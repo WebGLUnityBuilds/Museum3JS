@@ -1,0 +1,197 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+
+*{
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+
+/* Default Project settings --------------------------------------------------------------------------*/
+body {
+  background: #000000;
+  font-family: 'Dosis', Calibri, Arial, sans-serif;
+  margin: 0;
+}
+
+.progress-bar-container {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.8);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+#progress-bar {
+  width: 30%;
+  margin-top: 0.5%;
+  height: 2%;
+}
+
+/* For Firefox */
+progress::-moz-progress-bar {
+  /* Permalink - use to edit and share this gradient: https://colorzilla.com/gradient-editor/#b78628+0,fcc201+100 */
+  background: #6461ff; /* Old browsers */
+  background: -moz-linear-gradient(left,  #6461ff 0%, #6461ff 100%); /* FF3.6-15 */
+  background: -webkit-linear-gradient(left,  #b78628 0%,#6461ff 100%); /* Chrome10-25,Safari5.1-6 */
+  background: linear-gradient(to right,  #6461ff 0%,#6461ff 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#b78628', endColorstr='#fcc201',GradientType=1 ); /* IE6-9 */
+  border-radius: 10px;
+}
+
+/* For Chrome or Safari */
+progress::-webkit-progress-value {
+ /* Permalink - use to edit and share this gradient: https://colorzilla.com/gradient-editor/#b78628+0,fcc201+100 */
+  background: #6461ff; /* Old browsers */
+  background: -moz-linear-gradient(left,  #6461ff 0%, #6461ff 100%); /* FF3.6-15 */
+  background: -webkit-linear-gradient(left,  #6461ff 0%,#6461ff 100%); /* Chrome10-25,Safari5.1-6 */
+  background: linear-gradient(to right,  #6461ff 0%,#6461ff 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#b78628', endColorstr='#fcc201',GradientType=1 ); /* IE6-9 */
+  border-radius: 10px;
+}
+
+progress::-webkit-progress-bar {
+  border-radius: 10px;
+}
+
+/* For IE10 */
+progress {
+  /* Permalink - use to edit and share this gradient: https://colorzilla.com/gradient-editor/#b78628+0,fcc201+100 */
+  background: #6461ff; /* Old browsers */
+  background: -moz-linear-gradient(left,  #6461ff 0%, #fcc201 100%); /* FF3.6-15 */
+  background: -webkit-linear-gradient(left,  #6461ff 0%,#fcc201 100%); /* Chrome10-25,Safari5.1-6 */
+  background: linear-gradient(to right,  #6461ff 0%,#fcc201 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#6461ff', endColorstr='#fcc201',GradientType=1 ); /* IE6-9 */
+  border-radius: 10px;
+}
+
+label {
+  color: white;
+  font-size: 2rem;
+}
+
+test{
+position: absolute;
+display: block;
+z-index: 99;
+left: 50%;
+top: 50%;
+}
+
+/* Default Project settings --------------------------------------------------------------------------*/
+
+/* Experience canvas --------------------------------------------------------------------------*/
+
+.experience{
+  position: fixed;
+  width: 100vw;
+  height: 100vh;
+}
+
+.experience-canvas{
+  width: 100%;
+  height: 100%;
+}
+
+
+/* Page section --------------------------------------------------------------------------------*/
+
+.page{
+  z-index: 99999;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+.page-wrapper{
+  position: absolute;
+}
+
+/* Hero section ---------------------------------------------------------------------------------*/
+
+.hero{
+  width: 100vw;
+  height: 100vh;
+}
+
+.hero-wrapper{
+  width: relative;
+  height: 100%;
+}
+
+
+.hero-main{
+  position: absolute;
+  bottom: 2%;
+  left: 2%;
+  font-family: "Montserrat", sans-serif;
+  font-size: small;
+}
+
+
+/* --------------------------------------------------------------------------------------------- */
+
+
+
+
+
+button {
+  display: block;
+  margin: 0 auto;
+  padding: 10px;
+  position: fixed;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 20px;
+  background-color: rgba(30, 30, 30, 0.8);
+  color: #f5f5f5;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  font-family: "Arial", sans-serif;
+}
+
+#open-btn{
+  z-index: 99;
+
+}
+
+.small-renderer-container {
+  position: relative;
+}
+
+
+/* #close {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 25px;
+  height: 25px;
+  line-height: 25px;
+  font-size: 20px;
+  background-color: black;
+  color: white;
+  z-index: 100;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+} */
+
+.small-renderer {
+  position: fixed;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+}
+
+
