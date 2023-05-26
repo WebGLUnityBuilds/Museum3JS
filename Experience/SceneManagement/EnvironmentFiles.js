@@ -6,9 +6,10 @@ export default exhibits = {
       tab0: {
         room: "0",
         objectToAssign: "",
-        type: "fbx",
-        path: "./Models/Environment/Room00/MenuSceneNoSteps.fbx"
+        type: "glb",
+        path: "./Models/Environment/Room00/MenuSceneAnim.glb"
       },
+      //"./Models/Environment/Room00/MenuSceneNoSteps.fbx" working
       tab1: {
         room: "1",
         objectToAssign: "",

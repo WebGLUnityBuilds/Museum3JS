@@ -1,181 +1,84 @@
-
 nav {
-    position: absolute;
-    top: 15px;
-    left: 50%;
-    transform: translateX(-50%);
-    display: inline-block;
-    z-index: 10;
-    border-radius: 10px;
-    animation: slide-in 1s ease-out;
-    background-color: #424d5c8c;
-  }
+  &.primary-navigation {
+    margin: 0 auto;
+    display: block;
   
-  ul {
-    position: relative;
-    display: flex;
-    flex: 1 1 auto;
-    margin: 0;
-    padding: 0 30px;
-    backdrop-filter: blur(3px);
-    list-style-type: none;
-    
-    li:not(:last-child) {
-      margin-right: 40px;
+    padding: 10px 0 0 0;  
+    text-align: center;
+    font-size: 18px;
+
+    ul li {
+      list-style: none;
+      margin: 0 auto;
+      border-left: 2px solid #e64b40;
+      display: inline-block;
+      padding: 0 30px;
+      position: relative;
+      text-decoration: none;
+      text-align: center;
+      font-family: arvo;
     }
-    li {
-      border: 2px solid transparent;
-      border-radius: 5px;
-      padding: 10px;
-      transition: background 0.2s;
-      a {
-        color: #c2c9d3;
-        text-decoration: none;
-        text-transform: uppercase;
-        transition: color 0.2s;
-      }
-      ul {
-        visibility: hidden;
-        opacity: 0;
-        position: absolute;
-        display: block;
-        margin: 12px -12px;
-        padding: 0;
-        backdrop-filter: blur(3px);
-        background: #4b4040ab;
-        border: 2px solid #2b271d;
-        border-right: 2px solid #2c2620;
-        border-bottom: 2px solid #1d1813;
-        border-radius: 5px;
-        transition: opacity 0.2s, visibility 0.2s;
-        li {
-          margin: -2px 0 0 -2px;
-          width: calc(100% - 20px);
-          line-height: 1.7;
-          a {
-            color: #57474763;
-          }
-        }
-      }
-      &:hover {
-        background: #4d576388;
-        border: 2px solid #33201e;
-        border-right: 2px solid #46302f;
-        border-bottom: 2px solid #3f2d2c;
-        a {
-          color: #F9F8FD;
-        }
-        ul {
-          visibility: visible; 
-          opacity: 1;
-          box-shadow: 0px 3px 5px 2px #EBECF1;
-          li {
-            a {
-              color: #F9F8FD;
-            }
-          }
-        }
-      }
+
+    li a {
+      color: black;
     }
-  }
-  
-  
-  @keyframes slide-in {
-    0% {
-      top: -50px;
+
+    li a:hover {
+      color: #e64b40;
     }
-    40% {
-      top: 20px;
+
+    li:hover {
+      cursor: pointer;
     }
-    70% {
-      top: 10px;
+
+    ul li ul {
+      visibility: hidden;
+      opacity: 0;
+      position: absolute;
+padding-left: 0;
+      left: 0;
+      display: none;
+      background: white;
     }
-    100% {
-      top: 15px;
-    }
-  }
 
-
-  .dropdown-toggle::after {
-    content: none;
-}
-/////////////////////////////////////////////////////// Modal ///////////////////////////////////////////////////////
-
-
-img {
-  max-width: 100%;
-}
-
-.toMove{
-  //display: none; /* Hidden by default */
-  position: fixed; /* Stay in place */
-  z-index: 1; /* Sit on top */
-  padding-top: 56em; /* Location of the box */
-  padding-left: 50em;
-  left: 0;
-  bottom: 0;
-  width: 100%; /* Full width */
-  height: 100%; /* Full height */
-  overflow: auto; /* Enable scroll if needed */
-}
-
-.modal {
-  max-width: 240px;
-  background: rgb(17, 17, 17);
-  padding: 2rem;
-  border-radius: 1rem;
-  transition: 1s;
-
-  &__checkbox {
-    display: none;
-
-    &:checked ~ div {
+    ul li:hover > ul,
+    ul li ul:hover {
       visibility: visible;
       opacity: 1;
+      display: block;
+      min-width: 250px;
+      text-align: left;
+      padding-top: 20px;
+      box-shadow: 0px 3px 5px -1px #ccc;
+    }
+
+    ul li ul li {
+      clear: both;
+      width: 100%;
+      text-align: left;
+      margin-bottom: 20px;
+      border-style: none;
+    }
+
+    ul li ul li a:hover {
+      padding-left: 10px;
+      border-left: 2px solid #e64b40;
+      transition: all 0.3s ease;
     }
   }
-
-  &__label {
-    text-decoration: underline;
-    cursor: pointer;
-  }
-
-  &__window {
-    position: absolute;
-    left: 0;
-    right: 0;
-    top: 0;
-    bottom: 0;
-    background: rgba(64, 63, 126, 0.5);
-    visibility: hidden;
-    opacity: 0;
-    transition: 1s;
-    overflow:scroll;
-  }
-
-  &__content {
-    max-width: 576px;
-    background: rgb(10, 10, 10);
-    position: absolute;
-    transform: translate(-50%, -50%);
-    top: 50%;
-    left: 50%;
-    padding: 2.1rem;
-    border-radius: 0.8rem;
-  }
-
-  &__close-icon {
-    cursor: pointer;
-    width: 1rem;
-    margin: 0 0.5rem;
-    position: absolute;
-    right: 0;
-    top: 0;
-    color: #cecece;
-  }
-
-  &__text {
-    color: #e7e7e7;
-  }
-
 }
+
+a {
+
+    text-decoration: none;
+
+    &:hover {
+        color: #e64b40;
+    }
+ 
+}
+
+ ul li ul li a { transition: all 0.5s ease; }
+
+
+

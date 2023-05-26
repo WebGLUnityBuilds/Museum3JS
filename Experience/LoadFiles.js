@@ -70,7 +70,7 @@ export default class LoadFiles{
         });
       }
       
-      function loadAsset(type, url) {
+       function loadAsset(type, url) {
         switch (type) {
           case 'gltf':
             return LoadGLTFType(url);
@@ -86,12 +86,21 @@ export default class LoadFiles{
       function handleLoadedObjects(objects) {
         // Access and manipulate the stored objects
         const menuRoom = objects[0];
-        menuRoom.scale.multiplyScalar(0.01);
-        menuRoom.position.set(0, -0.8, 6);
-    
+        //menuRoom.scale.multiplyScalar(0.01);
+        menuRoom.position.set(0, 5, 13);
+        
+        menuRoom.traverse((child) => {
+          // Enable receive shadows for each child object
+          if (child instanceof THREE.Mesh) {
+            child.castShadow = true;
+          }
+        });
+          
+
+
         const room1 = objects[1];
         //room1.scale.multiplyScalar(0.1);
-        room1.position.set(0, 0.4, 0);
+        room1.position.set(0, 0.1, 1);
         room1.name = "room01";
         room1.visible = false;
         //room1.castShadow = true; //default is false
@@ -99,8 +108,14 @@ export default class LoadFiles{
     
         const steps = objects[2];
         steps.scale.multiplyScalar(0.01);
+        steps.traverse((child) => {
+          // Enable receive shadows for each child object
+          if (child instanceof THREE.Mesh) {
+            child.castShadow = true;
+          }
+        });
         steps.position.set(0, -0.25, 0);
-
+        
         rooms.push(menuRoom);
         rooms.push(room1);
         rooms.push(steps);
@@ -377,11 +392,18 @@ export default class LoadFiles{
             const model = gltf.scene;
             
             model.name = "floor";
-            model.scale.set(1.4,0.1,1.4);
+            model.scale.set(0.8,0.1,0.8);
             
             model.position.set(0,-0.3,0);
             model.rotation.z = -Math.PI * 2;
-            scene.add(model);
+            model.traverse((child) => {
+              // Enable receive shadows for each child object
+              if (child instanceof THREE.Mesh) {
+                child.receiveShadow = true;
+              }
+            });
+              
+            //scene.add(model);
           },(xhr) => {
               console.log((xhr.loaded / xhr.total) * 100 + "% loaded");
             },
@@ -389,6 +411,16 @@ export default class LoadFiles{
               console.log(`Error loading ${filepath}`, error);
           }
       );
+
+
+      // const floorGeo = new THREE.PlaneGeometry( 1000, 1000 );
+      // const floorMaterial = new THREE.MeshStandardMaterial( {color: 0xc5ba9d, side: THREE.DoubleSide} );
+      // const floor = new THREE.Mesh( floorGeo, floorMaterial );
+      // floor.rotation.x = Math.PI / 2;
+      // floor.position.y = -0.5;
+      // scene.add( floor );
+      // //rooms.push(floor);
+
 
 
       ///////////////////////////////////// Steps /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
