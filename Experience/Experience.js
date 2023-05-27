@@ -103,10 +103,6 @@ export default class Experience{
 
 
 
-
-
-
-
         const light = new THREE.DirectionalLight(0xC5BA9D, 2);
         light.position.set(-20, 60, 10);
         light.castShadow = true;
@@ -118,10 +114,8 @@ export default class Experience{
 
 
 
-
-
         const helper = new THREE.CameraHelper( light.shadow.camera );
-        scene.add( helper );
+        //scene.add( helper );
         
         smallScene.background = new THREE.Color( 0x1a0303);
         const smallHemisphereLight = new THREE.HemisphereLight(0x5C59CE, 0xffffff, 0.8);
@@ -129,17 +123,6 @@ export default class Experience{
                 
         
 
-        var textureLoader = new THREE.TextureLoader();
-        var customPointerTexture = textureLoader.load('./miscellaneous/mouse/dot.png');
-
-        // Create a custom pointer material using the texture
-        var customPointerMaterial = new THREE.SpriteMaterial({ map: customPointerTexture });
-
-        // Create a custom pointer sprite
-        var customPointer = new THREE.Sprite(customPointerMaterial);
-        customPointer.scale.set(0.1, 0.1, 1); // Adjust the scale of the custom pointer
-        camera.add(customPointer);
-        customPointer.position.set(0,0,-2);
 
         // Create cube for small Renderer. To Delete. v~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         const viewModel_geometry = new THREE.BoxGeometry();
@@ -160,61 +143,16 @@ export default class Experience{
         //smallRendererCloseB();
 
 
-
-
-
-        //////////////////////////////// Progress Bar //////////////////////////////////////
-        
-        const progressBar = document.getElementById('progress-bar');
-        const content = document.getElementById('scene-area');
-        const loadingManager = new THREE.LoadingManager();
-        loadingManager.onProgress = function(url, loaded, total) {
-            progressBar.value = (loaded / total) * 100;
-        }
-        const progressBarContainer = document.querySelector('.progress-bar-container');
-
-        loadingManager.onLoad = function() {
-            progressBarContainer.style.display = 'none';
-            content.style.display = 'block';
-
-        }
-        //////////////////////////////// Progress Bar //////////////////////////////////////
-
-        //////////////////////////////// Load/Instantiate Files //////////////////////////////////////
-        const gltfLoader = new GLTFLoader(loadingManager);
-        let sceneObjects = this.LoadFiles.gltfloaderFunc(gltfLoader, scene);
+        let sceneObjects = this.LoadFiles.gltfloaderFunc(scene);
         
         
         //////////////////////////////// Load/Instantiate Files //////////////////////////////////////
 
-        // let materialArray = [];
-
-        // scene.background = new THREE.Color(0x00000000);
-        // let texture_bk = new THREE.TextureLoader().load('./RawTextures/Environment/Skybox/graycloud_bk.jpg');
-        // let texture_dn = new THREE.TextureLoader().load('./RawTextures/Environment/Skybox/graycloud_dn.jpg');
-        // let texture_ft = new THREE.TextureLoader().load('./RawTextures/Environment/Skybox/graycloud_ft.jpg');
-        // let texture_lf = new THREE.TextureLoader().load('./RawTextures/Environment/Skybox/graycloud_lf.jpg');
-        // let texture_rt = new THREE.TextureLoader().load('./RawTextures/Environment/Skybox/graycloud_rt.jpg');
-        // let texture_up = new THREE.TextureLoader().load('./RawTextures/Environment/Skybox/graycloud_up.jpg');
-        
-        // materialArray.push(new THREE.MeshBasicMaterial({map: texture_bk}));
-        // materialArray.push(new THREE.MeshBasicMaterial({map: texture_dn}));
-        // materialArray.push(new THREE.MeshBasicMaterial({map: texture_ft}));
-        // materialArray.push(new THREE.MeshBasicMaterial({map: texture_lf}));
-        // materialArray.push(new THREE.MeshBasicMaterial({map: texture_rt}));
-        // materialArray.push(new THREE.MeshBasicMaterial({map: texture_up}));
-        
-        
-        // let skyboxMus = new THREE.BoxGeometry(10000, 10000, 10000);
-        // let skybox = new THREE.Mesh(skyboxMus, materialArray);
-        // scene.add(skybox);
-        // camera.add(skybox);
-        //skybox.position.set(0,0,0);
 
         let stats = new Stats();
         document.body.appendChild( stats.dom );
 
-        camera.position.set(0,0.4,20);
+        camera.position.set(0,0,-10);
 
 
         // // Access the first room from the sceneObjects array
@@ -232,36 +170,40 @@ export default class Experience{
         // }
         
         
-const video = document.createElement('video');
-video.src = '/RawTextures/VideoTextures/Mov1_1821.mp4';
-video.crossOrigin = 'anonymous';
-video.loop = true;
-video.muted = true; // Mute the video to comply with autoplay policies
-video.playsInline = true; // Ensure video playback on mobile devices
+        const video = document.createElement('video');
+        video.src = '/RawTextures/VideoTextures/Mov1_1821.mp4';
+        video.crossOrigin = 'anonymous';
+        video.loop = true;
+        video.muted = true; // Mute the video to comply with autoplay policies
+        video.playsInline = true; // Ensure video playback on mobile devices
 
-// Create a texture from the video element
-const videoTexture = new THREE.VideoTexture(video);
-videoTexture.minFilter = THREE.LinearFilter;
-videoTexture.magFilter = THREE.LinearFilter;
+        // Create a texture from the video element
+        const videoTexture = new THREE.VideoTexture(video);
+        videoTexture.minFilter = THREE.LinearFilter;
+        videoTexture.magFilter = THREE.LinearFilter;
 
-// Create a material and assign the video texture
-const material = new THREE.MeshBasicMaterial({ map: videoTexture });
+        // Create a material and assign the video texture
+        const material = new THREE.MeshBasicMaterial({ map: videoTexture });
 
-// Create a geometry and mesh
-const geometry = new THREE.PlaneGeometry(2, 1.125); // Adjust the size of the plane as needed
-const mesh = new THREE.Mesh(geometry, material);
-mesh.position.set(0,1,9);
-// Add the mesh to the scene
-scene.add(mesh);
+        // Create a geometry and mesh
+        const geometry = new THREE.PlaneGeometry(2, 1.125); // Adjust the size of the plane as needed
+        const mesh = new THREE.Mesh(geometry, material);
+        mesh.position.set(-4.3,1.4,-8);
+        // Add the mesh to the scene
+        scene.add(mesh);
 
-const svideo = document.getElementById('myVideo');
-function startVideoPlayback() {
-  video.play(); // Start video playback
-}
+        const svideo = document.getElementById('myVideo');
+        function startVideoPlayback() {
+          video.play(); // Start video playback
+        }
 
-document.addEventListener('click', startVideoPlayback);
+        document.addEventListener('click', startVideoPlayback);
 
-// Play the video
+        
+
+
+
+        moveCamera(-0.020159, 0,4.3341);
         
         ///////////////////////////////////////////////////////////////// START EVENTS PC/LAPTOP /////////////////////////////////////////////////////////////////
       
@@ -272,10 +214,6 @@ document.addEventListener('click', startVideoPlayback);
 
         pointer.x = (event.clientX / window.innerWidth) * 2 - 1;
         pointer.y = -(event.clientY / window.innerHeight) * 2 + 1;
-      
-        
-        
-
 
         
         document.onpointerdown = function(event) {
@@ -393,8 +331,8 @@ document.addEventListener('click', startVideoPlayback);
       const rotationEuler = new THREE.Euler(0, 0, 0, 'YXZ');
 
       // Define the minimum and maximum vertical rotation angles in radians
-      const minVerticalAngle = -Math.PI / 6; // 30 degrees looking down
-      const maxVerticalAngle = Math.PI / 6; // 30 degrees looking up
+      const minVerticalAngle = -Math.PI / 7; // 30 degrees looking down
+      const maxVerticalAngle = Math.PI / 7.; // 30 degrees looking up
 
       // Event listeners
       document.addEventListener('mousedown', () => {
@@ -499,11 +437,12 @@ document.addEventListener('click', startVideoPlayback);
       // Check the href attribute and call the appropriate function in your Three.js file
       if (menuItemHref === '#scene1') 
       {
-        loadScene1();
+        loadScene0();
         console.log("Scene 1");
       } 
       else if (menuItemHref === '#scene2') 
       {
+        loadScene1();
         console.log("Scene 2");
       } 
       else if (menuItemHref === '#scene3') 
@@ -538,8 +477,8 @@ document.addEventListener('click', startVideoPlayback);
         //tween.delay(0.2);
     }
 
-    function objToObj(x, y, z) {
-        let tween = gsap.to(sceneObjects[1].model.position, {
+    function objToObj(x, y, z, toObj) {
+        let tween = gsap.to(toObj.position, {
             x,
             y,
             z,
@@ -581,6 +520,7 @@ document.addEventListener('click', startVideoPlayback);
         }
       });
     }
+    
 
     // color transition
     // let targetColor = new THREE.Color(0x1a1a1a);
@@ -689,7 +629,6 @@ document.addEventListener('click', startVideoPlayback);
           //   }
           // }
            
-          console.log(intersects[i].object.name);
 
           if (intersects[i].object.name.includes("exhibit")) {
             
@@ -707,27 +646,29 @@ document.addEventListener('click', startVideoPlayback);
           if (intersects[i].object.name.includes("step")) {
             // let rayIndex = intersects[i].object.name.replace(/[^\d.-]/g, '');
             
-            console.log(intersects[i].object.name);
-
             let x = 0;
             let z = 0;
             //To fix
-            if (sceneObjects[2].model.visible)
-            {
-              x = (intersects[i].object.position.x / 100);
-              z = (intersects[i].object.position.z / 100);
-            }
-            else 
-            {
-              x = (intersects[i].object.position.x );
-              z = (intersects[i].object.position.z );
-            }
+            // if (sceneObjects[2].visible)
+            // {
+              
+            //   x = (intersects[i].object.position.x /100);
+            //   z = (intersects[i].object.position.z /100);
+            // }
+            // else 
+            // {
+            //   x = (intersects[i].object.position.x );
+            //   z = (intersects[i].object.position.z );
+            // }
             
+            
+            x = (intersects[i].object.position.x );
+            z = (intersects[i].object.position.z );
             moveCamera(x, 1, z);
             break;
             
           }
-          if(intersects[i].object.name.includes("001"))
+          if(intersects[i].object.name.includes("tab01"))
           {
             loadScene1();
 
@@ -741,17 +682,43 @@ document.addEventListener('click', startVideoPlayback);
       {
         cameraHeight = 1.65;
 
-        sceneObjects[0].model.visible = false;
-        sceneObjects[1].model.visible = true;
-        sceneObjects[2].model.visible = false;
+        sceneObjects[0].visible = false;
+        sceneObjects[1].visible = true;
+        //sceneObjects[2].visible = false;
 
         if(mainRendererActiveOBJ.length > 0)
         {
           mainRendererActiveOBJ.length = 0; // Empty the array
         }
-        mainRendererActiveOBJ.push(sceneObjects[1].model);
+        mainRendererActiveOBJ.push(sceneObjects[1]);
 
-        const objectAtIndex1 = sceneObjects[1].model;
+        const objectAtIndex1 = sceneObjects[1];
+        const step1 = objectAtIndex1.getObjectByName("step1");
+        if (step1) {
+          let x = (step1.position.x );
+          let z = (step1.position.z );
+          moveCamera(x, 1,z);
+          
+        } else {
+          // Object "step1" not found
+          console.log("Object not found");
+        }
+      }  
+      function loadScene0()
+      {
+        cameraHeight = 1.65;
+
+        sceneObjects[0].visible = true;
+        sceneObjects[1].visible = false;
+        //sceneObjects[2].visible = false;
+
+        if(mainRendererActiveOBJ.length > 0)
+        {
+          mainRendererActiveOBJ.length = 0; // Empty the array
+        }
+        mainRendererActiveOBJ.push(sceneObjects[0]);
+
+        const objectAtIndex1 = sceneObjects[0];
         const step1 = objectAtIndex1.getObjectByName("step1");
         if (step1) {
           let x = (step1.position.x );
@@ -876,13 +843,12 @@ document.addEventListener('click', startVideoPlayback);
       
       ////////////////////////////////////// Update Animate ////////////////////////////////////////////////////////
       
-      let rotation = 0;
-      let effectController = {
-        fov : 50
-      };
-      let gui = new GUI();
-      let element = gui.add( effectController, "fov", 1.0, 179.0);
-      element.name("field of view");
+      // let effectController = {
+      //   fov : 50
+      // };
+      // let gui = new GUI();
+      // let element = gui.add( effectController, "fov", 1.0, 179.0);
+      // element.name("field of view");
 
       var clock = new THREE.Clock();
       function animate() {
@@ -893,7 +859,7 @@ document.addEventListener('click', startVideoPlayback);
           smallCamera.position.y = 0.4;
           camera.position.y = cameraHeight;
 
-          camera.fov = effectController.fov;
+          //camera.fov = effectController.fov;
           camera.updateProjectionMatrix();
 
 
@@ -916,10 +882,9 @@ document.addEventListener('click', startVideoPlayback);
             // }    
             smallRenderer.render(smallScene, smallCamera);
           }
-          
+          //console.log(camera.position);
           decDefineTrue = true;
           
-
           stats.update();
 
       }

@@ -27,151 +27,307 @@ export default class LoadFiles{
 
     }
 
-    gltfloaderFunc(gltfLoader, scene){
+    gltfloaderFunc( scene ){
 
-        
-      
-        
-      let allSceneObjects = [];
-      let rooms = [];
+
+
+
       ///////////////////// Load Files using Promises /////////////////////////////
-        
-      
-      // const tabGltfFilepaths = [];
 
-      // // Access the path array inside texturePaths using forEach
-      // exhibits.room0.tabs.texturePaths.path.forEach((path, i) => {
-      //   tabGltfFilepaths.push(path);
-      // });
       const roomFileType = [];
       const roomFilePath = [];
-      
+
       // Access the path and type arrays inside exhibits using forEach
       Object.values(exhibits.room0).forEach((tab) => {
         roomFilePath.push(tab.path);
         roomFileType.push(tab.type);
       });
-      
-      function fbxType(url) {
+
+      function loadFile(url) {
         return new Promise((resolve, reject) => {
-          const fbxLoader = new FBXLoader();
-          fbxLoader.load(url, (fbx) => {
-            resolve(fbx);
-          }, null, reject);
+          const xhr = new XMLHttpRequest();
+          xhr.open('GET', url, true);
+          xhr.responseType = 'arraybuffer';
+
+          xhr.onprogress = (event) => {
+            if (event.lengthComputable) {
+              const progress = (event.loaded / event.total) * 100;
+              updateProgressBar(progress);
+            }
+          };
+
+          xhr.onload = () => {
+            if (xhr.status === 200) {
+              resolve(xhr.response);
+            } else {
+              reject(new Error(`Failed to load file: ${url}`));
+            }
+          };
+
+          xhr.onerror = () => {
+            reject(new Error(`Failed to load file: ${url}`));
+          };
+
+          xhr.send();
         });
       }
-      
-      function LoadGLTFType(url) {
-        return new Promise((resolve, reject) => {
-          const gltfLoader = new GLTFLoader();
-          gltfLoader.load(url, (gltf) => {
-            resolve(gltf.scene);
-          }, null, reject);
-        });
+
+      function updateProgressBar(progress) {
+        const progressBar = document.getElementById('progress-bar');
+        progressBar.value = progress;
       }
-      
-       function loadAsset(type, url) {
+
+      async function loadAsset(type, url) {
+        let data;
+        let loader;
+
         switch (type) {
           case 'gltf':
-            return LoadGLTFType(url);
+            data = await loadFile(url);
+            loader = new GLTFLoader();
+            return loader.parse(data);
+
           case 'glb':
-            return LoadGLTFType(url);
+            data = await loadFile(url);
+            return new Promise((resolve, reject) => {
+              loader = new GLTFLoader();
+              loader.parse(data, '', (gltf) => {
+                resolve(gltf.scene);
+              }, reject);
+            });
+
           case 'fbx':
-            return fbxType(url);
+            data = await loadFile(url);
+            loader = new FBXLoader();
+            return loader.parse(data);
+
           default:
             throw new Error(`Unsupported asset type: ${type}`);
         }
       }
-      
-      function handleLoadedObjects(objects, animations) {
-        // Access and manipulate the stored objects
+
+      const progressBarContainer = document.querySelector('.progress-bar-container');
+      const content = document.getElementById('scene-area');
+
+      function hideProgressBar() {
+        progressBarContainer.style.display = 'none';
+        content.style.display = 'block';
+      }
+
+      const promises = roomFilePath.map((url, index) => loadAsset(roomFileType[index], url));
+
+      Promise.all(promises)
+        .then((objects) => {
+          objects.forEach((object) => {
+            scene.add(object);
+            allSceneObjects.push(object);
+          });
+          handleLoadedObjects(allSceneObjects);
+          hideProgressBar();
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+
+
+
+
+
+
+      let allSceneObjects = [];
+      let rooms = [];
+
+      function handleLoadedObjects(objects) {
+
         const menuRoom = objects[0];
-        //menuRoom.scale.multiplyScalar(0.01);
-        menuRoom.position.set(0, 5, 13);
-        
+        menuRoom.position.set(0, 0, 0);
         menuRoom.traverse((child) => {
-          // Enable receive shadows for each child object
           if (child instanceof THREE.Mesh) {
             child.castShadow = true;
           }
         });
 
         const room1 = objects[1];
-        //room1.scale.multiplyScalar(0.1);
-        room1.position.set(0, 0.1, 1);
-        room1.name = "room01";
+        room1.position.set(0, 0.1, 0);
+        room1.name = 'room01';
         room1.visible = false;
-        //room1.castShadow = true; //default is false
-        //room1.receiveShadow = false;
-    
-        const steps = objects[2];
-        steps.scale.multiplyScalar(0.01);
-        steps.traverse((child) => {
-          // Enable receive shadows for each child object
-          if (child instanceof THREE.Mesh) {
-            child.castShadow = true;
-          }
-        });
-        steps.position.set(0, 0, 0);
-        
 
-        const animeC = objects[3];
-        animeC.traverse((child) => {
-          // Enable receive shadows for each child object
-          if (child instanceof THREE.Mesh) {
-            child.castShadow = true;
-          }
-        });
-        animeC.position.set(0, 1, 0);
+        // const steps = objects[2];
+        // steps.scale.multiplyScalar(0.01);
+        // steps.traverse((child) => {
+        //   if (child instanceof THREE.Mesh) {
+        //     child.castShadow = true;
+        //   }
+        // });
+        // steps.position.set(0, 0, 0);
 
-
-        rooms.push({
-          model: menuRoom,
-          animations: animations[0], // Store the animations along with the model
-        });
-        
-        rooms.push({
-          model: room1,
-          animations: animations[1] || [], // Add animations for this model if available
-        });
-      
-        rooms.push({
-          model: steps,
-          animations: animations[2] || [], // Add animations for this model if available
-        });
-
-        rooms.push({
-          model: steps,
-          animations: animations[3] || [], // Add animations for this model if available
-        });
-        rooms.forEach((d) => {
-          console.log(d.animations);
-        });
-
-
+        rooms.push(menuRoom);
+        rooms.push(room1);
+        //rooms.push(steps);
       }
 
-      // Example usage:
-      const promises = roomFilePath.map((url, index) => loadAsset(roomFileType[index], url));
-      console.log(promises.length);
-      Promise.all(promises)
-        .then((objects) => {
-          // All assets have been loaded successfully
-          objects.forEach((object, index) => {
-            scene.add(object); // Add object to the scene
-            allSceneObjects.push(object);
-          });
-          //scene.add(object); // Add object to the scene
-          //allSceneObjects.push(object);
-          handleLoadedObjects(allSceneObjects, objects.map((obj) => obj.animations || []));
-          //handleLoadedObjects(allSceneObjects);
+      
+      // let allSceneObjects = [];
+      // let rooms = [];
+      // ///////////////////// Load Files using Promises /////////////////////////////
+        
+      
+      // // const tabGltfFilepaths = [];
 
-        })
-        .catch((error) => {
-          // An error occurred while loading one of the assets
-          console.error(error);
-        });
+      // // // Access the path array inside texturePaths using forEach
+      // // exhibits.room0.tabs.texturePaths.path.forEach((path, i) => {
+      // //   tabGltfFilepaths.push(path);
+      // // });
+      // const roomFileType = [];
+      // const roomFilePath = [];
+      
+      // // Access the path and type arrays inside exhibits using forEach
+      // Object.values(exhibits.room0).forEach((tab) => {
+      //   roomFilePath.push(tab.path);
+      //   roomFileType.push(tab.type);
+      // });
+      
+      // function fbxType(url) {
+      //   return new Promise((resolve, reject) => {
+      //     const fbxLoader = new FBXLoader();
+      //     fbxLoader.load(url, (fbx) => {
+      //       resolve(fbx);
+      //     }, null, reject);
+      //   });
+      // }
+      
+      // function LoadGLTFType(url) {
+      //   return new Promise((resolve, reject) => {
+      //     const gltfLoader = new GLTFLoader();
+      //     gltfLoader.load(url, (gltf) => {
+      //       resolve(gltf.scene);
+      //     }, null, reject);
+      //   });
+      // }
+      
+      //  function loadAsset(type, url) {
+      //   switch (type) {
+      //     case 'gltf':
+      //       return LoadGLTFType(url);
+      //     case 'glb':
+      //       return LoadGLTFType(url);
+      //     case 'fbx':
+      //       return fbxType(url);
+      //     default:
+      //       throw new Error(`Unsupported asset type: ${type}`);
+      //   }
+      // }
+      
+      // function handleLoadedObjects(objects) {
+      //   // Access and manipulate the stored objects
+      //   const menuRoom = objects[0];
+      //   //menuRoom.scale.multiplyScalar(0.01);
+      //   menuRoom.position.set(0, 0, 13);
+        
+      //   menuRoom.traverse((child) => {
+      //     // Enable receive shadows for each child object
+      //     if (child instanceof THREE.Mesh) {
+      //       child.castShadow = true;
+      //     }
+      //   });
 
+
+      //   // const aabb = new THREE.Box3().setFromObject( obj );
+      //   // const center = aabb.getCenter( new THREE.Vector3() );
+        
+      //   // obj.position.x += ( obj.position.x - center.x );
+      //   // obj.position.y += ( obj.position.y - center.y );
+      //   // obj.position.z += ( obj.position.z - center.z );  
+
+
+      //   const room1 = objects[1];
+      //   //room1.scale.multiplyScalar(0.1);
+      //   room1.position.set(0, 0.1, 1);
+      //   room1.name = "room01";
+      //   room1.visible = false;
+      //   //room1.castShadow = true; //default is false
+      //   //room1.receiveShadow = false;
+    
+      //   const steps = objects[2];
+      //   steps.scale.multiplyScalar(0.01);
+      //   steps.traverse((child) => {
+      //     // Enable receive shadows for each child object
+      //     if (child instanceof THREE.Mesh) {
+      //       child.castShadow = true;
+      //     }
+      //   });
+      //   steps.position.set(0, 0, 0);
+        
+
+      //   // const animeC = objects[3];
+      //   // animeC.traverse((child) => {
+      //   //   // Enable receive shadows for each child object
+      //   //   if (child instanceof THREE.Mesh) {
+      //   //     child.castShadow = true;
+      //   //   }
+      //   // });
+      //   // animeC.position.set(0, 1, 0);
+
+
+      //   rooms.push(menuRoom);
+      //   rooms.push(room1);
+      //   rooms.push(steps);
+        
+      //   // rooms.push({
+      //   //   model: room1,
+      //   //   // animations: animations[1] || [], // Add animations for this model if available
+      //   // });
+      
+      //   // rooms.push({
+      //   //   model: steps,
+      //   //   // animations: animations[2] || [], // Add animations for this model if available
+      //   // });
+
+      //   // rooms.push({
+      //   //   model: steps,
+      //   //   // animations: animations[3] || [], // Add animations for this model if available
+      //   // });
+        
+
+      // }
+
+      // // Example usage:
+      // const promises = roomFilePath.map((url, index) => loadAsset(roomFileType[index], url));
+      // console.log(promises.length);
+      // Promise.all(promises)
+      //   .then((objects) => {
+      //     // All assets have been loaded successfully
+      //     // objects.forEach((object, index) => {
+      //     //   scene.add(object); // Add object to the scene
+      //     //   allSceneObjects.push(object);
+      //     // });
+
+      //      // All assets have been loaded successfully
+      //      objects.forEach((object) => {
+      //       scene.add(object); // Add object to the scene
+      //       allSceneObjects.push(object);
+      //     });
+      //     handleLoadedObjects(allSceneObjects);
+      //     // handleLoadedObjects(allSceneObjects, objects.map((obj) => obj.animations || []));
+      //     //handleLoadedObjects(allSceneObjects);
+
+      //   })
+      //   .catch((error) => {
+      //     // An error occurred while loading one of the assets
+      //     console.error(error);
+      //   });
+
+        
+      //     gltfLoader.load('./Models/Environment/Floor/floor.gltf', (gltf) => {
+      //       const model = gltf.scene;
+            
+            
+      //     },(xhr) => {
+      //         console.log((xhr.loaded / xhr.total) * 100 + "% loaded");
+      //       },
+      //       (error) => {
+      //         console.log(`Error loading ${filepath}`, error);
+      //     }
 
       
 
@@ -263,35 +419,13 @@ export default class LoadFiles{
 
           ///////////////////////////////Floor///////////////////////////////////////////////////////////////////////////////
         
-          gltfLoader.load('./Models/Environment/Floor/floor.gltf', (gltf) => {
-            const model = gltf.scene;
-            
-            model.name = "floor";
-            model.scale.set(0.8,0.1,0.8);
-            
-            model.position.set(0,-0.3,0);
-            model.rotation.z = -Math.PI * 2;
-            model.traverse((child) => {
-              // Enable receive shadows for each child object
-              if (child instanceof THREE.Mesh) {
-                child.receiveShadow = true;
-              }
-            });
-              
-            //scene.add(model);
-          },(xhr) => {
-              console.log((xhr.loaded / xhr.total) * 100 + "% loaded");
-            },
-            (error) => {
-              console.log(`Error loading ${filepath}`, error);
-          }
-      );
+          
+      
 
 
 
       ///////////////////////////////////// Steps /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        //console.log(rooms);
         
         return rooms;
 

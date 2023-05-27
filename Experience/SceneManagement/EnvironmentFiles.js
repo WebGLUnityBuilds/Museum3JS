@@ -7,27 +7,26 @@ export default exhibits = {
         room: "0",
         objectToAssign: "",
         type: "glb",
-        path: "./Models/Environment/Room00/MenuSceneAnimMet.glb"
+        path: "./Models/Environment/Room00/MenuRoomMetNoAnim.glb"
       },
-      //"./Models/Environment/Room00/MenuSceneNoSteps.fbx" working
       tab1: {
         room: "1",
         objectToAssign: "",
         type: "glb",
         path: "./Models/Environment/Room01/room12.glb"
       },
-      tab2: {
-        room: "2",
-        objectToAssign: "",
-        type: "fbx",
-        path: "./Models/Environment/Room00/StepsMenu.fbx"
-      },
-      tab3: {
-        room: "3",
-        objectToAssign: "",
-        type: "glb",
-        path: "./Models/Environment/Room00/AnimeCube.glb"
-      },
+      // tab2: {
+      //   room: "2",
+      //   objectToAssign: "",
+      //   type: "fbx",
+      //   path: "./Models/Environment/Room00/StepsMenu.fbx"
+      // },
+      // tab2: {
+      //   room: "2",
+      //   objectToAssign: "",
+      //   type: "glb",
+      //   path: "./Models/Environment/Room00/AnimeCube.glb"
+      // },
       // tab3: {
       //   room: "0",
       //   objectToAssign: "",

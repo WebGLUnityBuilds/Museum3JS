@@ -20,6 +20,12 @@ body {
   cursor: none;
 } */
 
+
+.custom-cursor {
+  cursor: url("./miscellaneous/mouse/icons8-pointer-48.png"), auto;
+}
+
+
 button,
 textarea,
 input,
@@ -59,10 +65,10 @@ a{
 /* For Firefox */
 progress::-moz-progress-bar {
   /* Permalink - use to edit and share this gradient: https://colorzilla.com/gradient-editor/#b78628+0,fcc201+100 */
-  background: #6461ff; /* Old browsers */
-  background: -moz-linear-gradient(left,  #6461ff 0%, #6461ff 100%); /* FF3.6-15 */
-  background: -webkit-linear-gradient(left,  #b78628 0%,#6461ff 100%); /* Chrome10-25,Safari5.1-6 */
-  background: linear-gradient(to right,  #6461ff 0%,#6461ff 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+  background: #bd2727; /* Old browsers */
+  background: -moz-linear-gradient(left,  #bd2727 0%, #bd2727 100%); /* FF3.6-15 */
+  background: -webkit-linear-gradient(left,  #b78628 0%,#bd2727 100%); /* Chrome10-25,Safari5.1-6 */
+  background: linear-gradient(to right,  #bd2727 0%,#bd2727 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
   filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#b78628', endColorstr='#fcc201',GradientType=1 ); /* IE6-9 */
   border-radius: 10px;
 }
@@ -70,10 +76,10 @@ progress::-moz-progress-bar {
 /* For Chrome or Safari */
 progress::-webkit-progress-value {
  /* Permalink - use to edit and share this gradient: https://colorzilla.com/gradient-editor/#b78628+0,fcc201+100 */
-  background: #6461ff; /* Old browsers */
-  background: -moz-linear-gradient(left,  #6461ff 0%, #6461ff 100%); /* FF3.6-15 */
-  background: -webkit-linear-gradient(left,  #6461ff 0%,#6461ff 100%); /* Chrome10-25,Safari5.1-6 */
-  background: linear-gradient(to right,  #6461ff 0%,#6461ff 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+  background: #bd2727; /* Old browsers */
+  background: -moz-linear-gradient(left,  #bd2727 0%, #bd2727 100%); /* FF3.6-15 */
+  background: -webkit-linear-gradient(left,  #bd2727 0%,#bd2727 100%); /* Chrome10-25,Safari5.1-6 */
+  background: linear-gradient(to right,  #bd2727 0%,#bd2727 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
   filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#b78628', endColorstr='#fcc201',GradientType=1 ); /* IE6-9 */
   border-radius: 10px;
 }
@@ -85,11 +91,11 @@ progress::-webkit-progress-bar {
 /* For IE10 */
 progress {
   /* Permalink - use to edit and share this gradient: https://colorzilla.com/gradient-editor/#b78628+0,fcc201+100 */
-  background: #6461ff; /* Old browsers */
-  background: -moz-linear-gradient(left,  #6461ff 0%, #fcc201 100%); /* FF3.6-15 */
-  background: -webkit-linear-gradient(left,  #6461ff 0%,#fcc201 100%); /* Chrome10-25,Safari5.1-6 */
-  background: linear-gradient(to right,  #6461ff 0%,#fcc201 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
-  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#6461ff', endColorstr='#fcc201',GradientType=1 ); /* IE6-9 */
+  background: #bd2727; /* Old browsers */
+  background: -moz-linear-gradient(left,  #bd2727 0%, #fcc201 100%); /* FF3.6-15 */
+  background: -webkit-linear-gradient(left,  #bd2727 0%,#fcc201 100%); /* Chrome10-25,Safari5.1-6 */
+  background: linear-gradient(to right,  #bd2727 0%,#fcc201 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#bd2727', endColorstr='#fcc201',GradientType=1 ); /* IE6-9 */
   border-radius: 10px;
 }
 
