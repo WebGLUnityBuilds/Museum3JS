@@ -88,11 +88,6 @@ export default class Experience{
         //scene.background = new THREE.Color( 0x66ccbe );
 
 
-
-
-
-
-
           const hdrTexture = new URL('../heavyAssets/industrial_sunset_puresky_4k.hdr', import.meta.url);
           renderer.outputColorSpace = THREE.SRGBColorSpace;
           renderer.toneMapping = THREE.ACESFilmicToneMapping;
@@ -221,6 +216,53 @@ export default class Experience{
 
         camera.position.set(0,0.4,20);
 
+
+        // // Access the first room from the sceneObjects array
+        // const firstRoom = sceneObjects[0];
+        // const firstRoomModel = firstRoom.model;
+        // const firstRoomAnimations = firstRoom.animations;
+
+        // // Play the animations if available
+        // if (firstRoomAnimations.length > 0) {
+        //   const mixer = new THREE.AnimationMixer(firstRoomModel);
+        //   firstRoomAnimations.forEach((animation) => {
+        //     const action = mixer.clipAction(animation);
+        //     action.play();
+        //   });
+        // }
+        
+        
+const video = document.createElement('video');
+video.src = '/RawTextures/VideoTextures/Mov1_1821.mp4';
+video.crossOrigin = 'anonymous';
+video.loop = true;
+video.muted = true; // Mute the video to comply with autoplay policies
+video.playsInline = true; // Ensure video playback on mobile devices
+
+// Create a texture from the video element
+const videoTexture = new THREE.VideoTexture(video);
+videoTexture.minFilter = THREE.LinearFilter;
+videoTexture.magFilter = THREE.LinearFilter;
+
+// Create a material and assign the video texture
+const material = new THREE.MeshBasicMaterial({ map: videoTexture });
+
+// Create a geometry and mesh
+const geometry = new THREE.PlaneGeometry(2, 1.125); // Adjust the size of the plane as needed
+const mesh = new THREE.Mesh(geometry, material);
+mesh.position.set(0,1,9);
+// Add the mesh to the scene
+scene.add(mesh);
+
+const svideo = document.getElementById('myVideo');
+function startVideoPlayback() {
+  video.play(); // Start video playback
+}
+
+document.addEventListener('click', startVideoPlayback);
+
+// Play the video
+        
         ///////////////////////////////////////////////////////////////// START EVENTS PC/LAPTOP /////////////////////////////////////////////////////////////////
       
 
@@ -240,11 +282,11 @@ export default class Experience{
 
           switch ( event.button ) {
               case 0:
+                mainRendererRaycaster(pointer, event);
                 if(smallRenderer.domElement.style.opacity >= 0.9)
                 {
                   closeRenderer();
                 }
-                mainRendererRaycaster(pointer, event);
                 break;
               case 1: 
                 console.log("Number of Triangles :", renderer.info.render.triangles);
@@ -393,12 +435,12 @@ export default class Experience{
       {
         if (smallRenderer.domElement.style.display === "block") {
           viewRendererGSAPout();
-          gsapDirLightIntensityInit(light);
+          gsapDirLightIntensityInit(renderer);
           smallRenderer.domElement.style.display = "none";
           
         } else {
           viewRendererGSAPin();
-          gsapDirLightIntensityTarget(light);
+          gsapDirLightIntensityTarget(renderer);
           smallRenderer.domElement.style.display = "block";
         }
       }
@@ -407,7 +449,7 @@ export default class Experience{
       {
         if (smallRenderer.domElement.style.display === "block") {
           viewRendererGSAPout();
-          gsapDirLightIntensityInit(light);
+          gsapDirLightIntensityInit(renderer);
           smallRenderer.domElement.style.display = "none";
         }
       }
@@ -457,6 +499,7 @@ export default class Experience{
       // Check the href attribute and call the appropriate function in your Three.js file
       if (menuItemHref === '#scene1') 
       {
+        loadScene1();
         console.log("Scene 1");
       } 
       else if (menuItemHref === '#scene2') 
@@ -496,7 +539,7 @@ export default class Experience{
     }
 
     function objToObj(x, y, z) {
-        let tween = gsap.to(sceneObjects[1].position, {
+        let tween = gsap.to(sceneObjects[1].model.position, {
             x,
             y,
             z,
@@ -514,23 +557,30 @@ export default class Experience{
         });
     }
 
-
+    
     const startingIntensity = 1.5;
-    function gsapDirLightIntensityInit(light) {
-      gsap.to(light, 
-      { intensity: startingIntensity, 
-        duration: 2 
-      });
-    }
-
-    const targetIntensity = 0.1;
-    function gsapDirLightIntensityTarget(light) {
-      gsap.to(light, 
-      { intensity: targetIntensity, 
-        duration: 2 
+    const rendererProperties = { toneMappingExposure: startingIntensity };
+    
+    function gsapDirLightIntensityInit() {
+      gsap.to(rendererProperties, {
+        toneMappingExposure: startingIntensity,
+        duration: 2,
+        onUpdate: () => {
+          renderer.toneMappingExposure = rendererProperties.toneMappingExposure;
+        }
       });
     }
     
+    const targetIntensity = 0.2;
+    function gsapDirLightIntensityTarget() {
+      gsap.to(rendererProperties, {
+        toneMappingExposure: targetIntensity,
+        duration: 2,
+        onUpdate: () => {
+          renderer.toneMappingExposure = rendererProperties.toneMappingExposure;
+        }
+      });
+    }
 
     // color transition
     // let targetColor = new THREE.Color(0x1a1a1a);
@@ -662,7 +712,7 @@ export default class Experience{
             let x = 0;
             let z = 0;
             //To fix
-            if (sceneObjects[2].visible)
+            if (sceneObjects[2].model.visible)
             {
               x = (intersects[i].object.position.x / 100);
               z = (intersects[i].object.position.z / 100);
@@ -679,29 +729,7 @@ export default class Experience{
           }
           if(intersects[i].object.name.includes("001"))
           {
-            cameraHeight = 1.65;
-
-            sceneObjects[0].visible = false;
-            sceneObjects[1].visible = true;
-            sceneObjects[2].visible = false;
-
-            if(mainRendererActiveOBJ.length > 0)
-            {
-              mainRendererActiveOBJ.length = 0; // Empty the array
-            }
-            mainRendererActiveOBJ.push(sceneObjects[1]);
-
-            const objectAtIndex1 = sceneObjects[1];
-            const step1 = objectAtIndex1.getObjectByName("step1");
-            if (step1) {
-              let x = (step1.position.x );
-              let z = (step1.position.z );
-              moveCamera(x, 1,z);
-              
-            } else {
-              // Object "step1" not found
-              console.log("Object not found");
-            }
+            loadScene1();
 
             break;
           }
@@ -709,7 +737,36 @@ export default class Experience{
       
       }
 
-        
+      function loadScene1()
+      {
+        cameraHeight = 1.65;
+
+        sceneObjects[0].model.visible = false;
+        sceneObjects[1].model.visible = true;
+        sceneObjects[2].model.visible = false;
+
+        if(mainRendererActiveOBJ.length > 0)
+        {
+          mainRendererActiveOBJ.length = 0; // Empty the array
+        }
+        mainRendererActiveOBJ.push(sceneObjects[1].model);
+
+        const objectAtIndex1 = sceneObjects[1].model;
+        const step1 = objectAtIndex1.getObjectByName("step1");
+        if (step1) {
+          let x = (step1.position.x );
+          let z = (step1.position.z );
+          moveCamera(x, 1,z);
+          
+        } else {
+          // Object "step1" not found
+          console.log("Object not found");
+        }
+      }  
+
+
+
+
     let mouseDown = false;
     let timer = null;
     
@@ -854,7 +911,9 @@ export default class Experience{
             if (sRModelRotAcceleration >= ROTATION_PERIOD) {
                 sRModelRotAcceleration -= ROTATION_PERIOD;
             }
-                            
+            // if (mixer) {
+            //   mixer.update(delta); // deltaTime is the time since the last frame
+            // }    
             smallRenderer.render(smallScene, smallCamera);
           }
           

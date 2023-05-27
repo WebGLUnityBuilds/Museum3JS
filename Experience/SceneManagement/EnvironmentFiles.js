@@ -7,7 +7,7 @@ export default exhibits = {
         room: "0",
         objectToAssign: "",
         type: "glb",
-        path: "./Models/Environment/Room00/MenuSceneAnim.glb"
+        path: "./Models/Environment/Room00/MenuSceneAnimMet.glb"
       },
       //"./Models/Environment/Room00/MenuSceneNoSteps.fbx" working
       tab1: {
@@ -21,6 +21,12 @@ export default exhibits = {
         objectToAssign: "",
         type: "fbx",
         path: "./Models/Environment/Room00/StepsMenu.fbx"
+      },
+      tab3: {
+        room: "3",
+        objectToAssign: "",
+        type: "glb",
+        path: "./Models/Environment/Room00/AnimeCube.glb"
       },
       // tab3: {
       //   room: "0",

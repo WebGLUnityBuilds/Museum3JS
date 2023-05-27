@@ -83,7 +83,7 @@ export default class LoadFiles{
         }
       }
       
-      function handleLoadedObjects(objects) {
+      function handleLoadedObjects(objects, animations) {
         // Access and manipulate the stored objects
         const menuRoom = objects[0];
         //menuRoom.scale.multiplyScalar(0.01);
@@ -95,8 +95,6 @@ export default class LoadFiles{
             child.castShadow = true;
           }
         });
-          
-
 
         const room1 = objects[1];
         //room1.scale.multiplyScalar(0.1);
@@ -114,26 +112,59 @@ export default class LoadFiles{
             child.castShadow = true;
           }
         });
-        steps.position.set(0, -0.25, 0);
+        steps.position.set(0, 0, 0);
         
-        rooms.push(menuRoom);
-        rooms.push(room1);
-        rooms.push(steps);
-      }
 
+        const animeC = objects[3];
+        animeC.traverse((child) => {
+          // Enable receive shadows for each child object
+          if (child instanceof THREE.Mesh) {
+            child.castShadow = true;
+          }
+        });
+        animeC.position.set(0, 1, 0);
+
+
+        rooms.push({
+          model: menuRoom,
+          animations: animations[0], // Store the animations along with the model
+        });
+        
+        rooms.push({
+          model: room1,
+          animations: animations[1] || [], // Add animations for this model if available
+        });
+      
+        rooms.push({
+          model: steps,
+          animations: animations[2] || [], // Add animations for this model if available
+        });
+
+        rooms.push({
+          model: steps,
+          animations: animations[3] || [], // Add animations for this model if available
+        });
+        rooms.forEach((d) => {
+          console.log(d.animations);
+        });
+
+
+      }
 
       // Example usage:
       const promises = roomFilePath.map((url, index) => loadAsset(roomFileType[index], url));
-      let i = -10;
-      console.log(promises.length)
+      console.log(promises.length);
       Promise.all(promises)
         .then((objects) => {
           // All assets have been loaded successfully
-          objects.forEach((object) => {
+          objects.forEach((object, index) => {
             scene.add(object); // Add object to the scene
             allSceneObjects.push(object);
           });
-          handleLoadedObjects(allSceneObjects);
+          //scene.add(object); // Add object to the scene
+          //allSceneObjects.push(object);
+          handleLoadedObjects(allSceneObjects, objects.map((obj) => obj.animations || []));
+          //handleLoadedObjects(allSceneObjects);
 
         })
         .catch((error) => {
@@ -230,162 +261,6 @@ export default class LoadFiles{
 
 
 
-
-
-
-
-        //// Load FBX Files, mostly works
-
-        // let room0;
-
-        // const fbxLoader = new FBXLoader()
-        // fbxLoader.load(
-        //     './Models/Environment/Room0Tabs/room0tabs.fbx',
-        //     (object) => {
-        //         scene.add(object)
-                
-        //         object.scale.set(0.01,0.01,0.01);
-        //         object.position.set(0,3,0);
-        //         object.name = "fad"; // assign the name here
-        //         room0 = object;
-        //         allSceneObjects["room0"]= room0;
-        //     },
-        //     (xhr) => {
-        //         console.log((xhr.loaded / xhr.total) * 100 + '% loaded')
-        //     },
-        //     (error) => {
-        //         console.log(error)
-        //     }
-        // )
-
-      // const tabGltfFilepaths = [
-        
-      // ];
-        
-      // // Access the path array inside texturePaths using forEach
-      // exhibits.room0.tabs.texturePaths.path.forEach((path, i) => {
-      //   tabGltfFilepaths.push(path);
-      // });
-              
-      
-
-        ///////////////////////// Load all tabs as one from gltf
-      // // Create a new texture loader
-      // const textureLoader = new THREE.TextureLoader();
-
-      // // Create a new GLTF loader
-      // //const gltfLoader = new THREE.GLTFLoader();
-
-
-
-
-
-      // gltfLoader.load("./Models/tabs/OneFileTabsGLTF/tabsEnter.gltf", (gltf) => {
-      //   gltf.scene.traverse((child) => {
-      //     if (child.isMesh) {
-      //       // check if child.material is an array before looping over it
-      //       if (Array.isArray(child.material)) {
-      //         child.material.forEach((material, index) => {
-      //           if (material) { // check if the material exists
-      //             textureLoader.load(
-      //               tabGltfFilepaths[index], // set the correct texture path for this material
-      //               (texture) => {
-      //                 texture.flipZ = true;
-      //                 material.map = texture // set the texture map
-      //                 material.needsUpdate = true // update the material
-      //               },
-      //               undefined,
-      //               (error) => {
-      //                 console.error(`Error loading texture: ${error}`)
-      //               }
-      //             )
-      //           }
-      //         })
-      //       } else {
-      //         // if child.material is not an array, just set the texture map for that material
-      //         const material = child.material; // declare the material variable
-      //         textureLoader.load(
-      //           tabGltfFilepaths[0], // set the correct texture path for this material
-      //           (texture) => {
-      //             texture.flipY = true;
-      //             material.map = texture // set the texture map
-      //             material.needsUpdate = true // update the material
-      //           },
-      //           undefined,
-      //           (error) => {
-      //             console.error(`Error loading texture: ${error}`)
-      //           }
-      //         )
-      //       }
-      //     }
-      //   })
-      
-      //   scene.add(gltf.scene)
-      
-      //   // set the scale and position of the gltf object
-      //   gltf.scene.position.set(0, 3, 0)
-      
-      // }, 
-      // (xhr) => {
-      //   console.log(`${(xhr.loaded / xhr.total * 100)}% loaded`)
-      // },
-      // (error) => {
-      //   console.error(`Error loading GLTF file: ${error}`)
-      // })
-
-      
-      //   //Loading all tabs for room 0 with gltf loader and filepaths from EnciromentFiles.js 
-      //   const tabGltfFilepaths = [
-          
-      //   ];
-          
-
-      //   Object.values(exhibits).forEach((room) => {
-      //     Object.values(room).forEach((tab) => {
-      //       const filePath = tab.path;
-      //       tabGltfFilepaths.push(filePath);
-      //     });
-      //   });
-        
-      //   const loader = new GLTFLoader();
-        
-
-      //   let i = 0;
-      //   let RoomOneObj = [];
-        
-      //   tabGltfFilepaths.forEach((filepath) => {
-      //     loader.load(
-      //       filepath,
-      //       (gltf) => {
-      //         const object = gltf.scene;
-      //           scene.add(object);
-      //           object.position.y = 3.1;
-      //           object.position.x = i + (i*1.2) ;
-      //           object.position.z = 5;
-      //           i++;
-      //       },
-      //       (xhr) => {
-      //         console.log((xhr.loaded / xhr.total) * 100 + "% loaded");
-      //       },
-      //       (error) => {
-      //         console.log(`Error loading ${filepath}`, error);
-      //       }
-      //     );
-      //   });
-
-
-        
-
-        
-
-
-        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-
-        //////////////////////////////////// Temp Boxes For Future Spots ////////////////////////////////////const geometry = new THREE.CylinderGeometry( 5, 5, 20, 32 );
-
-
           ///////////////////////////////Floor///////////////////////////////////////////////////////////////////////////////
         
           gltfLoader.load('./Models/Environment/Floor/floor.gltf', (gltf) => {
@@ -413,20 +288,11 @@ export default class LoadFiles{
       );
 
 
-      // const floorGeo = new THREE.PlaneGeometry( 1000, 1000 );
-      // const floorMaterial = new THREE.MeshStandardMaterial( {color: 0xc5ba9d, side: THREE.DoubleSide} );
-      // const floor = new THREE.Mesh( floorGeo, floorMaterial );
-      // floor.rotation.x = Math.PI / 2;
-      // floor.position.y = -0.5;
-      // scene.add( floor );
-      // //rooms.push(floor);
-
-
 
       ///////////////////////////////////// Steps /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-          console.log(rooms);
-
+        //console.log(rooms);
+        
         return rooms;
 
     }
