@@ -1,11 +1,14 @@
+
 nav {
   &.primary-navigation {
+    
     margin: 0 auto;
     display: block;
   
     padding: 10px 0 0 0;  
     text-align: center;
     font-size: 18px;
+    z-index: 1000;
 
     ul li {
       list-style: none;
@@ -21,15 +24,19 @@ nav {
 
     li a {
       color: black;
+      cursor: inherit;
+      &.hand-cursor {
+        cursor: url(../miscellaneous/mouse/icons8-hand-cursor-40.png), auto;
+      }
     }
 
     li a:hover {
       color: #e64b40;
     }
 
-    li:hover {
-      cursor: pointer;
-    }
+    // li:hover {
+    //   cursor: pointer;
+    // }
 
     ul li ul {
       visibility: hidden;
@@ -66,16 +73,17 @@ padding-left: 0;
       transition: all 0.3s ease;
     }
   }
+  
 }
 
 a {
 
     text-decoration: none;
-
+z-index: 4000;
     &:hover {
         color: #e64b40;
     }
- 
+    
 }
 
  ul li ul li a { transition: all 0.5s ease; }

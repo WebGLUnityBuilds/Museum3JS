@@ -57,9 +57,10 @@ export default class Experience{
         smallRenderer.domElement.style.border = "2px solid black";
         smallRenderer.domElement.style.borderRadius = "1%";
 
-
-        
-        document.body.appendChild(smallRenderer.domElement);
+        // Append the small renderer's div to the desired parent element
+        const parentElement = document.getElementById("cursor-div");
+        parentElement.appendChild(smallRenderer.domElement);
+        //document.body.appendChild(smallRenderer.domElement);
         
 
         const camera = new THREE.PerspectiveCamera(
@@ -117,7 +118,7 @@ export default class Experience{
         const helper = new THREE.CameraHelper( light.shadow.camera );
         //scene.add( helper );
         
-        smallScene.background = new THREE.Color( 0x1a0303);
+        smallScene.background = new THREE.Color( 0xb9b8ff);
         const smallHemisphereLight = new THREE.HemisphereLight(0x5C59CE, 0xffffff, 0.8);
         smallScene.add(smallHemisphereLight);
                 
@@ -174,7 +175,7 @@ export default class Experience{
         video.src = '/RawTextures/VideoTextures/Mov1_1821.mp4';
         video.crossOrigin = 'anonymous';
         video.loop = true;
-        video.muted = true; // Mute the video to comply with autoplay policies
+        video.muted = false; // Mute the video to comply with autoplay policies
         video.playsInline = true; // Ensure video playback on mobile devices
 
         // Create a texture from the video element
@@ -398,7 +399,6 @@ export default class Experience{
       
       
 
-    updateSmallRendererPosition();
     window.addEventListener("resize", () => {
         camera.aspect = window.innerWidth / window.innerHeight;
         camera.updateProjectionMatrix();
@@ -832,6 +832,7 @@ export default class Experience{
           }
       }
 
+      updateSmallRendererPosition();
       
       //////////////////////////////////////////////////// ~Small Renderer functions ////////////////////////////////////////////////////////////////////
 
