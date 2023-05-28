@@ -177,7 +177,7 @@ export default class Experience{
 
 
 
-        
+
         // Create an AudioLoader
         const audioLoader = new THREE.AudioLoader();
 
@@ -394,6 +394,39 @@ export default class Experience{
         };
       });
       
+
+      
+      // Touch control events
+      document.addEventListener('touchstart', event => {
+        isMouseDown = true;
+        previousMousePosition = {
+          x: event.touches[0].clientX,
+          y: event.touches[0].clientY
+        };
+      });
+
+      document.addEventListener('touchmove', event => {
+        if (isMouseDown) {
+          const deltaMove = {
+            x: previousMousePosition.x - event.touches[0].clientX,
+            y: previousMousePosition.y - event.touches[0].clientY
+          };
+
+          // Reverse controls
+          rotationEuler.y += -deltaMove.x * rotationSpeed;
+          rotationEuler.x += -deltaMove.y * rotationSpeed;
+
+          // Clamp the vertical rotation angle within the defined range
+          rotationEuler.x = Math.max(minVerticalAngle, Math.min(maxVerticalAngle, rotationEuler.x));
+
+          camera.rotation.set(rotationEuler.x, rotationEuler.y, rotationEuler.z, 'YXZ');
+        }
+
+        previousMousePosition = {
+          x: event.touches[0].clientX,
+          y: event.touches[0].clientY
+        };
+      });
       // ///////// ~Control Events //////////
 
       
