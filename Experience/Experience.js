@@ -170,12 +170,35 @@ export default class Experience{
         //   });
         // }
         
+        // Create an AudioListener
+        const listener = new THREE.AudioListener();
+        camera.add(listener); // Attach the listener to the camera or any object in the scene
+
+
+
+
+        
+        // Create an AudioLoader
+        const audioLoader = new THREE.AudioLoader();
+
+        // Declare the audio variable outside the callback function
+        let audio;
+
+        // Load the audio file
+        audioLoader.load('./RawTextures/AudioFiles/182147GKaudio1.mp3', function(buffer) {
+          // Create an Audio object and set the buffer
+          audio = new THREE.Audio(listener);
+          audio.setBuffer(buffer);
+        });
+
+
+
         
         const video = document.createElement('video');
         video.src = '/RawTextures/VideoTextures/Mov1_1821.mp4';
         video.crossOrigin = 'anonymous';
         video.loop = true;
-        video.muted = false; // Mute the video to comply with autoplay policies
+        video.muted = true; // Mute the video to comply with autoplay policies
         video.playsInline = true; // Ensure video playback on mobile devices
 
         // Create a texture from the video element
@@ -195,9 +218,13 @@ export default class Experience{
 
         const svideo = document.getElementById('myVideo');
         function startVideoPlayback() {
-          video.play(); // Start video playback
+          if (video) {
+            video.play(); // Play the audio if it's loaded
+          }
+          if (audio) {
+            audio.play(); // Play the audio if it's loaded
+          }
         }
-
         document.addEventListener('click', startVideoPlayback);
 
         

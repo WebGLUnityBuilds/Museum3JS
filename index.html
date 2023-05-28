@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://fonts.googleapis.com/css?family=Arvo&display=swap" rel="stylesheet">
     <title>Museum Of Karditsa</title>
     <link rel="icon" href="./miscellaneous/icons/Georgios_Karaiskakis.jpg">
@@ -87,7 +88,45 @@
     </div>
     
   </div>
-
+  <script>
+    // Check if the device is mobile
+    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+  
+    // Check if Chrome is available
+    const isChrome = /Chrome/i.test(navigator.userAgent);
+  
+    // Auto-rotate the page if it's a mobile device
+    if (isMobile) {
+      // Rotate the page to landscape mode
+      const rotateToLandscape = () => {
+        if (window.orientation === 0 || window.orientation === 180) {
+          document.documentElement.style.transform = "rotate(-90deg)";
+        }
+      };
+  
+      // Listen for orientation change events
+      window.addEventListener("orientationchange", rotateToLandscape);
+  
+      // Call the rotate function on page load
+      rotateToLandscape();
+    }
+  
+    // Open the page in Chrome if available
+    if (isChrome) {
+      const openInChrome = () => {
+        // Check if Chrome is the default browser
+        const isDefaultBrowser = window.navigator.standalone || window.matchMedia("(display-mode: standalone)").matches;
+  
+        // Open in Chrome only if it's not the default browser
+        if (!isDefaultBrowser) {
+          window.location.href = "googlechrome://navigate?url=" + window.location.href;
+        }
+      };
+  
+      // Call the open function on page load
+      openInChrome();
+    }
+  </script>
     <script type="module" src="/main.js" ></script>
 <!--     
     <script type="script" src="/src/scripts.js" ></script>
