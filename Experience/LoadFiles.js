@@ -16,157 +16,163 @@ import { element1, element2, element3 } from "/assets/txtElements.js";
 
 import exhibits from "./SceneManagement/EnvironmentFiles.js";
 
+export default class LoadFiles {
+  constructor() {}
 
-export default class LoadFiles{
-    constructor(){
-        
+  async gltfloaderFunc(scene) {
+    
+    const rooms = [];
+    const roomFileType = [];
+    const roomFilePath = [];
 
-        
-        //this.gltfloaderFunc();
+    // Access the path and type arrays inside exhibits using forEach
+    Object.values(exhibits.room0).forEach((tab) => {
+      roomFilePath.push(tab.path);
+      roomFileType.push(tab.type);
+    });
 
+    function loadFile(url) {
+      return new Promise((resolve, reject) => {
+        const xhr = new XMLHttpRequest();
+        xhr.open('GET', url, true);
+        xhr.responseType = 'arraybuffer';
 
+        xhr.onprogress = (event) => {
+          if (event.lengthComputable) {
+            const progress = (event.loaded / event.total) * 100;
+            updateProgressBar(progress);
+          }
+        };
+
+        xhr.onload = () => {
+          if (xhr.status === 200) {
+            resolve(xhr.response);
+          } else {
+            reject(new Error(`Failed to load file: ${url}`));
+          }
+        };
+
+        xhr.onerror = () => {
+          reject(new Error(`Failed to load file: ${url}`));
+        };
+
+        xhr.send();
+      });
     }
 
-    gltfloaderFunc( scene ){
+    function updateProgressBar(progress) {
+      const progressBar = document.getElementById('progress-bar');
+      progressBar.value = progress;
+    }
 
+    async function loadAsset(type, url) {
+      let data;
+      let loader;
 
+      switch (type) {
+        case 'gltf':
+          data = await loadFile(url);
+          loader = new GLTFLoader();
+          return loader.parse(data);
 
+        case 'glb':
+          data = await loadFile(url);
+          return new Promise((resolve, reject) => {
+            loader = new GLTFLoader();
+            loader.parse(data, '', (gltf) => {
+              resolve(gltf.scene);
+            }, reject);
+          });
 
-      ///////////////////// Load Files using Promises /////////////////////////////
+        case 'fbx':
+          data = await loadFile(url);
+          loader = new FBXLoader();
+          return loader.parse(data);
 
-      const roomFileType = [];
-      const roomFilePath = [];
+        default:
+          throw new Error(`Unsupported asset type: ${type}`);
+      }
+    }
 
-      // Access the path and type arrays inside exhibits using forEach
-      Object.values(exhibits.room0).forEach((tab) => {
-        roomFilePath.push(tab.path);
-        roomFileType.push(tab.type);
+    const progressBarContainer = document.querySelector('.progress-bar-container');
+    const content = document.getElementById('scene-area');
+
+    function hideProgressBar() {
+      progressBarContainer.style.display = 'none';
+      content.style.display = 'block';
+    }
+
+    try {
+      const objects = await Promise.all(roomFilePath.map((url, index) => loadAsset(roomFileType[index], url)));
+      const allSceneObjects = [];
+
+      objects.forEach((object) => {
+        scene.add(object);
+        allSceneObjects.push(object);
       });
 
-      function loadFile(url) {
-        return new Promise((resolve, reject) => {
-          const xhr = new XMLHttpRequest();
-          xhr.open('GET', url, true);
-          xhr.responseType = 'arraybuffer';
+      handleLoadedObjects(allSceneObjects);
+      hideProgressBar();
 
-          xhr.onprogress = (event) => {
-            if (event.lengthComputable) {
-              const progress = (event.loaded / event.total) * 100;
-              updateProgressBar(progress);
-            }
-          };
-
-          xhr.onload = () => {
-            if (xhr.status === 200) {
-              resolve(xhr.response);
-            } else {
-              reject(new Error(`Failed to load file: ${url}`));
-            }
-          };
-
-          xhr.onerror = () => {
-            reject(new Error(`Failed to load file: ${url}`));
-          };
-
-          xhr.send();
-        });
-      }
-
-      function updateProgressBar(progress) {
-        const progressBar = document.getElementById('progress-bar');
-        progressBar.value = progress;
-      }
-
-      async function loadAsset(type, url) {
-        let data;
-        let loader;
-
-        switch (type) {
-          case 'gltf':
-            data = await loadFile(url);
-            loader = new GLTFLoader();
-            return loader.parse(data);
-
-          case 'glb':
-            data = await loadFile(url);
-            return new Promise((resolve, reject) => {
-              loader = new GLTFLoader();
-              loader.parse(data, '', (gltf) => {
-                resolve(gltf.scene);
-              }, reject);
-            });
-
-          case 'fbx':
-            data = await loadFile(url);
-            loader = new FBXLoader();
-            return loader.parse(data);
-
-          default:
-            throw new Error(`Unsupported asset type: ${type}`);
-        }
-      }
-
-      const progressBarContainer = document.querySelector('.progress-bar-container');
-      const content = document.getElementById('scene-area');
-
-      function hideProgressBar() {
-        progressBarContainer.style.display = 'none';
-        content.style.display = 'block';
-      }
-
-      const promises = roomFilePath.map((url, index) => loadAsset(roomFileType[index], url));
-
-      Promise.all(promises)
-        .then((objects) => {
-          objects.forEach((object) => {
-            scene.add(object);
-            allSceneObjects.push(object);
-          });
-          handleLoadedObjects(allSceneObjects);
-          hideProgressBar();
-        })
-        .catch((error) => {
-          console.error(error);
-        });
-
-
-
-
-
-
-      let allSceneObjects = [];
-      let rooms = [];
 
       function handleLoadedObjects(objects) {
-
         const menuRoom = objects[0];
         menuRoom.position.set(0, 0, 0);
-        menuRoom.traverse((child) => {
-          if (child instanceof THREE.Mesh) {
-            child.castShadow = true;
-          }
-        });
+        // menuRoom.traverse((child) => {
+        //   if (child instanceof THREE.Mesh) {
+            
+        //   }
+        // });
+
+        // Assuming you have a 'group' object that is the root of the hierarchy
+        traverseHierarchy(menuRoom);
+        //console.log(menuRoom);
 
         const room1 = objects[1];
         room1.position.set(0, 0.1, 0);
         room1.name = 'room01';
         room1.visible = false;
 
-        // const steps = objects[2];
-        // steps.scale.multiplyScalar(0.01);
-        // steps.traverse((child) => {
-        //   if (child instanceof THREE.Mesh) {
-        //     child.castShadow = true;
-        //   }
-        // });
-        // steps.position.set(0, 0, 0);
-
         rooms.push(menuRoom);
         rooms.push(room1);
-        //rooms.push(steps);
       }
 
+            
+      function traverseHierarchy(object, isFloor = false) {
+        if (object instanceof THREE.Mesh) {
+          // It's a mesh object, do something with it
+          // object.castShadow = true;
+          // object.receiveShadow = isFloor;
       
+          // Check if the object's name contains "floor"
+          if (object.name.toLowerCase().includes('GROUND')) {
+            // Set isFloor to true for the floor object
+            isFloor = true;
+          }
+        }
+      
+        // Check if it's a group object
+        if (object instanceof THREE.Group) {
+          // Iterate over all children of the group
+          object.children.forEach((child) => {
+            traverseHierarchy(child, isFloor); 
+            // child.castShadow = true;
+            // child.receiveShadow = isFloor;
+          });
+        }
+      }
+
+      return rooms;
+    } catch (error) {
+      console.error(error);
+      return [];
+    }
+  }
+}
+
+
+
+
       // let allSceneObjects = [];
       // let rooms = [];
       // ///////////////////// Load Files using Promises /////////////////////////////
@@ -424,13 +430,4 @@ export default class LoadFiles{
 
 
 
-      ///////////////////////////////////// Steps /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-        
-        return rooms;
-
-    }
-
-
-
-}
+      //////////////////////////////////

@@ -20,7 +20,8 @@
         
       <p>παρακαλώ περιμένετε</p>
     </div>
-
+<!-- <div class="progress-bar"></div>
+<h1 class="count"></h1> -->
 
     <div class="page" id='scene-area' style="display: none;">
         <div class="page-wrapper">
@@ -57,12 +58,12 @@
                       
                       <nav role="navigation" class="primary-navigation">
                         <ul>
-                          <li><a href="#" class="hand-cursor">Home</a></li>
+                          <li><a href="#" class="hand-cursor">Αρχική</a></li>
                           <li>
-                            <a href="#" class="hand-cursor">3D Αίθουσες &dtrif;</a>
+                            <a href="#" class="hand-cursor">Αίθουσες &dtrif;</a>
                             <ul class="dropdown">
-                              <li><a href="#" class="hand-cursor">3D Μενού</a></li>
-                              <li><a href="#" class="hand-cursor">Αίθουσα Καραϊσκάκης</a></li>
+                              <li><a href="#scene1" class="hand-cursor">Μενού</a></li>
+                              <li><a href="#scene2" class="hand-cursor">Αίθουσα Καραϊσκάκης</a></li>
                               <li><a href="#" class="hand-cursor">Αίθουσα ...</a></li>
                               <li><a href="#" class="hand-cursor">Αίθουσα ...</a></li>
                             </ul>
@@ -74,9 +75,50 @@
                       
                       
                       
-
-
+                      <a href="#" id="forwardCB_action" class="arrow forward"></a>
+                      <a href="#" id="backwardsCB_action" class="arrow backwards"></a>
+                      <!-- <a href="#" id="leftCB_action" class="arrow left"></a>
+                      <a href="#" id="rightCB_action" class="arrow right"></a> -->
   
+                       
+                      
+                     
+                      <div class="box">
+                        <a class="button" href="#popup1">
+                          <img src="../miscellaneous/mouse/infoButton.png" alt="Info Icon">
+                        </a>
+                      </div>
+
+                      <div id="popup1" class="overlay">
+                        <div class="popup">
+                          <a class="close" href="#">&times;</a>
+                          <div class="content">
+                            <h3>Οδηγίες Μουσείου</h3>
+
+
+                            <div class="container">
+                              <div>
+                                <img src="../miscellaneous/mouse/infoButton.png" alt="Info Icon">
+                                <p style="display: inline;">ΚΕΙΜΕΝΟ ΟΔΗΓΕΙΩΝ</p>
+                              </div>
+                              <div>
+                                <img src="../miscellaneous/mouse/infoButton.png" alt="Info Icon">
+                                <p style="display: inline;">ΚΕΙΜΕΝΟ ΟΔΗΓΕΙΩΝ</p>
+                              </div>
+                              <div>
+                                <img src="../miscellaneous/mouse/infoButton.png" alt="Info Icon">
+                                <p style="display: inline;">ΚΕΙΜΕΝΟ ΟΔΗΓΕΙΩΝ</p>
+                              </div>
+                              <div>
+                                <img src="../miscellaneous/mouse/infoButton.png" alt="Info Icon">
+                                <p style="display: inline;">ΚΕΙΜΕΝΟ ΟΔΗΓΕΙΩΝ</p>
+                              </div>
+                            </div>
+
+
+                          </div>
+                        </div>
+                      </div>
 
                 </div>
 
@@ -88,7 +130,11 @@
     </div>
     
   </div>
-  
+  <script>
+
+
+
+  </script>
     <script type="module" src="/main.js" ></script>
 <!--     
     <script type="script" src="/src/scripts.js" ></script>

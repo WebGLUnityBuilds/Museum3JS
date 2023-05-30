@@ -22,15 +22,17 @@ export default class Experience{
         
         //this.ClickEvents = new ClickEvents(canvas);
 
-
-        this.init();
+        this.start();
 
 
     }
    
-    
-    
-    init(){
+        
+    async start() {
+      await this.init();
+    }
+        
+    async init(){
         let decDefineTrue = false;
        
 
@@ -61,7 +63,7 @@ export default class Experience{
         const parentElement = document.getElementById("cursor-div");
         parentElement.appendChild(smallRenderer.domElement);
         //document.body.appendChild(smallRenderer.domElement);
-        
+      
 
         const camera = new THREE.PerspectiveCamera(
           50,
@@ -69,7 +71,7 @@ export default class Experience{
           0.1,
           100
         );
-        let cameraHeight  = 1.65;
+        let cameraHeight  = 1.8;
         
 
         // set up the smaller scene
@@ -85,44 +87,108 @@ export default class Experience{
         const scene = new THREE.Scene();
         const smallScene = new THREE.Scene();
 
+
+
+        let sceneObjects = await this.LoadFiles.gltfloaderFunc(scene);
+
+
+
+
         // Light Settings
         //scene.background = new THREE.Color( 0x66ccbe );
 
+         
 
-          const hdrTexture = new URL('../heavyAssets/industrial_sunset_puresky_4k.hdr', import.meta.url);
-          renderer.outputColorSpace = THREE.SRGBColorSpace;
-          renderer.toneMapping = THREE.ACESFilmicToneMapping;
-          renderer.toneMappingExposure = 1.8;
-            
+        renderer.shadowMap.enabled = true;
 
-          const loader = new RGBELoader();
-          loader.load(hdrTexture, function(texture){
-            texture.mapping = THREE.EquirectangularReflectionMapping;
-            scene.background = texture;
-            scene.environment = texture;
-          });
+        renderer.shadowMap.type = THREE.PCFSoftShadowMap; 
 
+        const ambientLight = new THREE.HemisphereLight(0xffffff, 0x000000, 1); // Parameters: sky color, ground color, intensity
+        scene.add(ambientLight);
 
-
-        const light = new THREE.DirectionalLight(0xC5BA9D, 2);
-        light.position.set(-20, 60, 10);
-        light.castShadow = true;
-        light.shadow.mapSize.width = 512;
-        light.shadow.mapSize.height = 512;
-        light.shadow.camera.near = 0.5;
-        light.shadow.camera.far = 1000;
-        scene.add(light);
+        const directionalLight = new THREE.DirectionalLight(0xffffff, 1.2);
+        directionalLight.position.set(-6, 3, 5);
+        directionalLight.castShadow = true;
+        directionalLight.shadow.mapSize.width = 512;
+        directionalLight.shadow.mapSize.height = 512;
+        directionalLight.shadow.camera.near = 0.5;
+        directionalLight.shadow.camera.far = 500;
+        scene.add(directionalLight);
 
 
-
-        const helper = new THREE.CameraHelper( light.shadow.camera );
-        //scene.add( helper );
+        const helper = new THREE.CameraHelper( directionalLight.shadow.camera );
+        // //scene.add( helper );
         
         smallScene.background = new THREE.Color( 0xb9b8ff);
         const smallHemisphereLight = new THREE.HemisphereLight(0x5C59CE, 0xffffff, 0.8);
         smallScene.add(smallHemisphereLight);
                 
+
+
         
+        
+
+
+
+
+
+        
+                                const hdrTexture = new URL('../heavyAssets/kloppenheim_06_puresky_4k.hdr', import.meta.url);
+                                renderer.outputColorSpace = THREE.SRGBColorSpace;
+                                renderer.toneMapping = THREE.ACESFilmicToneMapping;
+                                renderer.toneMappingExposure = 1.8;
+                                  
+
+                                const loader = new RGBELoader();
+                                loader.load(hdrTexture, function(texture){
+                                  texture.mapping = THREE.EquirectangularReflectionMapping;
+                                  scene.background = texture;
+                                  scene.environment = texture;
+                                });                                
+                              // // Step 1: Create a reflection texture with reduced resolution
+                              // let reflectionWidth = 512; // Adjust as needed
+                              // let reflectionHeight = 512; // Adjust as needed
+                              // let reflectionCubeRenderTarget = new THREE.WebGLCubeRenderTarget({
+                              //   size: reflectionWidth,
+                              //   generateMipmaps: true,
+                              //   minFilter: THREE.LinearMipmapLinearFilter
+                              // });
+                              // let cubeCamera = new THREE.CubeCamera(0.1, 1000, reflectionCubeRenderTarget);
+
+                              // let floorModel = null;
+                              // if (sceneObjects[0]) {
+                              //   sceneObjects[0].traverse(function (child) {
+                              //     console.log(child.name);
+                              //     if (child.name.includes('floor')) {
+                              //       floorModel = child;
+                              //     }
+                              //   });
+                              // } else {
+                              //   console.error('sceneObjects[1] is undefined. Check if the object is correctly loaded.');
+                              // }
+
+                              // if (floorModel) {
+                              //   cubeCamera.position.copy(floorModel.position); // Assuming 'floor' is your imported model
+                              //   scene.add(cubeCamera); // Add the cube camera to the scene
+
+                              //   // Step 2: Set up the blending materials
+                              //   let blendingMaterial = new THREE.MeshStandardMaterial({
+                              //     envMap: reflectionCubeRenderTarget.texture,
+                              //     metalness: 1,
+                              //     roughness: 0.2
+                              //   });
+                              //   floorModel.material = blendingMaterial;
+                              // }
+                              //   // Step 3: Control the update frequency
+                              //   let shouldUpdateReflection = true; // Flag to track when to update the reflection texture
+
+                              //   function updateReflectionTexture() {
+                              //     cubeCamera.update(renderer, scene);
+                              //   }
+
+
+
+        //////////////////////////////// Load/Instantiate Files //////////////////////////////////////
 
 
         // Create cube for small Renderer. To Delete. v~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -144,10 +210,7 @@ export default class Experience{
         //smallRendererCloseB();
 
 
-        let sceneObjects = this.LoadFiles.gltfloaderFunc(scene);
-        
-        
-        //////////////////////////////// Load/Instantiate Files //////////////////////////////////////
+        renderer.debug.checkShaderErrors = true;
 
 
         let stats = new Stats();
@@ -221,9 +284,9 @@ export default class Experience{
           if (video) {
             video.play(); // Play the audio if it's loaded
           }
-          if (audio) {
-            audio.play(); // Play the audio if it's loaded
-          }
+          // if (audio) {
+          //   audio.play(); // Play the audio if it's loaded
+          // }
         }
         document.addEventListener('click', startVideoPlayback);
 
@@ -239,7 +302,9 @@ export default class Experience{
         const pointer = new THREE.Vector2();
       
       function onClick( event ) {
-
+        if (isMouseOverButtonLikeElement) {
+          return; // Skip the raycasting process if the mouse is over a button-like element
+        }
         pointer.x = (event.clientX / window.innerWidth) * 2 - 1;
         pointer.y = -(event.clientY / window.innerHeight) * 2 + 1;
 
@@ -347,6 +412,136 @@ export default class Experience{
 
       ///////// Control Events //////////
         
+      //Button control events
+      // CB stands for control button
+      const forwardCButton = document.getElementById("forwardCB_action");
+      const backwardsCButton = document.getElementById("backwardsCB_action");
+      const leftCButton = document.getElementById("leftCB_action");
+      const rightCButton = document.getElementById("rightCB_action");
+
+
+      // Get all the button-like elements in your HTML (e.g., <a> tags)
+      const buttonLikeElements = document.querySelectorAll('a');
+
+      // Flag to track if the mouse is over any button-like element
+      let isMouseOverButtonLikeElement = false;
+
+      // Add mouseover and mouseout event listeners to all button-like elements
+      buttonLikeElements.forEach((element) => {
+        element.addEventListener('mouseover', () => {
+          isMouseOverButtonLikeElement = true;
+        });
+
+        element.addEventListener('mouseout', () => {
+          isMouseOverButtonLikeElement = false;
+        });
+      });
+
+
+
+
+      function traverseBHierarchy(object, stepToMove) {
+        let targetObject = null;
+      
+        if (object.name.includes('step')) {
+          const currentStep = parseInt(object.name.replace('step', ''));
+          const targetStep = parseInt(stepToMove.replace('step', ''));
+          
+          if (currentStep === targetStep) {
+            targetObject = object;
+          }
+        }
+      
+        if (!targetObject && object.children.length > 0) {
+          for (let i = 0; i < object.children.length; i++) {
+            const result = traverseBHierarchy(object.children[i], stepToMove); // Recursively call the function for each child
+            if (result) {
+              targetObject = result; // Assign the result if a match is found in the child hierarchy
+              break; // Exit the loop if a match is found
+            }
+          }
+        }
+      
+        return targetObject; // Return the target object if found, or null if not found
+      }
+
+
+      function stepToMove(forwardFlag)
+      {
+        let stepToMove = activeStep;
+          
+        // Check if str contains the word 'step' followed by a number
+        if (/step\d+/.test(stepToMove)) {
+          // Extract the number from the string
+          let stepPosition = parseInt(stepToMove.match(/\d+/)[0]);
+          // Increment the number
+
+          if(forwardFlag)
+          {
+            ++stepPosition;
+            //++stepPosition;
+          }else
+          {
+            if(stepPosition>0)--stepPosition;
+          }
+
+          // Reconstruct the string with the incremented number
+          stepToMove = stepToMove.replace(/\d+/, stepPosition);
+          
+          let targetObject = activeStep;
+          // Call the function with the mainRendererActiveOBJ[0] and stepToMove
+          if(mainRendererActiveOBJ[0])
+          {
+            targetObject = traverseBHierarchy(mainRendererActiveOBJ[0], stepToMove);
+          }
+
+
+        
+          if (targetObject) {
+            // The object with the specified name exists in the scene
+            activeStep = stepToMove;
+            moveCamera(targetObject.position.x, camera.position.y, targetObject.position.z);
+          } else {
+            // The object with the specified name does not exist
+            console.log(`After end step`);
+          }
+
+        }
+      }
+
+      let activeStep = 'step0';
+
+      document.addEventListener('click', buttonControls);
+      function buttonControls(event) {
+        const targetCB = event.target;
+        
+
+        const x = camera.rotation.x;
+        const y = camera.rotation.y;
+        const z = camera.rotation.z;
+
+        const degrees = 30;
+        const radiansToMove = (degrees / 180) * Math.PI;
+        
+        let forwardFlag = false;
+        if (targetCB.id === "forwardCB_action") {
+          forwardFlag = true;
+          stepToMove(forwardFlag);
+          
+        } else if (targetCB.id === "backwardsCB_action") {
+          forwardFlag = false;
+          stepToMove(forwardFlag);
+
+        } else if (targetCB.id === "leftCB_action") {
+          
+          rotateCamera(x, y + radiansToMove, z);
+
+        } else if (targetCB.id === "rightCB_action") {
+          rotateCamera(x, y -radiansToMove , z);
+
+        }
+      }
+
       // Variables for rotation control
       let isMouseDown = false;
       let previousMousePosition = {
@@ -355,7 +550,7 @@ export default class Experience{
       };
 
       // Euler rotation
-      const rotationSpeed = 0.0025 * window.devicePixelRatio; // Adjust the sensitivity factor as needed
+      const rotationSpeed = 0.0018 * window.devicePixelRatio; // Adjust the sensitivity factor as needed
       const rotationEuler = new THREE.Euler(0, 0, 0, 'YXZ');
 
       // Define the minimum and maximum vertical rotation angles in radians
@@ -373,6 +568,7 @@ export default class Experience{
 
       document.addEventListener('mousemove', event => {
         if (isMouseDown) {
+
           const deltaMove = {
             x: previousMousePosition.x - event.clientX,
             y: previousMousePosition.y - event.clientY
@@ -498,22 +694,49 @@ export default class Experience{
       if (menuItemHref === '#scene1') 
       {
         loadScene0();
-        console.log("Scene 1");
       } 
       else if (menuItemHref === '#scene2') 
       {
         loadScene1();
-        console.log("Scene 2");
       } 
       else if (menuItemHref === '#scene3') 
       {
-        console.log("Scene 3");
+
       }
     }
 
+    function onMouseMove(event) {
+      // Calculate the mouse position in normalized device coordinates (-1 to 1)
+      const mouse = {
+        x: (event.clientX / window.innerWidth) * 2 - 1,
+        y: -(event.clientY / window.innerHeight) * 2 + 1,
+      };
+    
+      raycaster.setFromCamera(mouse, camera);
+    
+      // Find intersected objects
+      const intersects = raycaster.intersectObjects(mainRendererActiveOBJ[0], true);
+    
+      // Loop through the intersected objects
+      for (const intersect of intersects) {
+        const object = intersect.object;
+        
+        // Check if the object's name includes the string "tab"
+        if (object.name.includes('tab')) {
+          // Scale the object
+          gsap.to(object.scale, { x: 1.2, y: 1.2, z: 1.2, duration: 0.3 });
+        }
+      }
+    }
+    
+    renderer.domElement.addEventListener('mousemove', onMouseMove);
+    
+    
+    
+    
 
     //////////////////// Event Calls ///////////////////////
-    //window.addEventListener( 'click', onClick );
+    
 
     ///////////////////////////////////////////////////////////////// ~END EVENTS /////////////////////////////////////////////////////////////////
                                                                     //////////
@@ -550,9 +773,9 @@ export default class Experience{
     function rotateCamera(x, y, z) {
         gsap.to(camera.rotation, {
             x,
-            y,
+            y: y,
             z,
-            duration: 3.2
+            duration: 2.2
         });
     }
 
@@ -638,21 +861,37 @@ export default class Experience{
        
        let mainRendererActiveOBJINIT = true;
        let mainRendererActiveOBJ = [];
+       
+       let raycaster = new THREE.Raycaster();
       function mainRendererRaycaster(pointer, event)
       {
-        let raycaster = new THREE.Raycaster();
+        
+        const targetElement = event.target;
         raycaster.setFromCamera(pointer, camera);
        
 
         if(mainRendererActiveOBJINIT)
         {
-          mainRendererActiveOBJ = mainRendererActiveOBJ.concat(scene.children); // Concatenate the children of the scene
           mainRendererActiveOBJINIT = false;
+          mainRendererActiveOBJ = mainRendererActiveOBJ.concat(scene.children[0]); // Concatenate the children of the scene
+          
         }
+        
 
+        // Check if the target element is an HTML button or a child of a button
+        if (targetElement.closest("button")) {
+          return; // Skip raycasting if the target element is an HTML button
+        }
         const intersects = raycaster.intersectObjects(mainRendererActiveOBJ);
         
-     
+          // Check if any of the intersected objects are button-like elements
+        const isMouseOverButtonLikeElement = intersects.some((intersection) => {
+          return intersection.object.isButtonLikeElement === true;
+        });
+
+        if (isMouseOverButtonLikeElement) {
+          return; // Skip the raycasting process if the mouse is over a button-like element
+        }
         
         for (let i=0; i < intersects.length; i++)
         {
@@ -703,24 +942,23 @@ export default class Experience{
             break;
           }
 
+          if(intersects[i].object.name.includes("tab01"))
+          {
+            loadScene1();
+
+            break;
+          }
+          if(intersects[i].object.name.includes("tab00"))
+          {
+            loadScene0();
+
+            break;
+          }
           if (intersects[i].object.name.includes("step")) {
             // let rayIndex = intersects[i].object.name.replace(/[^\d.-]/g, '');
-            
+            activeStep = intersects[i].object.name;
             let x = 0;
             let z = 0;
-            //To fix
-            // if (sceneObjects[2].visible)
-            // {
-              
-            //   x = (intersects[i].object.position.x /100);
-            //   z = (intersects[i].object.position.z /100);
-            // }
-            // else 
-            // {
-            //   x = (intersects[i].object.position.x );
-            //   z = (intersects[i].object.position.z );
-            // }
-            
             
             x = (intersects[i].object.position.x );
             z = (intersects[i].object.position.z );
@@ -728,15 +966,33 @@ export default class Experience{
             break;
             
           }
-          if(intersects[i].object.name.includes("tab01"))
-          {
-            loadScene1();
+        }
+      
 
-            break;
+        
+      }
+
+      function traverseHierarchy(object, searchString) {
+        if (object instanceof THREE.Mesh && object.name.includes(searchString)) {
+          // Return the object if the name includes the search string
+          return object;
+        }
+      
+        // Check if it's a group object
+        if (object instanceof THREE.Group) {
+          // Iterate over all children of the group
+          for (let i = 0; i < object.children.length; i++) {
+            const result = traverseHierarchy(object.children[i], searchString);
+            if (result) {
+              // Return the result if a match is found in the child hierarchy
+              return result;
+            }
           }
         }
       
+        return null; // Return null if the object or its children do not contain the desired name
       }
+
 
       function loadScene1()
       {
@@ -752,11 +1008,13 @@ export default class Experience{
         }
         mainRendererActiveOBJ.push(sceneObjects[1]);
 
-        const objectAtIndex1 = sceneObjects[1];
-        const step1 = objectAtIndex1.getObjectByName("step1");
-        if (step1) {
-          let x = (step1.position.x );
-          let z = (step1.position.z );
+        const searchString = 'step1';
+        const initStep = traverseBHierarchy(mainRendererActiveOBJ[0], searchString);
+
+        activeStep = initStep.name;
+        if (initStep) {
+          let x = (initStep.position.x );
+          let z = (initStep.position.z );
           moveCamera(x, 1,z);
           
         } else {
@@ -767,7 +1025,7 @@ export default class Experience{
       function loadScene0()
       {
         cameraHeight = 1.65;
-
+        
         sceneObjects[0].visible = true;
         sceneObjects[1].visible = false;
         //sceneObjects[2].visible = false;
@@ -778,11 +1036,12 @@ export default class Experience{
         }
         mainRendererActiveOBJ.push(sceneObjects[0]);
 
-        const objectAtIndex1 = sceneObjects[0];
-        const step1 = objectAtIndex1.getObjectByName("step1");
-        if (step1) {
-          let x = (step1.position.x );
-          let z = (step1.position.z );
+        const searchString = 'step1';
+        const initStep = traverseBHierarchy(mainRendererActiveOBJ[0], searchString);
+        activeStep = initStep;
+        if (initStep) {
+          let x = (initStep.position.x );
+          let z = (initStep.position.z );
           moveCamera(x, 1,z);
           
         } else {
@@ -817,17 +1076,49 @@ export default class Experience{
 
 
 
-    function removeExhibitObjectsFromScene(sceenToDeleteFrom) {
+    //////////////////////////////////////////////////// ~Main Renderer functions ////////////////////////////////////////////////////////////////////
+    
+
+
+      ///////////////////////////////////////////////////// Small Renderer functions ////////////////////////////////////////////////////////////////////
+      let sRModelRotAcceleration = 0;
+      const MAX_ROTATION = 3;
+      const ROTATION_PERIOD = 8;
+      
+
+      function updateSmallRendererPosition() {
+          if(decDefineTrue)
+          {
+              const mainRendererWidth = renderer.getSize().width;
+              const mainRendererHeight = renderer.getSize().height;
+              const smallRendererWidth = smallRenderer.getSize().width;
+              const smallRendererHeight = smallRenderer.getSize().height;
+              const smallRendererLeft = (mainRendererWidth - smallRendererWidth) / 2;
+              const smallRendererTop = (mainRendererHeight - smallRendererHeight) / 2;
+              smallRenderer.domElement.style.left = smallRendererLeft + "px";
+              smallRenderer.domElement.style.top = smallRendererTop + "px";
+          }
+          else
+          {
+              console.log("Model viewer renderer not defined");
+          }
+      }
+
+      updateSmallRendererPosition();
+
+
+      
+    function removeExhibitObjectsFromScene(screenToDeleteFrom) {
       const objectsToRemove = [];
     
-      sceenToDeleteFrom.traverse((child) => {
+      screenToDeleteFrom.traverse((child) => {
         if (child instanceof THREE.Object3D && child.name.includes("exhibit")) {
           objectsToRemove.push(child);
         }
       });
     
       objectsToRemove.forEach((object) => {
-        sceenToDeleteFrom.remove(object);
+        screenToDeleteFrom.remove(object);
       });
     }
 
@@ -864,40 +1155,10 @@ export default class Experience{
     
 
 
-    //////////////////////////////////////////////////// ~Main Renderer functions ////////////////////////////////////////////////////////////////////
-    
-
-
-      ///////////////////////////////////////////////////// Small Renderer functions ////////////////////////////////////////////////////////////////////
-      let sRModelRotAcceleration = 0;
-      const MAX_ROTATION = 3;
-      const ROTATION_PERIOD = 8;
-      
-
-      function updateSmallRendererPosition() {
-          if(decDefineTrue)
-          {
-              const mainRendererWidth = renderer.getSize().width;
-              const mainRendererHeight = renderer.getSize().height;
-              const smallRendererWidth = smallRenderer.getSize().width;
-              const smallRendererHeight = smallRenderer.getSize().height;
-              const smallRendererLeft = (mainRendererWidth - smallRendererWidth) / 2;
-              const smallRendererTop = (mainRendererHeight - smallRendererHeight) / 2;
-              smallRenderer.domElement.style.left = smallRendererLeft + "px";
-              smallRenderer.domElement.style.top = smallRendererTop + "px";
-          }
-          else
-          {
-              console.log("Model viewer renderer not defined");
-          }
-      }
-
-      updateSmallRendererPosition();
       
       //////////////////////////////////////////////////// ~Small Renderer functions ////////////////////////////////////////////////////////////////////
 
-
-
+      
 
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       // Create a new div element for the renderer and add it to the page
@@ -913,9 +1174,12 @@ export default class Experience{
 
       var clock = new THREE.Clock();
       function animate() {
-          var delta = clock.getDelta();
 
-         
+        //updateReflectionTexture(); 
+
+
+
+          var delta = clock.getDelta();
 
           smallCamera.position.y = 0.4;
           camera.position.y = cameraHeight;
@@ -946,6 +1210,10 @@ export default class Experience{
           //console.log(camera.position);
           decDefineTrue = true;
           
+          // if (shouldUpdateReflection) {
+          //   updateReflectionTexture();
+          //   shouldUpdateReflection = false;
+          // }
           stats.update();
 
       }

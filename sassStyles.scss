@@ -23,7 +23,7 @@ nav {
     }
 
     li a {
-      color: black;
+      color: rgb(0, 0, 0);
       cursor: inherit;
       &.hand-cursor {
         cursor: url(../miscellaneous/mouse/icons8-hand-cursor-40.png), auto;
@@ -108,3 +108,62 @@ z-index: 4000;
       margin-bottom: 10px;
     }
   }
+
+
+  // arrow movement 
+  
+.arrow {
+	position: absolute;
+	top: 50%;
+	width: 3vmin;
+	height: 3vmin;
+	background: transparent;
+	border-top: 1vmin solid rgb(236, 44, 44);
+	border-right: 1vmin solid rgb(236, 44, 44);
+	box-shadow: 1 0 0 lightgray;
+	transition: all 300ms ease;
+  cursor: url(../miscellaneous/mouse/icons8-hand-cursor-40.png), auto;
+	
+  &.forward {
+    top: 80%;
+		left: 90%;
+		transform: translate3d(0%,50%,0) rotate(-45deg); //rotateX(-60deg);
+	}
+
+  &.backwards {
+    top: 90%;
+		left: 90%;
+		transform: translate3d(0%,50%,0)  rotate(135deg); //rotateX(-60deg);
+	}
+
+	&.left {
+		left: 1;
+		transform: translate3d(50%,-50%,0) rotate(-135deg);
+	}
+
+	&.right {
+		right: 0;
+		transform: translate3d(-50%,-50%,0) rotate(45deg);
+	}
+	
+	&:hover {
+		border-color: rgb(68, 255, 68);
+		box-shadow: 0.5vmin -0.5vmin 0 white;
+	}
+	
+	&:before { // for better hit area
+		content: '';
+		position: absolute;
+		top: 50%;
+		left: 50%;
+		transform: translate(-40%,-60%) rotate(45deg);
+		width: 200%;
+		height: 200%;
+	}
+}
+
+
+  // background-color: rgb(141, 133, 133, 0.5);
+  // width: 3%;
+  // height: 6%;
+  // border-radius: 60%;
