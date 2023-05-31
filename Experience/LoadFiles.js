@@ -138,29 +138,27 @@ export default class LoadFiles {
       }
 
             
-      function traverseHierarchy(object, isFloor = false) {
-        if (object instanceof THREE.Mesh) {
-          // It's a mesh object, do something with it
-          // object.castShadow = true;
-          // object.receiveShadow = isFloor;
       
-          // Check if the object's name contains "floor"
-          if (object.name.toLowerCase().includes('GROUND')) {
-            // Set isFloor to true for the floor object
-            isFloor = true;
+      function traverseHierarchy(object) {
+        if (object instanceof THREE.Mesh) {
+          // Check if the object's name contains "TAB" to determine if it has an animation
+          if (object.name.toLowerCase().includes('tab')) {
+            // Play the animations of the object
+            object.animations.forEach((animationClip) => {
+              const action = mixer.clipAction(animationClip);
+              action.setLoop(THREE.LoopOnce);
+              action.reset(); // Reset the animation to the first frame
+              action.play();
+            });
           }
         }
       
-        // Check if it's a group object
-        if (object instanceof THREE.Group) {
-          // Iterate over all children of the group
+        if (object.children.length > 0) {
           object.children.forEach((child) => {
-            traverseHierarchy(child, isFloor); 
-            // child.castShadow = true;
-            // child.receiveShadow = isFloor;
+            traverseHierarchy(child);
           });
         }
-      }
+      } 
 
       return rooms;
     } catch (error) {

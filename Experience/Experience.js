@@ -22,17 +22,14 @@ export default class Experience{
         
         //this.ClickEvents = new ClickEvents(canvas);
 
-        this.start();
+        this.init();
 
 
     }
    
+      
         
-    async start() {
-      await this.init();
-    }
-        
-    async init(){
+    init(){
         let decDefineTrue = false;
        
 
@@ -89,7 +86,7 @@ export default class Experience{
 
 
 
-        let sceneObjects = await this.LoadFiles.gltfloaderFunc(scene);
+        let sceneObjects = this.LoadFiles.gltfloaderFunc(scene);
 
 
 
