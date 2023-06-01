@@ -1228,8 +1228,27 @@ export default class Experience{
 
       ///////////////////////////////////////////////////////////// ~Math FUNCTIONS /////////////////////////////////////////////////////////////
       
-      const targetFrameRate = 30; // Set the target frame rate to 30 fps
+      let targetFrameRate = 60; // Default target frame rate is 60 fps
 
+      // Check if the device has low hardware concurrency (mid-low spec PC)
+      if (navigator.hardwareConcurrency && navigator.hardwareConcurrency <= 4) {
+        targetFrameRate = 30; // Set target frame rate to 30 fps for mid-low spec PCs
+      }
+      
+      // The list of devices that can handle 60 fps
+      const highEndDevices = ["iPhone X", "Samsung Galaxy S10"]; // Add devices that can handle 60 fps
+      
+      // Check if the current device is a high-end device
+      const userAgent = navigator.userAgent;
+      const isHighEndDevice = highEndDevices.some(device => userAgent.includes(device));
+      
+      // If it's a high-end device, cap the frame rate to 60, otherwise cap it to 30
+      if (isHighEndDevice) {
+        targetFrameRate = Math.min(targetFrameRate, 60);
+      } else {
+        targetFrameRate = Math.min(targetFrameRate, 30);
+      }
+      
       let averageFrameRate = targetFrameRate; // Assume an initial average frame rate equal to the target frame rate
       let lastFrameTime = performance.now();
       
