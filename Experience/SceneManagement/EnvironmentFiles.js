@@ -7,7 +7,7 @@ export default exhibits = {
         room: "0",
         objectToAssign: "",
         type: "glb",
-        path: "./Models/Environment/Room00/MenuRoomMetNoAnim.glb"
+        path: "./Models/Environment/Room00/MenuSceneR.glb"
       },
       tab1: {
         room: "1",
@@ -15,12 +15,12 @@ export default exhibits = {
         type: "glb",
         path: "./Models/Environment/Room01/room12.glb"
       },
-      // tab2: {
-      //   room: "2",
-      //   objectToAssign: "",
-      //   type: "fbx",
-      //   path: "./Models/Environment/Room00/StepsMenu.fbx"
-      // },
+      tab2: {
+        room: "2",
+        objectToAssign: "",
+        type: "glb",
+        path: "./miscellaneous/mouse/MoveArrow.glb"
+      },
       // tab2: {
       //   room: "2",
       //   objectToAssign: "",

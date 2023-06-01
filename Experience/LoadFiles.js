@@ -16,6 +16,7 @@ import { element1, element2, element3 } from "/assets/txtElements.js";
 
 import exhibits from "./SceneManagement/EnvironmentFiles.js";
 
+//"three": "^0.145.0" updated to "three": "^0.153.0",
 export default class LoadFiles {
   constructor() {}
 
@@ -68,12 +69,31 @@ export default class LoadFiles {
     async function loadAsset(type, url) {
       let data;
       let loader;
+      //let dracoLoader;
 
       switch (type) {
         case 'gltf':
           data = await loadFile(url);
           loader = new GLTFLoader();
           return loader.parse(data);
+
+          // case 'glb':
+          // data = await loadFile(url);
+          // return new Promise((resolve, reject) => {
+            
+          //   loader = new GLTFLoader();
+          //   dracoLoader = new DRACOLoader(); // Create a new instance of the DRACOLoader
+
+          // or use dracoLoader.setDecoderPath('/draco/');
+          //   dracoLoader.setDecoderPath('https://www.gstatic.com/draco/versioned/decoders/1.5.6/'); // Set the path to the Draco decoder files
+          //   dracoLoader.setDecoderConfig({type: 'js'})
+
+          //   loader.setDRACOLoader(dracoLoader); // Set the DRACOLoader for the GLTFLoader
+
+          //   loader.parse(data, '', (gltf) => {
+          //     resolve(gltf.scene);
+          //   }, reject);
+          // });
 
         case 'glb':
           data = await loadFile(url);
@@ -119,46 +139,54 @@ export default class LoadFiles {
         const menuRoom = objects[0];
         menuRoom.position.set(0, 0, 0);
 
-        // menuRoom.traverse((child) => {
-        //   if (child instanceof THREE.Mesh) {
-            
-        //   }
-        // });
-        // Assuming you have a 'group' object that is the root of the hierarchy
-        //traverseHierarchy(menuRoom);
-        //console.log(menuRoom);
+       
+        traverseHierarchyAnim(menuRoom);
 
         const room1 = objects[1];
         room1.position.set(0, 0.1, 0);
         room1.name = 'room01';
         room1.visible = false;
 
+
+        const MoveArrow = objects[2];
+        MoveArrow.name = "movearrow";
+        MoveArrow.position.set(0, 0.3, 0);
+
         rooms.push(menuRoom);
         rooms.push(room1);
+        rooms.push(MoveArrow);
       }
 
             
       
-      // function traverseHierarchy(object) {
-      //   if (object instanceof THREE.Mesh) {
-      //     // Check if the object's name contains "TAB" to determine if it has an animation
-      //     if (object.name.toLowerCase().includes('tab')) {
-      //       // Play the animations of the object
-      //       object.animations.forEach((animationClip) => {
-      //         const action = mixer.clipAction(animationClip);
-      //         action.setLoop(THREE.LoopOnce);
-      //         action.reset(); // Reset the animation to the first frame
-      //         action.play();
-      //       });
-      //     }
-      //   }
+      function traverseHierarchyAnim(object) {
+        if (object instanceof THREE.Mesh) {
+          // Check if the object's name contains "TAB" to determine if it has an animation
+          
+          if (object.name.toLowerCase().includes('tab')) {
+            // Create a mixer for the object
+            const mixer = new THREE.AnimationMixer(object);
       
-      //   if (object.children.length > 0) {
-      //     object.children.forEach((child) => {
-      //       traverseHierarchy(child);
-      //     });
-      //   }
-      // } 
+            // Play the animations of the object
+            object.animations.forEach((animationClip) => {
+              const action = mixer.clipAction(animationClip);
+              action.setLoop(THREE.LoopOnce);
+              action.play();
+            });
+          }
+        }
+      
+        if (object.children.length > 0) {
+          object.children.forEach((child) => {
+            traverseHierarchyAnim(child);
+          });
+        }
+      }
+      
+      
+      
+      
+      
 
       return rooms;
     } catch (error) {

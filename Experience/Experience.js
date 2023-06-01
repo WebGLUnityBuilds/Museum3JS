@@ -88,6 +88,8 @@ export default class Experience{
         async function loadSceneObjects() {
           const loadFiles = new LoadFiles();
           sceneObjects = await loadFiles.gltfloaderFunc(scene);
+
+          initArrowControl(sceneObjects[2]);
           // Now you can use the sceneObjects variable
         }
         
@@ -132,19 +134,19 @@ export default class Experience{
 
 
 
-        
-                                const hdrTexture = new URL('../heavyAssets/kloppenheim_06_puresky_4k.hdr', import.meta.url);
-                                renderer.outputColorSpace = THREE.SRGBColorSpace;
-                                renderer.toneMapping = THREE.ACESFilmicToneMapping;
-                                renderer.toneMappingExposure = 1.8;
-                                  
 
-                                const loader = new RGBELoader();
-                                loader.load(hdrTexture, function(texture){
-                                  texture.mapping = THREE.EquirectangularReflectionMapping;
-                                  scene.background = texture;
-                                  scene.environment = texture;
-                                });                                
+        const hdrTexture = new URL('../heavyAssets/kloppenheim_06_puresky_4k.hdr', import.meta.url);
+        renderer.outputColorSpace = THREE.SRGBColorSpace;
+        renderer.toneMapping = THREE.ACESFilmicToneMapping;
+        renderer.toneMappingExposure = 1.8;
+          
+
+        const loader = new RGBELoader();
+        loader.load(hdrTexture, function(texture){
+          texture.mapping = THREE.EquirectangularReflectionMapping;
+          scene.background = texture;
+          scene.environment = texture;
+        });                                
                               // // Step 1: Create a reflection texture with reduced resolution
                               // let reflectionWidth = 512; // Adjust as needed
                               // let reflectionHeight = 512; // Adjust as needed
@@ -241,18 +243,18 @@ export default class Experience{
 
 
 
-        // Create an AudioLoader
-        const audioLoader = new THREE.AudioLoader();
+        // // Create an AudioLoader
+        // const audioLoader = new THREE.AudioLoader();
 
-        // Declare the audio variable outside the callback function
-        let audio;
+        // // Declare the audio variable outside the callback function
+        // let audio;
 
-        // Load the audio file
-        audioLoader.load('./RawTextures/AudioFiles/182147GKaudio1.mp3', function(buffer) {
-          // Create an Audio object and set the buffer
-          audio = new THREE.Audio(listener);
-          audio.setBuffer(buffer);
-        });
+        // // Load the audio file
+        // audioLoader.load('./RawTextures/AudioFiles/182147GKaudio1.mp3', function(buffer) {
+        //   // Create an Audio object and set the buffer
+        //   audio = new THREE.Audio(listener);
+        //   audio.setBuffer(buffer);
+        // });
 
 
 
@@ -292,7 +294,52 @@ export default class Experience{
 
         
 
+        let invStepG, invStepM, invStep;
+        let i,j;
+        let posX = -25, posZ = -25;
+        const invStepGroup = new THREE.Group();
 
+
+        for(i=0; i<20; i++)
+        {
+          posZ += 2;
+          for(j=0; j<20; j++)
+          {
+            posX += 2;
+            //create walkable floor
+            invStepG = new THREE.PlaneGeometry( 1.9, 1.9 );
+            invStepM = new THREE.MeshBasicMaterial( {color: 0xffff, side: THREE.DoubleSide} );
+            invStep = new THREE.Mesh( invStepG, invStepM );
+            invStep.rotation.x = Math.PI / 2;
+            invStep.position.set(posX ,0.1,posZ);
+
+            const stepNumber = i * 20 + j + 1;
+            const stepName = `env${stepNumber.toString().padStart(3, '0')}`;
+            invStep.name = stepName;
+
+            //scene.add( invStep );
+            //invStep.visible = false;
+            invStepGroup.add(invStep);
+          }
+          posX = -25;
+        }
+        scene.add(invStepGroup);
+        
+        // const geometryCL = new THREE.CylinderGeometry( 1, 1, 0.1, 3 ); 
+        // const materialCL = new THREE.MeshStandardMaterial( {color: 0x00ff00} ); 
+        // const stepDir = new THREE.Mesh( geometryCL, materialCL );
+        // scene.add(stepDir);
+
+
+
+        let stepDir;
+        function initArrowControl(arrowObj)
+        {
+          stepDir = arrowObj;
+        }
+
+        //camera.add(stepDir);
+        //stepDir.position.set(0, 0, -10);
 
         moveCamera(-0.020159, 0,4.3341);
         
@@ -418,7 +465,7 @@ export default class Experience{
       const backwardsCButton = document.getElementById("backwardsCB_action");
       const leftCButton = document.getElementById("leftCB_action");
       const rightCButton = document.getElementById("rightCB_action");
-
+      
 
       // Get all the button-like elements in your HTML (e.g., <a> tags)
       const buttonLikeElements = document.querySelectorAll('a');
@@ -510,7 +557,7 @@ export default class Experience{
       }
 
       let activeStep = 'step0';
-
+      let invStepActive = "env001";
       document.addEventListener('click', buttonControls);
       function buttonControls(event) {
         const targetCB = event.target;
@@ -526,7 +573,26 @@ export default class Experience{
         let forwardFlag = false;
         if (targetCB.id === "forwardCB_action") {
           forwardFlag = true;
-          stepToMove(forwardFlag);
+          //stepToMove(forwardFlag);
+          
+          const desiredStep = invStepGroup.getObjectByName(invStepActive);
+          
+          const stepName = desiredStep.name; // Get the name of the step from the raycaster hit object
+          const stepNumberString = stepName.match(/\d+/)[0]; // Extract the numeric part of the name using regular expression
+          const stepNumber = parseInt(stepNumberString); // Convert the numeric part to a number
+          
+          if (!isNaN(stepNumber)) {
+            const incrementedStepNumber = stepNumber + 1;
+            const newStepName = `env${incrementedStepNumber.toString().padStart(3, '0')}`;
+            
+            const invStepToMove = invStepGroup.getObjectByName(newStepName);
+            moveCamera(invStepToMove.position.x , 1.65 ,  invStepToMove.position.z);
+            
+            invStepActive = newStepName;
+            
+          } else {
+            console.error('Invalid step name format');
+          }
           
         } else if (targetCB.id === "backwardsCB_action") {
           forwardFlag = false;
@@ -875,9 +941,8 @@ export default class Experience{
           mainRendererActiveOBJ = mainRendererActiveOBJ.concat(sceneObjects[0]); // Concatenate the children of the scene
         }
         
+        const intersects = raycaster.intersectObjects([...mainRendererActiveOBJ, invStepGroup]);
 
-        const intersects = raycaster.intersectObjects(mainRendererActiveOBJ);
-        
         
         for (let i=0; i < intersects.length; i++)
         {
@@ -914,7 +979,6 @@ export default class Experience{
           //   }
           // }
            
-
           if (intersects[i].object.name.includes("exhibit")) {
             
             if(mainRendererActiveOBJ.length > 0)
@@ -941,6 +1005,7 @@ export default class Experience{
             break;
           }
           if (intersects[i].object.name.includes("step")) {
+
             // let rayIndex = intersects[i].object.name.replace(/[^\d.-]/g, '');
             activeStep = intersects[i].object.name;
             let x = 0;
@@ -951,6 +1016,10 @@ export default class Experience{
             moveCamera(x, 1, z);
             break;
             
+          }
+          if(intersects[i].object.name.includes("inv")) {
+            console.log(intersects[i].object.name);
+            invStepActive = intersects[i].object.name;
           }
         }
       
@@ -1226,77 +1295,93 @@ export default class Experience{
         return distance;
       };
 
+      // Update the cylinder's position to always be in front of the camera
+      const updateCylinderPosition = () => {
+        if(stepDir)
+        {
+          const cameraPosition = new THREE.Vector3();
+          camera.getWorldPosition(cameraPosition);
+          const cameraDirection = new THREE.Vector3();
+          camera.getWorldDirection(cameraDirection);
+          const distance = -3.5; // Adjust the distance of the cylinder from the camera
+  
+          stepDir.position.copy(cameraPosition).add(cameraDirection.multiplyScalar(-distance));
+          stepDir.position.y = 0.2;
+        }
+       
+      };
+
+
       ///////////////////////////////////////////////////////////// ~Math FUNCTIONS /////////////////////////////////////////////////////////////
       
-      let targetFrameRate = 60; // Default target frame rate is 60 fps
+      const targetFrameRate = 60; // Default target frame rate is 60 fps
 
-      // Check if the device has low hardware concurrency (mid-low spec PC)
-      if (navigator.hardwareConcurrency && navigator.hardwareConcurrency <= 4) {
-        targetFrameRate = 30; // Set target frame rate to 30 fps for mid-low spec PCs
-      }
-      
-      // The list of devices that can handle 60 fps
-      const highEndDevices = ["iPhone X", "Samsung Galaxy S10"]; // Add devices that can handle 60 fps
-      
-      // Check if the current device is a high-end device
-      const userAgent = navigator.userAgent;
-      const isHighEndDevice = highEndDevices.some(device => userAgent.includes(device));
-      
-      // If it's a high-end device, cap the frame rate to 60, otherwise cap it to 30
-      if (isHighEndDevice) {
-        targetFrameRate = Math.min(targetFrameRate, 60);
-      } else {
-        targetFrameRate = Math.min(targetFrameRate, 30);
-      }
-      
-      let averageFrameRate = targetFrameRate; // Assume an initial average frame rate equal to the target frame rate
-      let lastFrameTime = performance.now();
-      
-      function measureFrameRate() {
-        const frameTimes = [];
-      
-        function update() {
-          const currentTime = performance.now();
-          const frameTime = currentTime - lastFrameTime;
-          lastFrameTime = currentTime;
-      
-          frameTimes.push(frameTime);
-      
-          // Keep track of the last n frames (e.g., last 60 frames)
-          const maxFrameCount = 60;
-          if (frameTimes.length > maxFrameCount) {
-            frameTimes.shift(); // Remove the oldest frame time
-          }
-      
-          // Calculate the average frame rate over the last n frames
-          const totalFrameTime = frameTimes.reduce((sum, time) => sum + time, 0);
-          const averageFrameTime = totalFrameTime / frameTimes.length;
-          averageFrameRate = 1000 / averageFrameTime;
-      
-          requestAnimationFrame(update);
-        }
-      
-        update();
-      }
-      
-      function animate() {
-        // Your animation logic goes here
-        
-        // Cap the frame rate to the targetFrameRate
-        const frameTime = 1000 / targetFrameRate;
-        const currentTime = performance.now();
-        const elapsedTime = currentTime - lastFrameTime;
-      
-        if (elapsedTime < frameTime) {
-          // Wait until the frame time has passed
-          setTimeout(animate, frameTime - elapsedTime);
-        } else {
-          // Continue immediately
-          requestAnimationFrame(animate);
-        }
-      
-        lastFrameTime = currentTime;
-      
+// Check if the device has low hardware concurrency (mid-low spec PC)
+const isMidLowSpecPC = navigator.hardwareConcurrency && navigator.hardwareConcurrency <= 4;
+
+// Check if the current device is a high-end device
+const highEndDevices = ["iPhone X", "Samsung Galaxy S10"]; // Add devices that can handle 60 fps
+const userAgent = navigator.userAgent;
+const isHighEndDevice = highEndDevices.some(device => userAgent.includes(device));
+
+// Determine the frame rate ceiling based on device capabilities
+let frameRateCeiling = targetFrameRate;
+if (isMidLowSpecPC) {
+  frameRateCeiling = Math.min(frameRateCeiling, 30); // Set the ceiling to 30 fps for mid-low spec PCs
+} else if (!isHighEndDevice) {
+  frameRateCeiling = Math.min(frameRateCeiling, 30); // Set the ceiling to 30 fps for non-high-end devices
+}
+
+let averageFrameRate = frameRateCeiling; // Assume an initial average frame rate equal to the frame rate ceiling
+let lastFrameTime = performance.now();
+
+function measureFrameRate() {
+  const frameTimes = [];
+
+  function update() {
+    const currentTime = performance.now();
+    const frameTime = currentTime - lastFrameTime;
+    lastFrameTime = currentTime;
+
+    frameTimes.push(frameTime);
+
+    // Keep track of the last n frames (e.g., last 60 frames)
+    const maxFrameCount = 60;
+    if (frameTimes.length > maxFrameCount) {
+      frameTimes.shift(); // Remove the oldest frame time
+    }
+
+    // Calculate the average frame rate over the last n frames
+    const totalFrameTime = frameTimes.reduce((sum, time) => sum + time, 0);
+    const averageFrameTime = totalFrameTime / frameTimes.length;
+    averageFrameRate = 1000 / averageFrameTime;
+
+    requestAnimationFrame(update);
+  }
+
+  update();
+}
+
+function animate() {
+  // Your animation logic goes here
+
+  // Cap the frame rate to the frameRateCeiling
+  const frameTime = 1000 / frameRateCeiling;
+  const currentTime = performance.now();
+  const elapsedTime = currentTime - lastFrameTime;
+
+  if (elapsedTime < frameTime) {
+    // Wait until the frame time has passed
+    setTimeout(animate, frameTime - elapsedTime);
+  } else {
+    // Continue immediately
+    requestAnimationFrame(animate);
+  }
+
+  lastFrameTime = currentTime;
+
+
+
       // Your animation logic goes here
       var delta = clock.getDelta();
 
@@ -1333,6 +1418,9 @@ export default class Experience{
         //   updateReflectionTexture();
         //   shouldUpdateReflection = false;
         // }
+
+        updateCylinderPosition();
+
         stats.update();
 
 
