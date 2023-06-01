@@ -1228,8 +1228,6 @@ export default class Experience{
 
       ///////////////////////////////////////////////////////////// ~Math FUNCTIONS /////////////////////////////////////////////////////////////
       
-
-      
       let targetFrameRate = 60; // Default target frame rate is 60 fps
 
       // Check if the device has low hardware concurrency (mid-low spec PC)
@@ -1248,7 +1246,10 @@ export default class Experience{
       if (canHandle60fps) {
         targetFrameRate = 60;
       }
-      
+      if (userAgent.includes("Android")) {
+        // Apply a specific frame rate cap for Android devices
+        targetFrameRate = 30;
+      } 
       let averageFrameRate = targetFrameRate; // Assume an initial average frame rate equal to the target frame rate
       let lastFrameTime = performance.now();
       let throttle = 0; // Initial throttle value (no throttle)
@@ -1288,6 +1289,9 @@ export default class Experience{
           // If the average frame rate is higher or equal to the target, reset the throttle value
           throttle = 0;
         }
+      
+        // Cap the throttle value at a maximum of 30 to ensure a minimum frame rate of 30 fps on mobile devices
+        throttle = Math.min(throttle, 30 - targetFrameRate);
       
         // Adjust the throttle by modifying the delay value in setTimeout or requestAnimationFrame
         const throttleDelay = throttle > 0 ? Math.floor(1000 / (targetFrameRate + throttle)) : 0;
