@@ -1228,31 +1228,10 @@ export default class Experience{
 
       ///////////////////////////////////////////////////////////// ~Math FUNCTIONS /////////////////////////////////////////////////////////////
       
-      let targetFrameRate = 60; // Default target frame rate is 60 fps
+      const targetFrameRate = 30; // Set the target frame rate to 30 fps
 
-      // Check if the device has low hardware concurrency (mid-low spec PC)
-      if (navigator.hardwareConcurrency && navigator.hardwareConcurrency <= 4) {
-        targetFrameRate = 30; // Set target frame rate to 30 fps for mid-low spec PCs
-      }
-      
-      // The list of devices that can handle 60 fps
-      const devices60fps = ["iPhone X", "Samsung Galaxy S10"]; // Add devices that can handle 60 fps
-      
-      // Check if the current device can handle 60 fps
-      const userAgent = navigator.userAgent;
-      const canHandle60fps = devices60fps.some(device => userAgent.includes(device));
-      
-      // If the device can handle 60 fps, cap the frame rate to 60
-      if (canHandle60fps) {
-        targetFrameRate = 60;
-      }
-      if (userAgent.includes("Android")) {
-        // Apply a specific frame rate cap for Android devices
-        targetFrameRate = 30;
-      } 
       let averageFrameRate = targetFrameRate; // Assume an initial average frame rate equal to the target frame rate
       let lastFrameTime = performance.now();
-      let throttle = 0; // Initial throttle value (no throttle)
       
       function measureFrameRate() {
         const frameTimes = [];
@@ -1281,25 +1260,23 @@ export default class Experience{
         update();
       }
       
-      function adjustThrottle() {
-        if (averageFrameRate < targetFrameRate) {
-          // If the average frame rate is lower than the target, increase the throttle value
-          throttle += 1;
+      function animate() {
+        // Your animation logic goes here
+        
+        // Cap the frame rate to the targetFrameRate
+        const frameTime = 1000 / targetFrameRate;
+        const currentTime = performance.now();
+        const elapsedTime = currentTime - lastFrameTime;
+      
+        if (elapsedTime < frameTime) {
+          // Wait until the frame time has passed
+          setTimeout(animate, frameTime - elapsedTime);
         } else {
-          // If the average frame rate is higher or equal to the target, reset the throttle value
-          throttle = 0;
+          // Continue immediately
+          requestAnimationFrame(animate);
         }
       
-        // Cap the throttle value at a maximum of 30 to ensure a minimum frame rate of 30 fps on mobile devices
-        throttle = Math.min(throttle, 30 - targetFrameRate);
-      
-        // Adjust the throttle by modifying the delay value in setTimeout or requestAnimationFrame
-        const throttleDelay = throttle > 0 ? Math.floor(1000 / (targetFrameRate + throttle)) : 0;
-        setTimeout(animate, throttleDelay);
-      }
-    
-    function animate() {
-      
+        lastFrameTime = currentTime;
       
       // Your animation logic goes here
       var delta = clock.getDelta();
@@ -1341,11 +1318,11 @@ export default class Experience{
 
 
 
-      adjustThrottle();
+      //adjustThrottle();
     }
-    
+
     measureFrameRate();
-    animate(); // Start the animation loop
+    animate(); // Start the animation loop/ Start the animation loop
     
   }
 
