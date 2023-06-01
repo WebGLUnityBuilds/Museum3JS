@@ -118,14 +118,14 @@ export default class LoadFiles {
       function handleLoadedObjects(objects) {
         const menuRoom = objects[0];
         menuRoom.position.set(0, 0, 0);
+
         // menuRoom.traverse((child) => {
         //   if (child instanceof THREE.Mesh) {
             
         //   }
         // });
-
         // Assuming you have a 'group' object that is the root of the hierarchy
-        traverseHierarchy(menuRoom);
+        //traverseHierarchy(menuRoom);
         //console.log(menuRoom);
 
         const room1 = objects[1];
@@ -139,26 +139,26 @@ export default class LoadFiles {
 
             
       
-      function traverseHierarchy(object) {
-        if (object instanceof THREE.Mesh) {
-          // Check if the object's name contains "TAB" to determine if it has an animation
-          if (object.name.toLowerCase().includes('tab')) {
-            // Play the animations of the object
-            object.animations.forEach((animationClip) => {
-              const action = mixer.clipAction(animationClip);
-              action.setLoop(THREE.LoopOnce);
-              action.reset(); // Reset the animation to the first frame
-              action.play();
-            });
-          }
-        }
+      // function traverseHierarchy(object) {
+      //   if (object instanceof THREE.Mesh) {
+      //     // Check if the object's name contains "TAB" to determine if it has an animation
+      //     if (object.name.toLowerCase().includes('tab')) {
+      //       // Play the animations of the object
+      //       object.animations.forEach((animationClip) => {
+      //         const action = mixer.clipAction(animationClip);
+      //         action.setLoop(THREE.LoopOnce);
+      //         action.reset(); // Reset the animation to the first frame
+      //         action.play();
+      //       });
+      //     }
+      //   }
       
-        if (object.children.length > 0) {
-          object.children.forEach((child) => {
-            traverseHierarchy(child);
-          });
-        }
-      } 
+      //   if (object.children.length > 0) {
+      //     object.children.forEach((child) => {
+      //       traverseHierarchy(child);
+      //     });
+      //   }
+      // } 
 
       return rooms;
     } catch (error) {
