@@ -5,11 +5,14 @@ import Stats from 'three/addons/libs/stats.module.js';
 import { GUI } from 'three/addons/libs/lil-gui.module.min.js';
 import { CSS3DRenderer, CSS3DObject } from 'three/addons/renderers/CSS3DRenderer.js';
 import { BoxHelper } from 'three';
-
 import { RGBELoader } from  'three/examples/jsm/loaders/RGBELoader.js';
 
 
-import LoadFiles from './LoadFiles.js'
+import LoadLevel from './LoadLevel.js';
+import assets from './SceneManagement/EnvironmentFiles.js';
+
+
+
 import lineChartData from '../assets/listOfText.js';
 import { TweenLite } from 'gsap/gsap-core.js';
 //import ClickEvents from './ClickEvents.js'
@@ -84,16 +87,46 @@ export default class Experience{
         const scene = new THREE.Scene();
         const smallScene = new THREE.Scene();
 
-        let sceneObjects = null;
-        async function loadSceneObjects() {
-          const loadFiles = new LoadFiles();
-          sceneObjects = await loadFiles.gltfloaderFunc(scene);
 
-          initArrowControl(sceneObjects[2]);
-          // Now you can use the sceneObjects variable
-        }
         
-        loadSceneObjects();
+        let sceneObjects;
+
+        const loadSceneObjects = async (desiredRoom) => {
+          return LoadLevel.loadSceneObjects(scene, assets, desiredRoom)
+            .then((loadedSceneObjects) => {
+              sceneObjects = loadedSceneObjects; // Assign the loaded sceneObjects to the sceneObjects variable
+              console.log(sceneObjects);
+              // Now you can safely use the loaded sceneObjects
+              //initArrowControl(sceneObjects[2]);
+            });
+        };
+
+        const desiredRoom = "0";
+        loadSceneObjects(desiredRoom)
+        .then(() => {
+          console.log(sceneObjects);
+          initArrowControl(sceneObjects[1]);
+        });
+
+        const desiredRoom1 = "1";
+        loadSceneObjects(desiredRoom1)
+        .then(() => {
+          console.log(sceneObjects);
+          
+        });
+              // sceneObjects
+        // let sceneObjects = null;
+        // async function loadSceneObjects() {
+        //   const loadFiles = new LoadFiles();
+        //   sceneObjects = await loadFiles.gltfloaderFunc(scene);
+
+        //   if(sceneObjects)
+        //   {
+        //     initArrowControl(sceneObjects[2]);
+        //   }
+        //   // Now you can use the sceneObjects variable
+        // }
+        // loadSceneObjects();
 
 
         // Light Settings
@@ -292,43 +325,33 @@ export default class Experience{
         }
         document.addEventListener('click', startVideoPlayback);
 
-        
 
-        let invStepG, invStepM, invStep;
-        let i,j;
-        let posX = -25, posZ = -25;
+
+     
+      
+        const invStepGeometry = new THREE.PlaneGeometry(1.9, 1.9);
+        const invStepMaterial = new THREE.MeshBasicMaterial({ color: 0xffff, side: THREE.DoubleSide });
+        
+        const instanceCount = 400;
         const invStepGroup = new THREE.Group();
-
-
-        for(i=0; i<20; i++)
-        {
-          posZ += 2;
-          for(j=0; j<20; j++)
-          {
-            posX += 2;
-            //create walkable floor
-            invStepG = new THREE.PlaneGeometry( 1.9, 1.9 );
-            invStepM = new THREE.MeshBasicMaterial( {color: 0xffff, side: THREE.DoubleSide} );
-            invStep = new THREE.Mesh( invStepG, invStepM );
-            invStep.rotation.x = Math.PI / 2;
-            invStep.position.set(posX ,0.1,posZ);
-
-            const stepNumber = i * 20 + j + 1;
-            const stepName = `env${stepNumber.toString().padStart(3, '0')}`;
-            invStep.name = stepName;
-
-            //scene.add( invStep );
-            //invStep.visible = false;
-            invStepGroup.add(invStep);
-          }
-          posX = -25;
-        }
-        scene.add(invStepGroup);
         
-        // const geometryCL = new THREE.CylinderGeometry( 1, 1, 0.1, 3 ); 
-        // const materialCL = new THREE.MeshStandardMaterial( {color: 0x00ff00} ); 
-        // const stepDir = new THREE.Mesh( geometryCL, materialCL );
-        // scene.add(stepDir);
+        for (let i = 0; i < instanceCount; i++) {
+          const posX = ((i % 20) - 9.5) * 2;
+          const posZ = (Math.floor(i / 20) - 9.5) * 2;
+        
+          const invStepMesh = new THREE.Mesh(invStepGeometry, invStepMaterial);
+        
+          const matrix = new THREE.Matrix4();
+          matrix.makeRotationX(Math.PI / 2); // Set rotation to Math.PI / 2
+          matrix.setPosition(posX, 0.1, posZ);
+        
+          invStepMesh.applyMatrix4(matrix);
+          invStepMesh.name = `env${(i + 1).toString().padStart(3, '0')}`;
+        
+          invStepGroup.add(invStepMesh);
+        }
+        
+        scene.add(invStepGroup);
 
 
 
@@ -367,10 +390,14 @@ export default class Experience{
                 }
                 break;
               case 1: 
-                console.log("Number of Triangles :", renderer.info.render.triangles);
+              
                 console.log("Active Drawcalls:", renderer.info.render.calls);
-                console.log("Textures in Memory", renderer.info.memory.textures);
+                console.log("Number of Vertices:", renderer.info.render.vertices);
+                console.log("Number of Triangles :", renderer.info.render.triangles);
                 console.log("Geometries in Memory", renderer.info.memory.geometries);
+                console.log("Textures in Memory", renderer.info.memory.textures);
+                console.log("Programs(Shaders) in Memory", renderer.info.programs.length);
+                
                 console.log("------------------------------------------");
                 break;
               case 2: 
@@ -557,7 +584,7 @@ export default class Experience{
       }
 
       let activeStep = 'step0';
-      let invStepActive = "env001";
+      let envStepActive = "env001";
       document.addEventListener('click', buttonControls);
       function buttonControls(event) {
         const targetCB = event.target;
@@ -575,7 +602,7 @@ export default class Experience{
           forwardFlag = true;
           //stepToMove(forwardFlag);
           
-          const desiredStep = invStepGroup.getObjectByName(invStepActive);
+          const desiredStep = invStepGroup.getObjectByName(envStepActive);
           
           const stepName = desiredStep.name; // Get the name of the step from the raycaster hit object
           const stepNumberString = stepName.match(/\d+/)[0]; // Extract the numeric part of the name using regular expression
@@ -588,7 +615,7 @@ export default class Experience{
             const invStepToMove = invStepGroup.getObjectByName(newStepName);
             moveCamera(invStepToMove.position.x , 1.65 ,  invStepToMove.position.z);
             
-            invStepActive = newStepName;
+            envStepActive = newStepName;
             
           } else {
             console.error('Invalid step name format');
@@ -1017,10 +1044,7 @@ export default class Experience{
             break;
             
           }
-          if(intersects[i].object.name.includes("inv")) {
-            console.log(intersects[i].object.name);
-            invStepActive = intersects[i].object.name;
-          }
+          
         }
       
 
