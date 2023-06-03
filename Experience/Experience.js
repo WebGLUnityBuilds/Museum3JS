@@ -1252,162 +1252,19 @@ export default class Experience{
       // element.name("field of view");
 
       var clock = new THREE.Clock();
-      // let previousTime = 0;
-      // const maxFPS = 30;
-      // const frameDelay = 1000 / maxFPS;
+      let previousTime = 0;
+      const maxFPS = 30;
+      //const frameDelay = 1000 / maxFPS;
 
-      // function animate(currentTime) {
+      function animate(currentTime) {
 
-      //   //updateReflectionTexture(); 
-      //   const timeDifference = currentTime - previousTime;
-      //   if (timeDifference < frameDelay) {
-      //     return;
-      //   }
-      //   previousTime = currentTime;
-      //   var delta = clock.getDelta();
-
-      //   smallCamera.position.y = 0.4;
-      //   camera.position.y = cameraHeight;
-
-      //   //camera.fov = effectController.fov;
-      //   camera.updateProjectionMatrix();
-
-
-      //   //renderer.setViewport(0,0,window.innerWidth, window.innerHeight);
-      //   renderer.render(scene, camera);
-
-      //   if(smallRenderer.domElement.style.display === "block" && activeObjSmallRenderer[0])
-      //   {   
-      //     sRModelRotAcceleration += delta;
-      //     const rotationAngle = Math.sin((sRModelRotAcceleration / ROTATION_PERIOD) * Math.PI * 2) * MAX_ROTATION;
-
-      //     activeObjSmallRenderer[0].rotation.set(rotationAngle / 10, rotationAngle / 10, 0);
-
-      //     // Reset rotation acceleration if necessary
-      //     if (sRModelRotAcceleration >= ROTATION_PERIOD) {
-      //         sRModelRotAcceleration -= ROTATION_PERIOD;
-      //     }
-      //     // if (mixer) {
-      //     //   mixer.update(delta); // deltaTime is the time since the last frame
-      //     // }    
-      //     smallRenderer.render(smallScene, smallCamera);
-      //   }
-      //   //console.log(camera.position);
-      //   decDefineTrue = true;
-        
-      //   // if (shouldUpdateReflection) {
-      //   //   updateReflectionTexture();
-      //   //   shouldUpdateReflection = false;
-      //   // }
-      //   stats.update();
-
-      // }
-      
-      //renderer.setAnimationLoop(animate);
-      ////////////////////////////////////// ~Update Animate ////////////////////////////////////////////////////////
-
-      ///////////////////////////////////////////////////////////// Math FUNCTIONS /////////////////////////////////////////////////////////////
-
-      function measureDistance(obj1, obj2)
-      {
-        const dx = obj1.position.x - obj2.position.x;
-        const dz = obj1.position.z - obj2.position.z;
-        const dy = obj1.position.y - obj2.position.y;
-        // Ignore the Y component
-        const distance = Math.sqrt(dx * dx + dz * dz + dy * dy);
-      
-        return distance;
-      };
-
-      // Update the cylinder's position to always be in front of the camera
-      const updateCylinderPosition = () => {
-        if(stepDir)
-        {
-          const cameraPosition = new THREE.Vector3();
-          camera.getWorldPosition(cameraPosition);
-          const cameraDirection = new THREE.Vector3();
-          camera.getWorldDirection(cameraDirection);
-          const distance = -3.5; // Adjust the distance of the cylinder from the camera
-  
-          stepDir.position.copy(cameraPosition).add(cameraDirection.multiplyScalar(-distance));
-          stepDir.position.y = 0.2;
-        }
-       
-      };
-
-
-      ///////////////////////////////////////////////////////////// ~Math FUNCTIONS /////////////////////////////////////////////////////////////
-      
-      const targetFrameRate = 60; // Default target frame rate is 60 fps
-
-// Check if the device has low hardware concurrency (mid-low spec PC)
-const isMidLowSpecPC = navigator.hardwareConcurrency && navigator.hardwareConcurrency <= 4;
-
-// Check if the current device is a high-end device
-const highEndDevices = ["iPhone X", "Samsung Galaxy S10"]; // Add devices that can handle 60 fps
-const userAgent = navigator.userAgent;
-const isHighEndDevice = highEndDevices.some(device => userAgent.includes(device));
-
-// Determine the frame rate ceiling based on device capabilities
-let frameRateCeiling = targetFrameRate;
-if (isMidLowSpecPC) {
-  frameRateCeiling = Math.min(frameRateCeiling, 30); // Set the ceiling to 30 fps for mid-low spec PCs
-} else if (!isHighEndDevice) {
-  frameRateCeiling = Math.min(frameRateCeiling, 30); // Set the ceiling to 30 fps for non-high-end devices
-}
-
-let averageFrameRate = frameRateCeiling; // Assume an initial average frame rate equal to the frame rate ceiling
-let lastFrameTime = performance.now();
-
-function measureFrameRate() {
-  const frameTimes = [];
-
-  function update() {
-    const currentTime = performance.now();
-    const frameTime = currentTime - lastFrameTime;
-    lastFrameTime = currentTime;
-
-    frameTimes.push(frameTime);
-
-    // Keep track of the last n frames (e.g., last 60 frames)
-    const maxFrameCount = 60;
-    if (frameTimes.length > maxFrameCount) {
-      frameTimes.shift(); // Remove the oldest frame time
-    }
-
-    // Calculate the average frame rate over the last n frames
-    const totalFrameTime = frameTimes.reduce((sum, time) => sum + time, 0);
-    const averageFrameTime = totalFrameTime / frameTimes.length;
-    averageFrameRate = 1000 / averageFrameTime;
-
-    requestAnimationFrame(update);
-  }
-
-  update();
-}
-
-function animate() {
-  // Your animation logic goes here
-
-  // Cap the frame rate to the frameRateCeiling
-  const frameTime = 1000 / frameRateCeiling;
-  const currentTime = performance.now();
-  const elapsedTime = currentTime - lastFrameTime;
-
-  if (elapsedTime < frameTime) {
-    // Wait until the frame time has passed
-    setTimeout(animate, frameTime - elapsedTime);
-  } else {
-    // Continue immediately
-    requestAnimationFrame(animate);
-  }
-
-  lastFrameTime = currentTime;
-
-
-
-      // Your animation logic goes here
-      var delta = clock.getDelta();
+        //updateReflectionTexture(); 
+        // const timeDifference = currentTime - previousTime;
+        // if (timeDifference < frameDelay) {
+        //   return;
+        // }
+        // previousTime = currentTime;
+        var delta = clock.getDelta();
 
         smallCamera.position.y = 0.4;
         camera.position.y = cameraHeight;
@@ -1442,23 +1299,168 @@ function animate() {
         //   updateReflectionTexture();
         //   shouldUpdateReflection = false;
         // }
-
+      
         updateCylinderPosition();
-
         stats.update();
 
+      }
+      
+      renderer.setAnimationLoop(animate);
+      ////////////////////////////////////// ~Update Animate ////////////////////////////////////////////////////////
+
+      ///////////////////////////////////////////////////////////// Math FUNCTIONS /////////////////////////////////////////////////////////////
+
+      function measureDistance(obj1, obj2)
+      {
+        const dx = obj1.position.x - obj2.position.x;
+        const dz = obj1.position.z - obj2.position.z;
+        const dy = obj1.position.y - obj2.position.y;
+        // Ignore the Y component
+        const distance = Math.sqrt(dx * dx + dz * dz + dy * dy);
+      
+        return distance;
+      };
+
+      // Update the cylinder's position to always be in front of the camera
+      const updateCylinderPosition = () => {
+        if(stepDir)
+        {
+          const cameraPosition = new THREE.Vector3();
+          camera.getWorldPosition(cameraPosition);
+          const cameraDirection = new THREE.Vector3();
+          camera.getWorldDirection(cameraDirection);
+          const distance = -3.5; // Adjust the distance of the cylinder from the camera
+  
+          stepDir.position.copy(cameraPosition).add(cameraDirection.multiplyScalar(-distance));
+          stepDir.position.y = 0.2;
+        }
+       
+      };
 
 
-      //adjustThrottle();
-    }
+      ///////////////////////////////////////////////////////////// ~Math FUNCTIONS /////////////////////////////////////////////////////////////
+      
+  //    const targetFrameRate = 60; // Default target frame rate is 60 fps
 
-    measureFrameRate();
-    animate(); // Start the animation loop/ Start the animation loop
-    
-  }
+  // // Check if the device has low hardware concurrency (mid-low spec PC)
+  // const isMidLowSpecPC = navigator.hardwareConcurrency && navigator.hardwareConcurrency <= 4;
+
+  // // Check if the current device is a high-end device
+  // const highEndDevices = ["iPhone X", "Samsung Galaxy S10"]; // Add devices that can handle 60 fps
+  // const userAgent = navigator.userAgent;
+  // const isHighEndDevice = highEndDevices.some(device => userAgent.includes(device));
+
+  // // Determine the frame rate ceiling based on device capabilities
+  // let frameRateCeiling = targetFrameRate;
+  // if (isMidLowSpecPC) {
+  //   frameRateCeiling = Math.min(frameRateCeiling, 30); // Set the ceiling to 30 fps for mid-low spec PCs
+  // } else if (!isHighEndDevice) {
+  //   frameRateCeiling = Math.min(frameRateCeiling, 30); // Set the ceiling to 30 fps for non-high-end devices
+  // }
+
+  // let averageFrameRate = frameRateCeiling; // Assume an initial average frame rate equal to the frame rate ceiling
+  // let lastFrameTime = performance.now();
+
+  // function measureFrameRate() {
+  //   const frameTimes = [];
+
+  //   function update() {
+  //     const currentTime = performance.now();
+  //     const frameTime = currentTime - lastFrameTime;
+  //     lastFrameTime = currentTime;
+
+  //     frameTimes.push(frameTime);
+
+  //     // Keep track of the last n frames (e.g., last 60 frames)
+  //     const maxFrameCount = 60;
+  //     if (frameTimes.length > maxFrameCount) {
+  //       frameTimes.shift(); // Remove the oldest frame time
+  //     }
+
+  //     // Calculate the average frame rate over the last n frames
+  //     const totalFrameTime = frameTimes.reduce((sum, time) => sum + time, 0);
+  //     const averageFrameTime = totalFrameTime / frameTimes.length;
+  //     averageFrameRate = 1000 / averageFrameTime;
+
+  //     requestAnimationFrame(update);
+  //   }
+
+  //   update();
+  // }
+
+  // function animate() {
+  //   // Your animation logic goes here
+
+  //   // Cap the frame rate to the frameRateCeiling
+  //   const frameTime = 1000 / frameRateCeiling;
+  //   const currentTime = performance.now();
+  //   const elapsedTime = currentTime - lastFrameTime;
+
+  //   if (elapsedTime < frameTime) {
+  //     // Wait until the frame time has passed
+  //     setTimeout(animate, frameTime - elapsedTime);
+  //   } else {
+  //     // Continue immediately
+  //     requestAnimationFrame(animate);
+  //   }
+
+  //   lastFrameTime = currentTime;
+
+
+
+  //       // Your animation logic goes here
+  //       var delta = clock.getDelta();
+
+  //         smallCamera.position.y = 0.4;
+  //         camera.position.y = cameraHeight;
+
+  //         //camera.fov = effectController.fov;
+  //         camera.updateProjectionMatrix();
+
+
+  //         //renderer.setViewport(0,0,window.innerWidth, window.innerHeight);
+  //         renderer.render(scene, camera);
+
+  //         if(smallRenderer.domElement.style.display === "block" && activeObjSmallRenderer[0])
+  //         {   
+  //           sRModelRotAcceleration += delta;
+  //           const rotationAngle = Math.sin((sRModelRotAcceleration / ROTATION_PERIOD) * Math.PI * 2) * MAX_ROTATION;
+
+  //           activeObjSmallRenderer[0].rotation.set(rotationAngle / 10, rotationAngle / 10, 0);
+
+  //           // Reset rotation acceleration if necessary
+  //           if (sRModelRotAcceleration >= ROTATION_PERIOD) {
+  //               sRModelRotAcceleration -= ROTATION_PERIOD;
+  //           }
+  //           // if (mixer) {
+  //           //   mixer.update(delta); // deltaTime is the time since the last frame
+  //           // }    
+  //           smallRenderer.render(smallScene, smallCamera);
+  //         }
+  //         //console.log(camera.position);
+  //         decDefineTrue = true;
+          
+  //         // if (shouldUpdateReflection) {
+  //         //   updateReflectionTexture();
+  //         //   shouldUpdateReflection = false;
+  //         // }
+
+  //         updateCylinderPosition();
+
+  //         stats.update();
+
+
+
+  //       //adjustThrottle();
+  //     }
+
+  //     measureFrameRate();
+  //     animate(); // Start the animation loop/ Start the animation loop
+      
+  //   }
 
 
 }
 
-
+}
 
