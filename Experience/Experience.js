@@ -16,10 +16,13 @@ import {
 } from './Controls/MouseControls.js';
 import {
   handleTouchStart,
-  handleTouchMove
+  handleTouchMove,
+  handleTouchEnd, 
+  handleTouchZoom
 } from './Controls/TouchControls.js';
 import handleRegularMouseScroll from './Controls/ZoomControls/regularMouseScroll.js';
 import handleAppleDeviceScroll from './Controls/ZoomControls/appleDeviceScroll.js';
+
 
 //import ClickEvents from './ClickEvents.js'
 
@@ -361,9 +364,7 @@ export default class Experience{
         document.addEventListener("wheel", (event) => handleRegularMouseScroll(event, camera));
       }
 
-      
       const keyControls = keyboardControls(camera);
-     
       screenControls(camera);
 
       // Check if the device is a touchscreen
@@ -373,14 +374,15 @@ export default class Experience{
       if (isTouchDevice) {
         document.addEventListener('touchstart', event => handleTouchStart(event));
         document.addEventListener('touchmove', event => handleTouchMove(event, camera));
+        document.addEventListener('touchend', handleTouchEnd);
+        document.addEventListener('touchmove', event => handleTouchZoom(event, camera));
       } else {
         // Mouse controls listeners
         document.addEventListener('mousedown', handleMouseDown);
         document.addEventListener('mouseup', handleMouseUp);
         document.addEventListener('mousemove', event => handleMouseMove(event, camera));
       }
-            
-            
+                  
 
       // ///////// ~Control Events //////////
 
