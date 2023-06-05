@@ -12,7 +12,15 @@ import LoadLevel from './LoadLevel.js';
 import assets from './AssetsManagement/EnvironmentFiles.js';
 import { keyboardControls } from './Controls/KeyboardControls.js';
 import { screenControls } from './Controls/ScreenControls.js';
-
+import { 
+  handleMouseDown,
+  handleMouseUp,
+  handleMouseMove 
+} from './Controls/MouseControls.js';
+import {
+  handleTouchStart,
+  handleTouchMove
+} from './Controls/TouchControls.js';
 
 import lineChartData from '../assets/listOfText.js';
 import { TweenLite } from 'gsap/gsap-core.js';
@@ -422,95 +430,25 @@ export default class Experience{
       };
 
       ///////// Control Events //////////
-        
-
-      // Variables for rotation control
-      let isMouseDown = false;
-      let previousMousePosition = {
-        x: 0,
-        y: 0
-      };
-
-      // Euler rotation
-      const rotationSpeed = 0.0018 * window.devicePixelRatio; // Adjust the sensitivity factor as needed
-      const rotationEuler = new THREE.Euler(0, 0, 0, 'YXZ');
-
-      // Define the minimum and maximum vertical rotation angles in radians
-      const minVerticalAngle = -Math.PI / 7; // 30 degrees looking down
-      const maxVerticalAngle = Math.PI / 7.; // 30 degrees looking up
-
-      // Event listeners
-      document.addEventListener('mousedown', () => {
-        isMouseDown = true;
-      });
-
-      document.addEventListener('mouseup', () => {
-        isMouseDown = false;
-      });
-
-      document.addEventListener('mousemove', event => {
-        if (isMouseDown) {
-
-          const deltaMove = {
-            x: previousMousePosition.x - event.clientX,
-            y: previousMousePosition.y - event.clientY
-          };
-
-          //To Reverse controls
-          rotationEuler.y += -deltaMove.x * rotationSpeed;
-          rotationEuler.x += -deltaMove.y * rotationSpeed;
-
-          // Clamp the vertical rotation angle within the defined range
-          rotationEuler.x = Math.max(minVerticalAngle, Math.min(maxVerticalAngle, rotationEuler.x));
-
-          camera.rotation.set(rotationEuler.x, rotationEuler.y, rotationEuler.z, 'YXZ');
-        }
-
-        previousMousePosition = {
-          x: event.clientX,
-          y: event.clientY
-        };
-      });
-      
-
-      
-      // Touch control events
-      document.addEventListener('touchstart', event => {
-        isMouseDown = true;
-        previousMousePosition = {
-          x: event.touches[0].clientX,
-          y: event.touches[0].clientY
-        };
-      });
-
-      document.addEventListener('touchmove', event => {
-        if (isMouseDown) {
-          const deltaMove = {
-            x: previousMousePosition.x - event.touches[0].clientX,
-            y: previousMousePosition.y - event.touches[0].clientY
-          };
-
-          // Reverse controls
-          rotationEuler.y += -deltaMove.x * rotationSpeed;
-          rotationEuler.x += -deltaMove.y * rotationSpeed;
-
-          // Clamp the vertical rotation angle within the defined range
-          rotationEuler.x = Math.max(minVerticalAngle, Math.min(maxVerticalAngle, rotationEuler.x));
-
-          camera.rotation.set(rotationEuler.x, rotationEuler.y, rotationEuler.z, 'YXZ');
-        }
-
-        previousMousePosition = {
-          x: event.touches[0].clientX,
-          y: event.touches[0].clientY
-        };
-      });
-
-
       const keyControls = keyboardControls(camera);
      
       screenControls(camera);
-      
+
+      // Check if the device is a touchscreen
+      const isTouchDevice = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0) || (navigator.msMaxTouchPoints > 0);
+
+      // Add event listeners based on device
+      if (isTouchDevice) {
+        document.addEventListener('touchstart', event => handleTouchStart(event));
+        document.addEventListener('touchmove', event => handleTouchMove(event, camera));
+      } else {
+        // Mouse controls listeners
+        document.addEventListener('mousedown', handleMouseDown);
+        document.addEventListener('mouseup', handleMouseUp);
+        document.addEventListener('mousemove', event => handleMouseMove(event, camera));
+      }
+            
+            
 
       // ///////// ~Control Events //////////
 
@@ -591,6 +529,26 @@ export default class Experience{
       else if (menuItemHref === '#scene2') 
       {
         loadScene("2");
+      }
+      else if (menuItemHref === '#scene3') 
+      {
+        loadScene("3");
+      }
+      else if (menuItemHref === '#scene4') 
+      {
+        loadScene("4");
+      }
+      else if (menuItemHref === '#scene5') 
+      {
+        loadScene("5");
+      }
+      else if (menuItemHref === '#scene6') 
+      {
+        loadScene("6");
+      }
+      else if (menuItemHref === '#scene7') 
+      {
+        loadScene("7");
       }
     }
 
