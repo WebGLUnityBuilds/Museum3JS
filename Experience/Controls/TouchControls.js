@@ -55,6 +55,7 @@ const minVerticalAngle = -Math.PI / 7; // 30 degrees looking down
 const maxVerticalAngle = Math.PI / 7; // 30 degrees looking up
 
 function handleTouchStart(event) {
+  event.preventDefault(); // Prevent default touch behavior
   isMouseDown = true;
   previousMousePosition = {
     x: event.touches[0].clientX,
@@ -63,6 +64,7 @@ function handleTouchStart(event) {
 }
 
 function handleTouchMove(event, camera) {
+  event.preventDefault(); // Prevent default touch behavior
   if (isMouseDown) {
     const deltaMove = {
       x: previousMousePosition.x - event.touches[0].clientX,
