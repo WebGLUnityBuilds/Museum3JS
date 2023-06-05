@@ -8,7 +8,6 @@ const LoadLevel = {
         const assetsData = getRoomAssets(exhibits, desiredRoom);
         
         const sceneObjects = await loadFiles.gltfloaderFunc(scene, assetsData);
-        console.log(sceneObjects);
         // Now you can use the loaded sceneObjects for further processing or rendering
         return sceneObjects
     },

@@ -4,13 +4,14 @@ import gsap from 'gsap';
 import Stats from 'three/addons/libs/stats.module.js';
 import { GUI } from 'three/addons/libs/lil-gui.module.min.js';
 import { CSS3DRenderer, CSS3DObject } from 'three/addons/renderers/CSS3DRenderer.js';
-import { BoxHelper } from 'three';
+
 import { RGBELoader } from  'three/examples/jsm/loaders/RGBELoader.js';
 
 
 import LoadLevel from './LoadLevel.js';
-import assets from './SceneManagement/EnvironmentFiles.js';
-
+import assets from './AssetsManagement/EnvironmentFiles.js';
+import { keyboardControls } from './Controls/KeyboardControls.js';
+import { screenControls } from './Controls/ScreenControls.js';
 
 
 import lineChartData from '../assets/listOfText.js';
@@ -88,51 +89,42 @@ export default class Experience{
         const smallScene = new THREE.Scene();
 
 
-        
-        let sceneObjects;
 
+
+        const loadedScenes = new Map(); // Map to store the loaded scene objects
+        let interactableObjects = [];
+        
         const loadSceneObjects = async (desiredRoom) => {
+          console.log("Loading scene objects for room", desiredRoom);
+        
+          if (loadedScenes.has(desiredRoom)) {
+            // If the scene is already loaded, return the corresponding scene objects
+            console.log("Scene objects already loaded for room", desiredRoom);
+            return Promise.resolve(loadedScenes.get(desiredRoom));
+          }
+        
+          // Otherwise, load the scene objects
           return LoadLevel.loadSceneObjects(scene, assets, desiredRoom)
             .then((loadedSceneObjects) => {
-              sceneObjects = loadedSceneObjects; // Assign the loaded sceneObjects to the sceneObjects variable
-              console.log(sceneObjects);
-              // Now you can safely use the loaded sceneObjects
-              //initArrowControl(sceneObjects[2]);
+              console.log("Loaded scene objects for room", desiredRoom, ":", loadedSceneObjects);
+              loadedScenes.set(desiredRoom, loadedSceneObjects); // Store the loaded scene objects in the map
+              return loadedSceneObjects; // Return the loaded scene objects
             });
         };
-
-        const desiredRoom = "0";
-        loadSceneObjects(desiredRoom)
-        .then(() => {
-          console.log(sceneObjects);
-          initArrowControl(sceneObjects[1]);
-        });
-
-        const desiredRoom1 = "1";
-        loadSceneObjects(desiredRoom1)
-        .then(() => {
-          console.log(sceneObjects);
+        
+        // Load and print the scene objects for room 0
+        const desiredRoomInit = "0";
+        loadSceneObjects(desiredRoomInit)
+          .then(() => {
+            findInteractableObjects(desiredRoomInit);
+          })
+          .catch((error) => {
+            console.log("Error loading scene objects for room", desiredRoomInit, ":", error);
+          });
+        
           
-        });
-              // sceneObjects
-        // let sceneObjects = null;
-        // async function loadSceneObjects() {
-        //   const loadFiles = new LoadFiles();
-        //   sceneObjects = await loadFiles.gltfloaderFunc(scene);
+          
 
-        //   if(sceneObjects)
-        //   {
-        //     initArrowControl(sceneObjects[2]);
-        //   }
-        //   // Now you can use the sceneObjects variable
-        // }
-        // loadSceneObjects();
-
-
-        // Light Settings
-        //scene.background = new THREE.Color( 0x66ccbe );
-
-         
 
         renderer.shadowMap.enabled = true;
 
@@ -160,14 +152,6 @@ export default class Experience{
                 
 
 
-        
-        
-
-
-
-
-
-
         const hdrTexture = new URL('../heavyAssets/kloppenheim_06_puresky_4k.hdr', import.meta.url);
         renderer.outputColorSpace = THREE.SRGBColorSpace;
         renderer.toneMapping = THREE.ACESFilmicToneMapping;
@@ -180,46 +164,7 @@ export default class Experience{
           scene.background = texture;
           scene.environment = texture;
         });                                
-                              // // Step 1: Create a reflection texture with reduced resolution
-                              // let reflectionWidth = 512; // Adjust as needed
-                              // let reflectionHeight = 512; // Adjust as needed
-                              // let reflectionCubeRenderTarget = new THREE.WebGLCubeRenderTarget({
-                              //   size: reflectionWidth,
-                              //   generateMipmaps: true,
-                              //   minFilter: THREE.LinearMipmapLinearFilter
-                              // });
-                              // let cubeCamera = new THREE.CubeCamera(0.1, 1000, reflectionCubeRenderTarget);
-
-                              // let floorModel = null;
-                              // if (sceneObjects[0]) {
-                              //   sceneObjects[0].traverse(function (child) {
-                              //     console.log(child.name);
-                              //     if (child.name.includes('floor')) {
-                              //       floorModel = child;
-                              //     }
-                              //   });
-                              // } else {
-                              //   console.error('sceneObjects[1] is undefined. Check if the object is correctly loaded.');
-                              // }
-
-                              // if (floorModel) {
-                              //   cubeCamera.position.copy(floorModel.position); // Assuming 'floor' is your imported model
-                              //   scene.add(cubeCamera); // Add the cube camera to the scene
-
-                              //   // Step 2: Set up the blending materials
-                              //   let blendingMaterial = new THREE.MeshStandardMaterial({
-                              //     envMap: reflectionCubeRenderTarget.texture,
-                              //     metalness: 1,
-                              //     roughness: 0.2
-                              //   });
-                              //   floorModel.material = blendingMaterial;
-                              // }
-                              //   // Step 3: Control the update frequency
-                              //   let shouldUpdateReflection = true; // Flag to track when to update the reflection texture
-
-                              //   function updateReflectionTexture() {
-                              //     cubeCamera.update(renderer, scene);
-                              //   }
+                            
 
 
 
@@ -327,33 +272,6 @@ export default class Experience{
 
 
 
-     
-      
-        const invStepGeometry = new THREE.PlaneGeometry(1.9, 1.9);
-        const invStepMaterial = new THREE.MeshBasicMaterial({ color: 0xffff, side: THREE.DoubleSide });
-        
-        const instanceCount = 400;
-        const invStepGroup = new THREE.Group();
-        
-        for (let i = 0; i < instanceCount; i++) {
-          const posX = ((i % 20) - 9.5) * 2;
-          const posZ = (Math.floor(i / 20) - 9.5) * 2;
-        
-          const invStepMesh = new THREE.Mesh(invStepGeometry, invStepMaterial);
-        
-          const matrix = new THREE.Matrix4();
-          matrix.makeRotationX(Math.PI / 2); // Set rotation to Math.PI / 2
-          matrix.setPosition(posX, 0.1, posZ);
-        
-          invStepMesh.applyMatrix4(matrix);
-          invStepMesh.name = `env${(i + 1).toString().padStart(3, '0')}`;
-        
-          invStepGroup.add(invStepMesh);
-        }
-        
-        scene.add(invStepGroup);
-
-
 
         let stepDir;
         function initArrowControl(arrowObj)
@@ -370,15 +288,44 @@ export default class Experience{
       
 
         const pointer = new THREE.Vector2();
-      
-      function onClick( event ) {
-        if (isMouseOverButtonLikeElement) {
-          return; // Skip the raycasting process if the mouse is over a button-like element
+        
+
+        function listAllEventListeners() {
+          const allElements = Array.prototype.slice.call(document.querySelectorAll('*'));
+          allElements.push(document);
+          allElements.push(window);
+        
+          const types = [];
+        
+          for (let ev in window) {
+            if (/^on/.test(ev)) types[types.length] = ev;
+          }
+        
+          let elements = [];
+          for (let i = 0; i < allElements.length; i++) {
+            const currentElement = allElements[i];
+            for (let j = 0; j < types.length; j++) {
+              if (typeof currentElement[types[j]] === 'function') {
+                elements.push({
+                  "node": currentElement,
+                  "type": types[j],
+                  "func": currentElement[types[j]].toString(),
+                });
+              }
+            }
+          }
+        
+          return elements.sort(function(a,b) {
+            return a.type.localeCompare(b.type);
+          });
         }
+
+
+      function onClick( event ) {
+
         pointer.x = (event.clientX / window.innerWidth) * 2 - 1;
         pointer.y = -(event.clientY / window.innerHeight) * 2 + 1;
 
-        
         document.onpointerdown = function(event) {
 
           switch ( event.button ) {
@@ -397,7 +344,8 @@ export default class Experience{
                 console.log("Geometries in Memory", renderer.info.memory.geometries);
                 console.log("Textures in Memory", renderer.info.memory.textures);
                 console.log("Programs(Shaders) in Memory", renderer.info.programs.length);
-                
+                console.table(listAllEventListeners());
+
                 console.log("------------------------------------------");
                 break;
               case 2: 
@@ -412,18 +360,7 @@ export default class Experience{
           timer = null;
         }, 1000);
       }
-      // document.onpointerup = function(event) {
-      //     switch ( event.button ) {
-              
-      //         case 0: 
-      //           break;
-      //         case 1: 
-      //           //Beware this work not on mac with magic mouse!
-      //           break;
-      //         case 2: 
-      //           break;
-      //     }
-      // }
+    
       }
   
       ////////////////////////////////////////////////////////////////////////////////
@@ -486,154 +423,6 @@ export default class Experience{
 
       ///////// Control Events //////////
         
-      //Button control events
-      // CB stands for control button
-      const forwardCButton = document.getElementById("forwardCB_action");
-      const backwardsCButton = document.getElementById("backwardsCB_action");
-      const leftCButton = document.getElementById("leftCB_action");
-      const rightCButton = document.getElementById("rightCB_action");
-      
-
-      // Get all the button-like elements in your HTML (e.g., <a> tags)
-      const buttonLikeElements = document.querySelectorAll('a');
-
-      // Flag to track if the mouse is over any button-like element
-      let isMouseOverButtonLikeElement = false;
-
-      // Add mouseover and mouseout event listeners to all button-like elements
-      buttonLikeElements.forEach((element) => {
-        element.addEventListener('mouseover', () => {
-          isMouseOverButtonLikeElement = true;
-        });
-
-        element.addEventListener('mouseout', () => {
-          isMouseOverButtonLikeElement = false;
-        });
-      });
-
-
-
-
-      function traverseBHierarchy(object, stepToMove) {
-        let targetObject = null;
-      
-        if (object.name.includes('step')) {
-          const currentStep = parseInt(object.name.replace('step', ''));
-          const targetStep = parseInt(stepToMove.replace('step', ''));
-          
-          if (currentStep === targetStep) {
-            targetObject = object;
-          }
-        }
-      
-        if (!targetObject && object.children.length > 0) {
-          for (let i = 0; i < object.children.length; i++) {
-            const result = traverseBHierarchy(object.children[i], stepToMove); // Recursively call the function for each child
-            if (result) {
-              targetObject = result; // Assign the result if a match is found in the child hierarchy
-              break; // Exit the loop if a match is found
-            }
-          }
-        }
-      
-        return targetObject; // Return the target object if found, or null if not found
-      }
-
-
-      function stepToMove(forwardFlag)
-      {
-        let stepToMove = activeStep;
-          
-        // Check if str contains the word 'step' followed by a number
-        if (/step\d+/.test(stepToMove)) {
-          // Extract the number from the string
-          let stepPosition = parseInt(stepToMove.match(/\d+/)[0]);
-          // Increment the number
-
-          if(forwardFlag)
-          {
-            ++stepPosition;
-            //++stepPosition;
-          }else
-          {
-            if(stepPosition>0)--stepPosition;
-          }
-
-          // Reconstruct the string with the incremented number
-          stepToMove = stepToMove.replace(/\d+/, stepPosition);
-          
-          let targetObject = activeStep;
-          // Call the function with the mainRendererActiveOBJ[0] and stepToMove
-          if(mainRendererActiveOBJ[0])
-          {
-            targetObject = traverseBHierarchy(mainRendererActiveOBJ[0], stepToMove);
-          }
-
-
-        
-          if (targetObject) {
-            // The object with the specified name exists in the scene
-            activeStep = stepToMove;
-            moveCamera(targetObject.position.x, camera.position.y, targetObject.position.z);
-          } else {
-            // The object with the specified name does not exist
-            console.log(`After end step`);
-          }
-
-        }
-      }
-
-      let activeStep = 'step0';
-      let envStepActive = "env001";
-      document.addEventListener('click', buttonControls);
-      function buttonControls(event) {
-        const targetCB = event.target;
-        
-
-        const x = camera.rotation.x;
-        const y = camera.rotation.y;
-        const z = camera.rotation.z;
-
-        const degrees = 30;
-        const radiansToMove = (degrees / 180) * Math.PI;
-        
-        let forwardFlag = false;
-        if (targetCB.id === "forwardCB_action") {
-          forwardFlag = true;
-          //stepToMove(forwardFlag);
-          
-          const desiredStep = invStepGroup.getObjectByName(envStepActive);
-          
-          const stepName = desiredStep.name; // Get the name of the step from the raycaster hit object
-          const stepNumberString = stepName.match(/\d+/)[0]; // Extract the numeric part of the name using regular expression
-          const stepNumber = parseInt(stepNumberString); // Convert the numeric part to a number
-          
-          if (!isNaN(stepNumber)) {
-            const incrementedStepNumber = stepNumber + 1;
-            const newStepName = `env${incrementedStepNumber.toString().padStart(3, '0')}`;
-            
-            const invStepToMove = invStepGroup.getObjectByName(newStepName);
-            moveCamera(invStepToMove.position.x , 1.65 ,  invStepToMove.position.z);
-            
-            envStepActive = newStepName;
-            
-          } else {
-            console.error('Invalid step name format');
-          }
-          
-        } else if (targetCB.id === "backwardsCB_action") {
-          forwardFlag = false;
-          stepToMove(forwardFlag);
-
-        } else if (targetCB.id === "leftCB_action") {
-          
-          rotateCamera(x, y + radiansToMove, z);
-
-        } else if (targetCB.id === "rightCB_action") {
-          rotateCamera(x, y -radiansToMove , z);
-
-        }
-      }
 
       // Variables for rotation control
       let isMouseDown = false;
@@ -716,6 +505,13 @@ export default class Experience{
           y: event.touches[0].clientY
         };
       });
+
+
+      const keyControls = keyboardControls(camera);
+     
+      screenControls(camera);
+      
+
       // ///////// ~Control Events //////////
 
       
@@ -784,45 +580,20 @@ export default class Experience{
       const menuItemHref = event.target.getAttribute('href');
 
       // Check the href attribute and call the appropriate function in your Three.js file
-      if (menuItemHref === '#scene1') 
+      if (menuItemHref === '#scene0') 
       {
-        loadScene0();
+        loadScene("0");
+      } 
+      else if (menuItemHref === '#scene1') 
+      {
+        loadScene("1");
       } 
       else if (menuItemHref === '#scene2') 
       {
-        loadScene1();
-      } 
-      else if (menuItemHref === '#scene3') 
-      {
-
+        loadScene("2");
       }
     }
 
-    function onMouseMove(event) {
-      // Calculate the mouse position in normalized device coordinates (-1 to 1)
-      const mouse = {
-        x: (event.clientX / window.innerWidth) * 2 - 1,
-        y: -(event.clientY / window.innerHeight) * 2 + 1,
-      };
-    
-      raycaster.setFromCamera(mouse, camera);
-    
-      // Find intersected objects
-      const intersects = raycaster.intersectObjects(mainRendererActiveOBJ[0], true);
-    
-      // Loop through the intersected objects
-      for (const intersect of intersects) {
-        const object = intersect.object;
-        
-        // Check if the object's name includes the string "tab"
-        if (object.name.includes('tab')) {
-          // Scale the object
-          gsap.to(object.scale, { x: 1.2, y: 1.2, z: 1.2, duration: 0.3 });
-        }
-      }
-    }
-    
-    renderer.domElement.addEventListener('mousemove', onMouseMove);
     
     
     
@@ -842,15 +613,24 @@ export default class Experience{
                                                                     //////////
                                                                     //////////
     ///////////////////////////////////////////////////////////// START GSAP FUNCTIONS /////////////////////////////////////////////////////////////
-
+    
     function moveCamera(x, y, z) {
-        let tween = gsap.to(camera.position, {
+      const lvlLim = 20;
+        if(camera.position.x < -lvlLim || camera.position.x > lvlLim || camera.position.x  < -lvlLim || camera.position.z > lvlLim)
+        {
+          console.log("Out of level bounds");
+        }
+        else
+        {
+          let tween = gsap.to(camera.position, {
             x,
             y,
             z,
             duration: 4
         });
         //tween.delay(0.2);
+        }
+        
     }
 
     function objToObj(x, y, z, toObj) {
@@ -952,63 +732,23 @@ export default class Experience{
        ///////////////////////////////////////////////////// Main Renderer functions ////////////////////////////////////////////////////////////////////
        
        
-       let mainRendererActiveOBJINIT = true;
-       let mainRendererActiveOBJ = [];
-       
-       let raycaster = new THREE.Raycaster();
+      const raycaster = new THREE.Raycaster();
+      let smallRendererActiveOBJ;
       function mainRendererRaycaster(pointer, event)
       {
         
         const targetElement = event.target;
         raycaster.setFromCamera(pointer, camera);
        
-        if(mainRendererActiveOBJINIT)
-        {
-          mainRendererActiveOBJINIT = false;
-          mainRendererActiveOBJ = mainRendererActiveOBJ.concat(sceneObjects[0]); // Concatenate the children of the scene
-        }
-        
-        const intersects = raycaster.intersectObjects([...mainRendererActiveOBJ, invStepGroup]);
-
+       // const intersects = raycaster.intersectObjects([...interactableObjects/*, */]);
+       const intersects = raycaster.intersectObjects(interactableObjects, true);
         
         for (let i=0; i < intersects.length; i++)
         {
-          // let minDistance = Infinity; // Initialize with a large value
-          // let closestExhibit = null;
-          
-          // mainRendererActiveOBJ.forEach((object) => {
-          //   if(object.visible){
-          //   object.children.forEach((child) => {
-          //     if (child.name.includes("exhibit")) {
-          //       let distance = measureDistance(camera, child);
-          //       distance = distance;// / 100;
-          //       if (distance < minDistance) {
-          //         minDistance = distance;
-          //         closestExhibit = child;
-          //       }
-          //     }
-          //   });
-          //   }
-          // });
-
-          // if (closestExhibit) {
-          //   // console.log("Closest Exhibit: ", closestExhibit.name);
-          //   console.log("Min Distance:", minDistance);
-          //   if (minDistance < 12) {
-
-          //     if(mainRendererActiveOBJ.length > 0)
-          //     {
-          //       activeObjSmallRenderer.length = 0; // Empty the array
-          //     }
-          //     removeExhibitObjectsFromScene(smallScene);
-          //     addExhibitToScene(closestExhibit, smallScene);
-
-          //   }
-          // }
-           
+           console.log(intersects[i].object.name);
           if (intersects[i].object.name.includes("exhibit")) {
             
-            if(mainRendererActiveOBJ.length > 0)
+            if(smallRendererActiveOBJ.length > 0)
             {
               activeObjSmallRenderer.length = 0; // Empty the array
             }
@@ -1019,21 +759,20 @@ export default class Experience{
             break;
           }
 
-          if(intersects[i].object.name.includes("tab01"))
+          if(intersects[i].object.name.includes("tab00"))
           {
-            loadScene1();
+            loadScene("0");
 
             break;
           }
-          if(intersects[i].object.name.includes("tab00"))
+          if(intersects[i].object.name.includes("tab01"))
           {
-            loadScene0();
+            loadScene("1");
 
             break;
           }
           if (intersects[i].object.name.includes("step")) {
 
-            // let rayIndex = intersects[i].object.name.replace(/[^\d.-]/g, '');
             activeStep = intersects[i].object.name;
             let x = 0;
             let z = 0;
@@ -1044,92 +783,204 @@ export default class Experience{
             break;
             
           }
-          
         }
       
-
+      }
+      let activeRoom = "0";
+      // Function to handle switching to a different room
+      function loadScene(desiredRoom) {
         
+        if (loadedScenes.has(desiredRoom)) {
+          console.log(`Room ${desiredRoom} is already loaded.`);
+          // Perform your logic for making the room visible here
+
+          findObjectsToActDeact(activeRoom);
+          findObjectsToActDeact(desiredRoom);
+          
+          findInteractableObjects(desiredRoom); // Update the interactableObjects array for the current room
+          activeRoom = desiredRoom;
+        } 
+        else 
+        {
+          console.log(`Room ${desiredRoom} is not yet loaded.`);
+          loadSceneObjects(desiredRoom).then((loadedSceneObjects) => {
+          findObjectsToActDeact(activeRoom);
+          findInteractableObjects(desiredRoom); // Update the interactableObjects array for the current room
+          activeRoom = desiredRoom;
+          });
+        }
       }
 
-      function traverseHierarchy(object, searchString) {
-        if (object instanceof THREE.Mesh && object.name.includes(searchString)) {
-          // Return the object if the name includes the search string
-          return object;
+
+
+
+    function findInteractableObjects(desiredRoom) {
+      interactableObjects.length = 0;
+      if (loadedScenes.has(desiredRoom)) {
+        const loadedSceneObjects = loadedScenes.get(desiredRoom);
+
+        loadedSceneObjects.forEach((object) => {
+          traverseRayHierarchy(object);
+        });
+      } else {
+        console.log(`No loaded objects found for room ${desiredRoom}`);
+      }
+    }
+
+    function traverseRayHierarchy(object) {
+
+
+      if (object instanceof THREE.Mesh) {
+        if (
+          object.name.includes("exhibit") ||
+          object.name.includes("tab") ||
+          object.name.includes("step") ||
+          object.name.includes("media")
+        ) {
+          interactableObjects.push(object); // Add the object to the interactableObjects array
         }
-      
-        // Check if it's a group object
-        if (object instanceof THREE.Group) {
-          // Iterate over all children of the group
-          for (let i = 0; i < object.children.length; i++) {
-            const result = traverseHierarchy(object.children[i], searchString);
-            if (result) {
-              // Return the result if a match is found in the child hierarchy
-              return result;
-            }
-          }
-        }
-      
-        return null; // Return null if the object or its children do not contain the desired name
       }
 
+      if (object instanceof THREE.Group) {
 
-      function loadScene1()
-      {
-        cameraHeight = 1.65;
-
-        sceneObjects[0].visible = false;
-        sceneObjects[1].visible = true;
-        //sceneObjects[2].visible = false;
-
-        if(mainRendererActiveOBJ.length > 0)
-        {
-          mainRendererActiveOBJ.length = 0; // Empty the array
+        for (let i = 0; i < object.children.length; i++) {
+          traverseRayHierarchy(object.children[i]);
         }
-        mainRendererActiveOBJ.push(sceneObjects[1]);
+      }
+    }
 
-        const searchString = 'step1';
-        const initStep = traverseBHierarchy(mainRendererActiveOBJ[0], searchString);
 
-        activeStep = initStep.name;
-        if (initStep) {
-          let x = (initStep.position.x );
-          let z = (initStep.position.z );
-          moveCamera(x, 1,z);
-          
-        } else {
-          // Object "step1" not found
-          console.log("Object not found");
-        }
-      }  
-      function loadScene0()
-      {
-        cameraHeight = 1.65;
+    function findObjectsToActDeact(desiredRoom) {
+
+      if (loadedScenes.has(desiredRoom)) {
+        const loadedSceneObjects = loadedScenes.get(desiredRoom);
+
+        loadedSceneObjects.forEach((object) => {
+          traverseActDeactHierarchy(object);
+        });
+      } else {
+        console.log(`No loaded objects found for room ${desiredRoom}`);
+      }
+    }
+
+
+    function traverseActDeactHierarchy(object) {
+
+      if (object instanceof THREE.Mesh) {
         
-        sceneObjects[0].visible = true;
-        sceneObjects[1].visible = false;
-        //sceneObjects[2].visible = false;
-
-        if(mainRendererActiveOBJ.length > 0)
+        if(object.visible)
         {
-          mainRendererActiveOBJ.length = 0; // Empty the array
+          object.visible = false;
         }
-        mainRendererActiveOBJ.push(sceneObjects[0]);
+        else 
+        {
+          object.visible = true;
+        }
+      } 
 
-        const searchString = 'step1';
-        const initStep = traverseBHierarchy(mainRendererActiveOBJ[0], searchString);
-        activeStep = initStep;
-        if (initStep) {
-          let x = (initStep.position.x );
-          let z = (initStep.position.z );
-          moveCamera(x, 1,z);
+      if (object instanceof THREE.Group) {
+        for (let i = 0; i < object.children.length; i++) {
+          traverseActDeactHierarchy(object.children[i]);
+        }
+      }
+    }
+
+// function traverseHierarchy(object) {
+//   console.log(object)
+//   if (
+//     object.name.includes("exhibit") ||
+//     object.name.includes("tab") ||
+//     object.name.includes("step") ||
+//     object.name.includes("media")
+//   ) {
+//     interactableObjects.push(object); // Add the object to the interactableObjects array
+//   }
+
+//   // Check if it's a group object
+//   if (object instanceof THREE.Group) {
+//     // Iterate over all children of the group
+//     for (let i = 0; i < object.children.length; i++) {
+//       traverseHierarchy(object.children[i]);
+//     }
+//   }
+// }
+
+
+
+      // function findInteractableObjects(desiredRoom) {
+      //   // Clear the interactableObjects array
+      //   interactableObjects.length = 0;
+
+      //   if (loadedScenes.has(desiredRoom)) {
+      //     const loadedSceneObjects = loadedScenes.get(desiredRoom);
+
+      //     // Traverse the loaded scene objects to find the interactable objects
+      //     loadedSceneObjects.traverse((object) => {
+      //       // Check if the object's name includes the desired string and belongs to the desired room
+      //       if (
+      //         (object.name.includes("tab") ||
+      //           object.name.includes("step") ||
+      //           object.name.includes("exhibit") ||
+      //           object.name.includes("media")) &&
+      //         object.room === desiredRoom
+      //       ) {
+      //         interactableObjects.push(object); // Add the object to the interactableObjects array
+      //       }
+      //     });
+      //   }
+
+      //   console.log(`Interactable objects for room ${desiredRoom}:`, interactableObjects);
+      // }
+
+      // function loadScene()
+      // {
+      //   cameraHeight = 1.65;
+        
+      //   sceneObjects[0].visible = true;
+      //   sceneObjects[1].visible = false;
+      //   //sceneObjects[2].visible = false;
+
+      //   if(mainRendererActiveOBJ.length > 0)
+      //   {
+      //     mainRendererActiveOBJ.length = 0; // Empty the array
+      //   }
+      //   mainRendererActiveOBJ.push(sceneObjects[0]);
+
+      //   const searchString = 'step1';
+      //   const initStep = traverseBHierarchy(mainRendererActiveOBJ[0], searchString);
+      //   activeStep = initStep;
+      //   if (initStep) {
+      //     let x = (initStep.position.x );
+      //     let z = (initStep.position.z );
+      //     moveCamera(x, 1,z);
           
-        } else {
-          // Object "step1" not found
-          console.log("Object not found");
-        }
-      }  
+      //   } else {
+      //     // Object "step1" not found
+      //     console.log("Object not found");
+      //   }
+      // }  
 
 
+      // function traverseHierarchy(object, searchString) {
+      //   if (object instanceof THREE.Mesh && object.name.includes(searchString)) {
+      //     // Return the object if the name includes the search string
+      //     return object;
+      //   }
+      
+      //   // Check if it's a group object
+      //   if (object instanceof THREE.Group) {
+      //     // Iterate over all children of the group
+      //     for (let i = 0; i < object.children.length; i++) {
+      //       const result = traverseHierarchy(object.children[i], searchString);
+      //       if (result) {
+      //         // Return the result if a match is found in the child hierarchy
+      //         return result;
+      //       }
+      //     }
+      //   }
+      
+      //   return null; // Return null if the object or its children do not contain the desired name
+      // }
 
 
     let mouseDown = false;
@@ -1252,18 +1103,13 @@ export default class Experience{
       // element.name("field of view");
 
       var clock = new THREE.Clock();
-      let previousTime = 0;
-      const maxFPS = 30;
-      //const frameDelay = 1000 / maxFPS;
-
+      
+     
       function animate(currentTime) {
 
-        //updateReflectionTexture(); 
-        // const timeDifference = currentTime - previousTime;
-        // if (timeDifference < frameDelay) {
-        //   return;
-        // }
-        // previousTime = currentTime;
+        keyControls.update();
+           
+
         var delta = clock.getDelta();
 
         smallCamera.position.y = 0.4;
@@ -1340,124 +1186,7 @@ export default class Experience{
 
       ///////////////////////////////////////////////////////////// ~Math FUNCTIONS /////////////////////////////////////////////////////////////
       
-  //    const targetFrameRate = 60; // Default target frame rate is 60 fps
-
-  // // Check if the device has low hardware concurrency (mid-low spec PC)
-  // const isMidLowSpecPC = navigator.hardwareConcurrency && navigator.hardwareConcurrency <= 4;
-
-  // // Check if the current device is a high-end device
-  // const highEndDevices = ["iPhone X", "Samsung Galaxy S10"]; // Add devices that can handle 60 fps
-  // const userAgent = navigator.userAgent;
-  // const isHighEndDevice = highEndDevices.some(device => userAgent.includes(device));
-
-  // // Determine the frame rate ceiling based on device capabilities
-  // let frameRateCeiling = targetFrameRate;
-  // if (isMidLowSpecPC) {
-  //   frameRateCeiling = Math.min(frameRateCeiling, 30); // Set the ceiling to 30 fps for mid-low spec PCs
-  // } else if (!isHighEndDevice) {
-  //   frameRateCeiling = Math.min(frameRateCeiling, 30); // Set the ceiling to 30 fps for non-high-end devices
-  // }
-
-  // let averageFrameRate = frameRateCeiling; // Assume an initial average frame rate equal to the frame rate ceiling
-  // let lastFrameTime = performance.now();
-
-  // function measureFrameRate() {
-  //   const frameTimes = [];
-
-  //   function update() {
-  //     const currentTime = performance.now();
-  //     const frameTime = currentTime - lastFrameTime;
-  //     lastFrameTime = currentTime;
-
-  //     frameTimes.push(frameTime);
-
-  //     // Keep track of the last n frames (e.g., last 60 frames)
-  //     const maxFrameCount = 60;
-  //     if (frameTimes.length > maxFrameCount) {
-  //       frameTimes.shift(); // Remove the oldest frame time
-  //     }
-
-  //     // Calculate the average frame rate over the last n frames
-  //     const totalFrameTime = frameTimes.reduce((sum, time) => sum + time, 0);
-  //     const averageFrameTime = totalFrameTime / frameTimes.length;
-  //     averageFrameRate = 1000 / averageFrameTime;
-
-  //     requestAnimationFrame(update);
-  //   }
-
-  //   update();
-  // }
-
-  // function animate() {
-  //   // Your animation logic goes here
-
-  //   // Cap the frame rate to the frameRateCeiling
-  //   const frameTime = 1000 / frameRateCeiling;
-  //   const currentTime = performance.now();
-  //   const elapsedTime = currentTime - lastFrameTime;
-
-  //   if (elapsedTime < frameTime) {
-  //     // Wait until the frame time has passed
-  //     setTimeout(animate, frameTime - elapsedTime);
-  //   } else {
-  //     // Continue immediately
-  //     requestAnimationFrame(animate);
-  //   }
-
-  //   lastFrameTime = currentTime;
-
-
-
-  //       // Your animation logic goes here
-  //       var delta = clock.getDelta();
-
-  //         smallCamera.position.y = 0.4;
-  //         camera.position.y = cameraHeight;
-
-  //         //camera.fov = effectController.fov;
-  //         camera.updateProjectionMatrix();
-
-
-  //         //renderer.setViewport(0,0,window.innerWidth, window.innerHeight);
-  //         renderer.render(scene, camera);
-
-  //         if(smallRenderer.domElement.style.display === "block" && activeObjSmallRenderer[0])
-  //         {   
-  //           sRModelRotAcceleration += delta;
-  //           const rotationAngle = Math.sin((sRModelRotAcceleration / ROTATION_PERIOD) * Math.PI * 2) * MAX_ROTATION;
-
-  //           activeObjSmallRenderer[0].rotation.set(rotationAngle / 10, rotationAngle / 10, 0);
-
-  //           // Reset rotation acceleration if necessary
-  //           if (sRModelRotAcceleration >= ROTATION_PERIOD) {
-  //               sRModelRotAcceleration -= ROTATION_PERIOD;
-  //           }
-  //           // if (mixer) {
-  //           //   mixer.update(delta); // deltaTime is the time since the last frame
-  //           // }    
-  //           smallRenderer.render(smallScene, smallCamera);
-  //         }
-  //         //console.log(camera.position);
-  //         decDefineTrue = true;
-          
-  //         // if (shouldUpdateReflection) {
-  //         //   updateReflectionTexture();
-  //         //   shouldUpdateReflection = false;
-  //         // }
-
-  //         updateCylinderPosition();
-
-  //         stats.update();
-
-
-
-  //       //adjustThrottle();
-  //     }
-
-  //     measureFrameRate();
-  //     animate(); // Start the animation loop/ Start the animation loop
-      
-  //   }
+  
 
 
 }
