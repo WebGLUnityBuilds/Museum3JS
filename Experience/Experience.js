@@ -1,9 +1,6 @@
 import * as THREE from 'three';
-import {GLTFLoader} from 'three/examples/jsm/loaders/GLTFLoader.js';
 import gsap from 'gsap';
 import Stats from 'three/addons/libs/stats.module.js';
-import { GUI } from 'three/addons/libs/lil-gui.module.min.js';
-import { CSS3DRenderer, CSS3DObject } from 'three/addons/renderers/CSS3DRenderer.js';
 
 import { RGBELoader } from  'three/examples/jsm/loaders/RGBELoader.js';
 
@@ -21,9 +18,9 @@ import {
   handleTouchStart,
   handleTouchMove
 } from './Controls/TouchControls.js';
+import handleRegularMouseScroll from './Controls/ZoomControls/regularMouseScroll.js';
+import handleAppleDeviceScroll from './Controls/ZoomControls/appleDeviceScroll.js';
 
-import lineChartData from '../assets/listOfText.js';
-import { TweenLite } from 'gsap/gsap-core.js';
 //import ClickEvents from './ClickEvents.js'
 
 
@@ -195,8 +192,7 @@ export default class Experience{
         modelPointLight.position.set(-1, 1, 0);
         smallScene.add(modelPointLight);
 
-        //smallRendererCloseB();
-
+        
 
         renderer.debug.checkShaderErrors = true;
 
@@ -207,26 +203,13 @@ export default class Experience{
         camera.position.set(0,0,-10);
 
 
-        // // Access the first room from the sceneObjects array
-        // const firstRoom = sceneObjects[0];
-        // const firstRoomModel = firstRoom.model;
-        // const firstRoomAnimations = firstRoom.animations;
 
-        // // Play the animations if available
-        // if (firstRoomAnimations.length > 0) {
-        //   const mixer = new THREE.AnimationMixer(firstRoomModel);
-        //   firstRoomAnimations.forEach((animation) => {
-        //     const action = mixer.clipAction(animation);
-        //     action.play();
-        //   });
-        // }
-        
+        // Audio Video Creation
+
+
         // Create an AudioListener
-        const listener = new THREE.AudioListener();
-        camera.add(listener); // Attach the listener to the camera or any object in the scene
-
-
-
+        // const listener = new THREE.AudioListener();
+        // camera.add(listener); // Attach the listener to the camera or any object in the scene
 
 
         // // Create an AudioLoader
@@ -243,52 +226,45 @@ export default class Experience{
         // });
 
 
+        // const video = document.createElement('video');
+        // video.src = '/RawTextures/VideoTextures/Mov1_1821.mp4';
+        // video.crossOrigin = 'anonymous';
+        // video.loop = true;
+        // video.muted = true; // Mute the video to comply with autoplay policies
+        // video.playsInline = true; // Ensure video playback on mobile devices
 
-        
-        const video = document.createElement('video');
-        video.src = '/RawTextures/VideoTextures/Mov1_1821.mp4';
-        video.crossOrigin = 'anonymous';
-        video.loop = true;
-        video.muted = true; // Mute the video to comply with autoplay policies
-        video.playsInline = true; // Ensure video playback on mobile devices
+        // // Create a texture from the video element
+        // const videoTexture = new THREE.VideoTexture(video);
+        // videoTexture.minFilter = THREE.LinearFilter;
+        // videoTexture.magFilter = THREE.LinearFilter;
 
-        // Create a texture from the video element
-        const videoTexture = new THREE.VideoTexture(video);
-        videoTexture.minFilter = THREE.LinearFilter;
-        videoTexture.magFilter = THREE.LinearFilter;
+        // // Create a material and assign the video texture
+        // const material = new THREE.MeshBasicMaterial({ map: videoTexture });
 
-        // Create a material and assign the video texture
-        const material = new THREE.MeshBasicMaterial({ map: videoTexture });
+        // // Create a geometry and mesh
+        // const geometry = new THREE.PlaneGeometry(2, 1.125); // Adjust the size of the plane as needed
+        // const mesh = new THREE.Mesh(geometry, material);
+        // mesh.position.set(-4.3,1.4,-8);
+        // // Add the mesh to the scene
+        // scene.add(mesh);
 
-        // Create a geometry and mesh
-        const geometry = new THREE.PlaneGeometry(2, 1.125); // Adjust the size of the plane as needed
-        const mesh = new THREE.Mesh(geometry, material);
-        mesh.position.set(-4.3,1.4,-8);
-        // Add the mesh to the scene
-        scene.add(mesh);
-
-        const svideo = document.getElementById('myVideo');
-        function startVideoPlayback() {
-          if (video) {
-            video.play(); // Play the audio if it's loaded
-          }
-          // if (audio) {
-          //   audio.play(); // Play the audio if it's loaded
-          // }
-        }
-        document.addEventListener('click', startVideoPlayback);
+        // const svideo = document.getElementById('myVideo');
+        // function startVideoPlayback() {
+        //   if (video) {
+        //     video.play(); // Play the audio if it's loaded
+        //   }
+        //   // if (audio) {
+        //   //   audio.play(); // Play the audio if it's loaded
+        //   // }
+        // }
+        // document.addEventListener('click', startVideoPlayback);
 
 
 
+        // Audio Video Creation
 
-        let stepDir;
-        function initArrowControl(arrowObj)
-        {
-          stepDir = arrowObj;
-        }
 
-        //camera.add(stepDir);
-        //stepDir.position.set(0, 0, -10);
+      
 
         moveCamera(-0.020159, 0,4.3341);
         
@@ -372,64 +348,20 @@ export default class Experience{
       }
   
       ////////////////////////////////////////////////////////////////////////////////
-      //Movement Events
       
-      let targetZoomLevel = 0.5; // set the initial zoom level
-      let zoomLevel = camera.zoom; // current zoom level
+      ///////// Control Events ////////////
       
+
       // Check the platform and apply the appropriate event listener
       if (/Macintosh|iPad|iPhone|iPod/.test(navigator.userAgent)) {
         // Apple device scroll event listener
-        document.addEventListener("wheel", handleAppleDeviceScroll);
-      }else {
+        document.addEventListener("wheel", (event) => handleAppleDeviceScroll(event, camera));
+      } else {
         // Regular mouse scroll event listener
-        document.addEventListener("wheel",handleRegularMouseScroll);
+        document.addEventListener("wheel", (event) => handleRegularMouseScroll(event, camera));
       }
-      
-      function handleAppleDeviceScroll(event) {
-        // Adjust the deltaY value based on the device
-        const deltaY = event.deltaY / 100;
-      
-        // Adjust the target zoom level based on the scroll direction
-        targetZoomLevel += deltaY * -0.1;
-        // Make sure the target zoom level stays within a reasonable range
-        targetZoomLevel = Math.max(1, Math.min(2, targetZoomLevel));
-      
-        // Create a GSAP animation to smoothly transition the zoom level
-        gsap.to({ zoom: zoomLevel }, {
-          duration: 0.5,
-          zoom: targetZoomLevel,
-          onUpdate: function () {
-            // Update the zoom level
-            zoomLevel = this.targets()[0].zoom;
-            // Set the camera zoom
-            camera.zoom = zoomLevel;
-            camera.updateProjectionMatrix();
-          }
-        });
-      }
-      function handleRegularMouseScroll(event) 
-      {
-          // adjust the target zoom level based on the scroll direction
-          targetZoomLevel += event.deltaY * -0.001;
-          // make sure the target zoom level stays within a reasonable range
-          targetZoomLevel = Math.max(1, Math.min(2, targetZoomLevel));
-      
-          // create a GSAP animation to smoothly transition the zoom level
-          gsap.to({ zoom: zoomLevel }, {
-          duration: 0.5,
-          zoom: targetZoomLevel,
-          onUpdate: function () {
-              // update the zoom level
-              zoomLevel = this.targets()[0].zoom;
-              // set the camera zoom
-              camera.zoom = zoomLevel;
-              camera.updateProjectionMatrix();
-          }
-          });
-      };
 
-      ///////// Control Events //////////
+      
       const keyControls = keyboardControls(camera);
      
       screenControls(camera);
@@ -482,24 +414,6 @@ export default class Experience{
       
       
 
-    window.addEventListener("resize", () => {
-        camera.aspect = window.innerWidth / window.innerHeight;
-        camera.updateProjectionMatrix();
-        renderer.setSize(window.innerWidth, window.innerHeight);
-
-
-        smallCamera.aspect = (window.innerWidth/2) / (window.innerHeight/2);
-        smallCamera.updateProjectionMatrix();
-        smallRenderer.setSize(window.innerWidth/2, window.innerHeight/2);
-        updateSmallRendererPosition();
-    });
-      
-      
-    window.addEventListener('contextmenu', function (e) { 
-        // do something here... 
-        e.preventDefault(); 
-    }, false);
-
 
 
     // Get the navigation menu items of the specific menu
@@ -514,10 +428,7 @@ export default class Experience{
     function handleMenuItemClick(event) {
       event.preventDefault(); // Prevent the default link behavior
 
-      // Get the href attribute of the clicked menu item
       const menuItemHref = event.target.getAttribute('href');
-
-      // Check the href attribute and call the appropriate function in your Three.js file
       if (menuItemHref === '#scene0') 
       {
         loadScene("0");
@@ -552,10 +463,6 @@ export default class Experience{
       }
     }
 
-    
-    
-    
-    
 
     //////////////////// Event Calls ///////////////////////
     
@@ -744,6 +651,11 @@ export default class Experience{
         }
       
       }
+
+
+
+
+
       let activeRoom = "0";
       // Function to handle switching to a different room
       function loadScene(desiredRoom) {
@@ -772,6 +684,7 @@ export default class Experience{
 
 
 
+
     function findInteractableObjects(desiredRoom) {
       interactableObjects.length = 0;
       if (loadedScenes.has(desiredRoom)) {
@@ -784,6 +697,10 @@ export default class Experience{
         console.log(`No loaded objects found for room ${desiredRoom}`);
       }
     }
+
+
+
+
 
     function traverseRayHierarchy(object) {
 
@@ -843,52 +760,7 @@ export default class Experience{
       }
     }
 
-// function traverseHierarchy(object) {
-//   console.log(object)
-//   if (
-//     object.name.includes("exhibit") ||
-//     object.name.includes("tab") ||
-//     object.name.includes("step") ||
-//     object.name.includes("media")
-//   ) {
-//     interactableObjects.push(object); // Add the object to the interactableObjects array
-//   }
 
-//   // Check if it's a group object
-//   if (object instanceof THREE.Group) {
-//     // Iterate over all children of the group
-//     for (let i = 0; i < object.children.length; i++) {
-//       traverseHierarchy(object.children[i]);
-//     }
-//   }
-// }
-
-
-
-      // function findInteractableObjects(desiredRoom) {
-      //   // Clear the interactableObjects array
-      //   interactableObjects.length = 0;
-
-      //   if (loadedScenes.has(desiredRoom)) {
-      //     const loadedSceneObjects = loadedScenes.get(desiredRoom);
-
-      //     // Traverse the loaded scene objects to find the interactable objects
-      //     loadedSceneObjects.traverse((object) => {
-      //       // Check if the object's name includes the desired string and belongs to the desired room
-      //       if (
-      //         (object.name.includes("tab") ||
-      //           object.name.includes("step") ||
-      //           object.name.includes("exhibit") ||
-      //           object.name.includes("media")) &&
-      //         object.room === desiredRoom
-      //       ) {
-      //         interactableObjects.push(object); // Add the object to the interactableObjects array
-      //       }
-      //     });
-      //   }
-
-      //   console.log(`Interactable objects for room ${desiredRoom}:`, interactableObjects);
-      // }
 
       // function loadScene()
       // {
@@ -918,27 +790,6 @@ export default class Experience{
       //   }
       // }  
 
-
-      // function traverseHierarchy(object, searchString) {
-      //   if (object instanceof THREE.Mesh && object.name.includes(searchString)) {
-      //     // Return the object if the name includes the search string
-      //     return object;
-      //   }
-      
-      //   // Check if it's a group object
-      //   if (object instanceof THREE.Group) {
-      //     // Iterate over all children of the group
-      //     for (let i = 0; i < object.children.length; i++) {
-      //       const result = traverseHierarchy(object.children[i], searchString);
-      //       if (result) {
-      //         // Return the result if a match is found in the child hierarchy
-      //         return result;
-      //       }
-      //     }
-      //   }
-      
-      //   return null; // Return null if the object or its children do not contain the desired name
-      // }
 
 
     let mouseDown = false;
@@ -1067,18 +918,16 @@ export default class Experience{
 
         keyControls.update();
            
-
         var delta = clock.getDelta();
+
 
         smallCamera.position.y = 0.4;
         camera.position.y = cameraHeight;
-
         //camera.fov = effectController.fov;
         camera.updateProjectionMatrix();
-
-
-        //renderer.setViewport(0,0,window.innerWidth, window.innerHeight);
         renderer.render(scene, camera);
+
+
 
         if(smallRenderer.domElement.style.display === "block" && activeObjSmallRenderer[0])
         {   
@@ -1091,26 +940,25 @@ export default class Experience{
           if (sRModelRotAcceleration >= ROTATION_PERIOD) {
               sRModelRotAcceleration -= ROTATION_PERIOD;
           }
-          // if (mixer) {
-          //   mixer.update(delta); // deltaTime is the time since the last frame
-          // }    
           smallRenderer.render(smallScene, smallCamera);
         }
-        //console.log(camera.position);
+
+
+
+
         decDefineTrue = true;
         
-        // if (shouldUpdateReflection) {
-        //   updateReflectionTexture();
-        //   shouldUpdateReflection = false;
-        // }
-      
-        updateCylinderPosition();
+        //updatGrabablePosition();
         stats.update();
 
       }
       
       renderer.setAnimationLoop(animate);
       ////////////////////////////////////// ~Update Animate ////////////////////////////////////////////////////////
+
+
+
+
 
       ///////////////////////////////////////////////////////////// Math FUNCTIONS /////////////////////////////////////////////////////////////
 
@@ -1126,28 +974,46 @@ export default class Experience{
       };
 
       // Update the cylinder's position to always be in front of the camera
-      const updateCylinderPosition = () => {
-        if(stepDir)
-        {
-          const cameraPosition = new THREE.Vector3();
-          camera.getWorldPosition(cameraPosition);
-          const cameraDirection = new THREE.Vector3();
-          camera.getWorldDirection(cameraDirection);
-          const distance = -3.5; // Adjust the distance of the cylinder from the camera
+      // const updatGrabablePosition = () => {
+      //   if(stepDir)
+      //   {
+      //     const cameraPosition = new THREE.Vector3();
+      //     camera.getWorldPosition(cameraPosition);
+      //     const cameraDirection = new THREE.Vector3();
+      //     camera.getWorldDirection(cameraDirection);
+      //     const distance = -3.5; // Adjust the distance of the cylinder from the camera
   
-          stepDir.position.copy(cameraPosition).add(cameraDirection.multiplyScalar(-distance));
-          stepDir.position.y = 0.2;
-        }
+      //     stepDir.position.copy(cameraPosition).add(cameraDirection.multiplyScalar(-distance));
+      //     stepDir.position.y = 0.2;
+      //   }
        
-      };
+      // };
 
 
       ///////////////////////////////////////////////////////////// ~Math FUNCTIONS /////////////////////////////////////////////////////////////
       
   
+      window.addEventListener("resize", () => {
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(window.innerWidth, window.innerHeight);
 
 
-}
+        smallCamera.aspect = (window.innerWidth/2) / (window.innerHeight/2);
+        smallCamera.updateProjectionMatrix();
+        smallRenderer.setSize(window.innerWidth/2, window.innerHeight/2);
+        updateSmallRendererPosition();
+      });
+        
+        
+      window.addEventListener('contextmenu', function (e) { 
+          // do something here... 
+          e.preventDefault(); 
+      }, false);
+
+
+
+  }
 
 }
 
