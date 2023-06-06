@@ -1,16 +1,31 @@
 import LoadFiles from './LoadFiles.js';
-
+import * as THREE from 'three';
 
 const loadFiles = new LoadFiles();
 const LoadLevel = {
-    async loadSceneObjects(scene, exhibits, desiredRoom) {
-        
-        const assetsData = getRoomAssets(exhibits, desiredRoom);
-        
-        const sceneObjects = await loadFiles.gltfloaderFunc(scene, assetsData);
-        // Now you can use the loaded sceneObjects for further processing or rendering
-        return sceneObjects
-    },
+  async loadSceneObjects(scene, exhibits, desiredRoom) {
+
+    const assetsData = getRoomAssets(exhibits, desiredRoom);
+
+    const sceneObjects = await loadFiles.gltfloaderFunc(scene, assetsData);
+
+    const mixerArray = [];
+
+    sceneObjects.forEach((object) => {
+      scene.add(object);
+
+      const mixer = new THREE.AnimationMixer(object);
+      mixerArray.push(mixer);
+      
+      object.animations.forEach((animationClip) => {
+        const action = mixer.clipAction(animationClip);
+        action.play();
+      });
+    });
+
+    // Now you can use the loaded sceneObjects for further processing or rendering
+    return { sceneObjects, mixers: mixerArray };
+  },
 };
 
 function getRoomAssets(exhibits, desiredRoom) {

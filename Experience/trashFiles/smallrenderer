@@ -1,0 +1,201 @@
+          
+        const smallRenderer = new THREE.WebGLRenderer({antialias: true});
+        smallRenderer.setSize(window.innerWidth / 2, window.innerHeight / 2);
+        
+        smallRenderer.domElement.classList.add("small-renderer");
+        smallRenderer.domElement.style.display = "none";
+        smallRenderer.toneMapping = THREE.ACESFilmicToneMapping;
+
+
+        // Apply styles to the renderer's container element
+        smallRenderer.domElement.style.border = "2px solid black";
+        smallRenderer.domElement.style.borderRadius = "1%";
+
+        // Append the small renderer's div to the desired parent element
+        const parentElement = document.getElementById("cursor-div");
+        parentElement.appendChild(smallRenderer.domElement);
+        //document.body.appendChild(smallRenderer.domElement);
+          
+        
+        // set up the smaller scene
+        const smallCamera = new THREE.PerspectiveCamera(
+        45,
+        window.innerWidth/2 / (window.innerHeight/2),
+        0.1,
+        50
+        );   
+        const smallScene = new THREE.Scene();
+
+
+        smallCamera.position.set(0, 0, 5);
+
+        smallScene.background = new THREE.Color( 0xb9b8ff);
+        const smallHemisphereLight = new THREE.HemisphereLight(0x5C59CE, 0xffffff, 0.8);
+        smallScene.add(smallHemisphereLight);
+                
+        // Create cube for small Renderer. To Delete. v~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        const viewModel_geometry = new THREE.BoxGeometry();
+        const viewModel_material = new THREE.MeshStandardMaterial({ color: 0xff0000 });
+        const viewModel = new THREE.Mesh(viewModel_geometry, viewModel_material);
+        viewModel.position.set(0, 0.4, 0);
+        viewModel.name = "active_exhibit";
+
+        let activeObjSmallRenderer = [];
+        activeObjSmallRenderer.push(viewModel);
+
+        smallScene.add(viewModel);
+                
+        const modelPointLight = new THREE.PointLight(0xffff00, 1, 100);
+        modelPointLight.position.set(-1, 1, 0);
+        smallScene.add(modelPointLight);
+    
+        if (intersects[i].object.name.includes("exhibit")) {
+        
+        if(smallRendererActiveOBJ.length > 0)
+        {
+            activeObjSmallRenderer.length = 0; // Empty the array
+        }
+        let sa_Exhibit = intersects[i].object;
+        removeExhibitObjectsFromScene(smallScene);
+        addExhibitToScene(sa_Exhibit, smallScene);
+        viewRenderer();
+        break;
+        }
+
+
+
+          
+      ///////////////////////////////////////////////////// Small Renderer functions ////////////////////////////////////////////////////////////////////
+      let sRModelRotAcceleration = 0;
+      const MAX_ROTATION = 3;
+      const ROTATION_PERIOD = 8;
+      
+
+      function updateSmallRendererPosition() {
+          if(decDefineTrue)
+          {
+              const mainRendererWidth = renderer.getSize().width;
+              const mainRendererHeight = renderer.getSize().height;
+              const smallRendererWidth = smallRenderer.getSize().width;
+              const smallRendererHeight = smallRenderer.getSize().height;
+              const smallRendererLeft = (mainRendererWidth - smallRendererWidth) / 2;
+              const smallRendererTop = (mainRendererHeight - smallRendererHeight) / 2;
+              smallRenderer.domElement.style.left = smallRendererLeft + "px";
+              smallRenderer.domElement.style.top = smallRendererTop + "px";
+          }
+          else
+          {
+              console.log("Model viewer renderer not defined");
+          }
+      }
+
+      updateSmallRendererPosition();
+
+
+      
+    function removeExhibitObjectsFromScene(screenToDeleteFrom) {
+      const objectsToRemove = [];
+    
+      screenToDeleteFrom.traverse((child) => {
+        if (child instanceof THREE.Object3D && child.name.includes("exhibit")) {
+          objectsToRemove.push(child);
+        }
+      });
+    
+      objectsToRemove.forEach((object) => {
+        screenToDeleteFrom.remove(object);
+      });
+    }
+
+
+    function addExhibitToScene(exhibit, smallRenderer) {
+      if (activeObjSmallRenderer.includes(exhibit)) {
+        return;
+      }
+  
+      // Create a new instance of the object's geometry and material for the second scene
+      const clonedGeometry = exhibit.geometry.clone();
+      const clonedMaterial = exhibit.material.clone();
+      const clonedObject = new THREE.Mesh(clonedGeometry, clonedMaterial);
+      clonedObject.position.set(0, 0.4, 0);
+      clonedObject.name = "active_exhibit";
+      
+      activeObjSmallRenderer.push(clonedObject);
+
+      smallRenderer.add(clonedObject);
+
+      //Camera rescaling based on dimensions of object
+      const boundingBox = new THREE.Box3().setFromObject(clonedObject);
+      const dimensions = boundingBox.getSize(new THREE.Vector3());
+      const diagonalDistance = dimensions.length();
+      
+      const desiredFov = 2 * Math.atan(diagonalDistance / (2 * smallCamera.position.z)) * (180 / Math.PI);
+      smallCamera.fov = desiredFov;
+      smallCamera.aspect = window.innerWidth/2 / (window.innerHeight/2);
+      smallCamera.updateProjectionMatrix();
+      
+      
+    }
+     
+    window.addEventListener("resize", () => {
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+
+
+        smallCamera.aspect = (window.innerWidth/2) / (window.innerHeight/2);
+        smallCamera.updateProjectionMatrix();
+        smallRenderer.setSize(window.innerWidth/2, window.innerHeight/2);
+        updateSmallRendererPosition();
+      });
+
+      
+    function viewRenderer()
+    {
+      if (smallRenderer.domElement.style.display === "block") {
+        viewRendererGSAPout();
+        gsapDirLightIntensityInit(renderer);
+        smallRenderer.domElement.style.display = "none";
+        
+      } else {
+        viewRendererGSAPin();
+        gsapDirLightIntensityTarget(renderer);
+        smallRenderer.domElement.style.display = "block";
+      }
+    }
+
+    function closeRenderer()
+    {
+      if (smallRenderer.domElement.style.display === "block") {
+        viewRendererGSAPout();
+        gsapDirLightIntensityInit(renderer);
+        smallRenderer.domElement.style.display = "none";
+      }
+    }
+    
+
+
+      
+      //////////////////////////////////////////////////// ~Small Renderer functions ////////////////////////////////////////////////////////////////////
+
+
+
+      //inside render function
+
+
+
+      
+
+      if(smallRenderer.domElement.style.display === "block" && activeObjSmallRenderer[0])
+      {   
+        sRModelRotAcceleration += delta;
+        const rotationAngle = Math.sin((sRModelRotAcceleration / ROTATION_PERIOD) * Math.PI * 2) * MAX_ROTATION;
+
+        activeObjSmallRenderer[0].rotation.set(rotationAngle / 10, rotationAngle / 10, 0);
+
+        // Reset rotation acceleration if necessary
+        if (sRModelRotAcceleration >= ROTATION_PERIOD) {
+            sRModelRotAcceleration -= ROTATION_PERIOD;
+        }
+        smallRenderer.render(smallScene, smallCamera);
+      }

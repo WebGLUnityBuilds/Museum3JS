@@ -56,22 +56,6 @@ export default class Experience{
         renderer.shadowMap.enabled = true;
         renderer.shadowMap.type = THREE.PCFShadowMap; 
 
-        const smallRenderer = new THREE.WebGLRenderer({antialias: true});
-        smallRenderer.setSize(window.innerWidth / 2, window.innerHeight / 2);
-        
-        smallRenderer.domElement.classList.add("small-renderer");
-        smallRenderer.domElement.style.display = "none";
-        smallRenderer.toneMapping = THREE.ACESFilmicToneMapping;
-
-
-        // Apply styles to the renderer's container element
-        smallRenderer.domElement.style.border = "2px solid black";
-        smallRenderer.domElement.style.borderRadius = "1%";
-
-        // Append the small renderer's div to the desired parent element
-        const parentElement = document.getElementById("cursor-div");
-        parentElement.appendChild(smallRenderer.domElement);
-        //document.body.appendChild(smallRenderer.domElement);
       
 
         const camera = new THREE.PerspectiveCamera(
@@ -83,23 +67,14 @@ export default class Experience{
         let cameraHeight  = 1.8;
         
 
-        // set up the smaller scene
-        const smallCamera = new THREE.PerspectiveCamera(
-            45,
-            window.innerWidth/2 / (window.innerHeight/2),
-            0.1,
-            50
-        );
         camera.position.set(0, 0, 0);
-        smallCamera.position.set(0, 0, 5);
           
         const scene = new THREE.Scene();
-        const smallScene = new THREE.Scene();
-
 
 
 
         const loadedScenes = new Map(); // Map to store the loaded scene objects
+        const roomMixersMap = new Map();
         let interactableObjects = [];
         
         const loadSceneObjects = async (desiredRoom) => {
@@ -113,35 +88,59 @@ export default class Experience{
         
           // Otherwise, load the scene objects
           return LoadLevel.loadSceneObjects(scene, assets, desiredRoom)
-            .then((loadedSceneObjects) => {
-              console.log("Loaded scene objects for room", desiredRoom, ":", loadedSceneObjects);
-              loadedScenes.set(desiredRoom, loadedSceneObjects); // Store the loaded scene objects in the map
-              return loadedSceneObjects; // Return the loaded scene objects
-            });
+          .then((result) => {
+            console.log("Loaded scene objects for room", desiredRoom, ":", result.sceneObjects);
+            loadedScenes.set(desiredRoom, result.sceneObjects); // Store the loaded scene objects in the map
+            roomMixersMap.set(desiredRoom, result.mixers);
+            console.log(roomMixersMap);
+
+            return result; // Return the loaded scene objects and mixers
+          });
         };
+        
+
+
         
         // Load and print the scene objects for room 0
         const desiredRoomInit = "0";
         loadSceneObjects(desiredRoomInit)
-          .then(() => {
-            findInteractableObjects(desiredRoomInit);
-          })
-          .catch((error) => {
-            console.log("Error loading scene objects for room", desiredRoomInit, ":", error);
-          });
-        
-          
-          
+        .then((result) => {
+          findInteractableObjects(desiredRoomInit);
+          playanimation(desiredRoomInit, result);
+        })
+        .catch((error) => {
+          console.log("Error loading scene objects for room", desiredRoomInit, ":", error);
+        });
+
+        function playanimation(desiredRoomInit, result) {
+          const mixers = roomMixersMap.get(desiredRoomInit);
+          if (mixers && mixers.length > 0) {
+            mixers.forEach((mixer) => {
+              console.log(mixer);
+              result.sceneObjects.forEach((object) => {
+                console.log(object.animations);
+                if (object.animations && object.animations.length > 0) {
+                  object.animations.forEach((animationClip) => {
+                    const action = mixer.clipAction(animationClip);
+                    action.play();
+                  });
+                }
+              });
+            });
+          }
+        }
+
+
 
 
         renderer.shadowMap.enabled = true;
 
         renderer.shadowMap.type = THREE.PCFSoftShadowMap; 
 
-        const ambientLight = new THREE.HemisphereLight(0xffffff, 0x000000, 1); // Parameters: sky color, ground color, intensity
+        const ambientLight = new THREE.HemisphereLight(0xffffff, 0x000000, 0.1); // Parameters: sky color, ground color, intensity
         scene.add(ambientLight);
 
-        const directionalLight = new THREE.DirectionalLight(0xffffff, 1.2);
+        const directionalLight = new THREE.DirectionalLight(0xffffff, 0.2);
         directionalLight.position.set(-6, 3, 5);
         directionalLight.castShadow = true;
         directionalLight.shadow.mapSize.width = 512;
@@ -154,10 +153,7 @@ export default class Experience{
         const helper = new THREE.CameraHelper( directionalLight.shadow.camera );
         // //scene.add( helper );
         
-        smallScene.background = new THREE.Color( 0xb9b8ff);
-        const smallHemisphereLight = new THREE.HemisphereLight(0x5C59CE, 0xffffff, 0.8);
-        smallScene.add(smallHemisphereLight);
-                
+   
 
 
         const hdrTexture = new URL('../heavyAssets/kloppenheim_06_puresky_4k.hdr', import.meta.url);
@@ -179,21 +175,7 @@ export default class Experience{
         //////////////////////////////// Load/Instantiate Files //////////////////////////////////////
 
 
-        // Create cube for small Renderer. To Delete. v~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-        const viewModel_geometry = new THREE.BoxGeometry();
-        const viewModel_material = new THREE.MeshStandardMaterial({ color: 0xff0000 });
-        const viewModel = new THREE.Mesh(viewModel_geometry, viewModel_material);
-        viewModel.position.set(0, 0.4, 0);
-        viewModel.name = "active_exhibit";
 
-        let activeObjSmallRenderer = [];
-        activeObjSmallRenderer.push(viewModel);
-
-        smallScene.add(viewModel);
-                
-        const modelPointLight = new THREE.PointLight(0xffff00, 1, 100);
-        modelPointLight.position.set(-1, 1, 0);
-        smallScene.add(modelPointLight);
 
         
 
@@ -318,10 +300,7 @@ export default class Experience{
           switch ( event.button ) {
               case 0:
                 mainRendererRaycaster(pointer, event);
-                if(smallRenderer.domElement.style.opacity >= 0.9)
-                {
-                  closeRenderer();
-                }
+                
                 break;
               case 1: 
               
@@ -386,30 +365,7 @@ export default class Experience{
 
       // ///////// ~Control Events //////////
 
-      
-      function viewRenderer()
-      {
-        if (smallRenderer.domElement.style.display === "block") {
-          viewRendererGSAPout();
-          gsapDirLightIntensityInit(renderer);
-          smallRenderer.domElement.style.display = "none";
-          
-        } else {
-          viewRendererGSAPin();
-          gsapDirLightIntensityTarget(renderer);
-          smallRenderer.domElement.style.display = "block";
-        }
-      }
 
-      function closeRenderer()
-      {
-        if (smallRenderer.domElement.style.display === "block") {
-          viewRendererGSAPout();
-          gsapDirLightIntensityInit(renderer);
-          smallRenderer.domElement.style.display = "none";
-        }
-      }
-      
     // // ///////////////////////////////////////////////////////////////////////
 
       
@@ -566,45 +522,43 @@ export default class Experience{
     //   });
     // }
 
-    function viewRendererGSAPin() {
-      if(smallRenderer.domElement.style.display === "none")
-      {
-        smallRenderer.domElement.style.opacity = 0;
-        gsap.fromTo(
-          smallRenderer.domElement,
-          { opacity: 0 },
-          { opacity: 1, duration: 1 } // Adjust the duration as desired
-        );
-      }
-    }
+    // function viewRendererGSAPin() {
+    //   if(smallRenderer.domElement.style.display === "none")
+    //   {
+    //     smallRenderer.domElement.style.opacity = 0;
+    //     gsap.fromTo(
+    //       smallRenderer.domElement,
+    //       { opacity: 0 },
+    //       { opacity: 1, duration: 1 } // Adjust the duration as desired
+    //     );
+    //   }
+    // }
 
     
-    function viewRendererGSAPout() {
-      if(smallRenderer.domElement.style.display === "block")
-      {
-        smallRenderer.domElement.style.opacity = 1;
-        gsap.fromTo(
-          smallRenderer.domElement,
-          { opacity: 1 },
-          { opacity: 0, duration: 1 } // Adjust the duration as desired
-        );
-      }
+    // function viewRendererGSAPout() {
+    //   if(smallRenderer.domElement.style.display === "block")
+    //   {
+    //     smallRenderer.domElement.style.opacity = 1;
+    //     gsap.fromTo(
+    //       smallRenderer.domElement,
+    //       { opacity: 1 },
+    //       { opacity: 0, duration: 1 } // Adjust the duration as desired
+    //     );
+    //   }
       
-    }
+    // }
       ///////////////////////////////////////////////////////////// ~END GSAP FUNCTIONS /////////////////////////////////////////////////////////////
       
       
         
 
        ///////////////////////////////////////////////////// Main Renderer functions ////////////////////////////////////////////////////////////////////
-       
-       
+     
+      let activeStep = "step1";
       const raycaster = new THREE.Raycaster();
-      let smallRendererActiveOBJ;
       function mainRendererRaycaster(pointer, event)
       {
         
-        const targetElement = event.target;
         raycaster.setFromCamera(pointer, camera);
        
        // const intersects = raycaster.intersectObjects([...interactableObjects/*, */]);
@@ -615,14 +569,7 @@ export default class Experience{
            console.log(intersects[i].object.name);
           if (intersects[i].object.name.includes("exhibit")) {
             
-            if(smallRendererActiveOBJ.length > 0)
-            {
-              activeObjSmallRenderer.length = 0; // Empty the array
-            }
-            let sa_Exhibit = intersects[i].object;
-            removeExhibitObjectsFromScene(smallScene);
-            addExhibitToScene(sa_Exhibit, smallScene);
-            viewRenderer();
+            
             break;
           }
 
@@ -670,6 +617,7 @@ export default class Experience{
           findObjectsToActDeact(desiredRoom);
           
           findInteractableObjects(desiredRoom); // Update the interactableObjects array for the current room
+          
           activeRoom = desiredRoom;
         } 
         else 
@@ -678,6 +626,8 @@ export default class Experience{
           loadSceneObjects(desiredRoom).then((loadedSceneObjects) => {
           findObjectsToActDeact(activeRoom);
           findInteractableObjects(desiredRoom); // Update the interactableObjects array for the current room
+         
+          
           activeRoom = desiredRoom;
           });
         }
@@ -716,6 +666,10 @@ export default class Experience{
         ) {
           interactableObjects.push(object); // Add the object to the interactableObjects array
         }
+        if(object.name.includes("step1") && object.visible)
+        {
+          moveCamera(object.position.x, camera.position.y, object.position.z);
+        }
       }
 
       if (object instanceof THREE.Group) {
@@ -753,6 +707,7 @@ export default class Experience{
         {
           object.visible = true;
         }
+        
       } 
 
       if (object instanceof THREE.Group) {
@@ -764,33 +719,21 @@ export default class Experience{
 
 
 
-      // function loadScene()
-      // {
-      //   cameraHeight = 1.65;
-        
-      //   sceneObjects[0].visible = true;
-      //   sceneObjects[1].visible = false;
-      //   //sceneObjects[2].visible = false;
 
-      //   if(mainRendererActiveOBJ.length > 0)
-      //   {
-      //     mainRendererActiveOBJ.length = 0; // Empty the array
-      //   }
-      //   mainRendererActiveOBJ.push(sceneObjects[0]);
 
-      //   const searchString = 'step1';
-      //   const initStep = traverseBHierarchy(mainRendererActiveOBJ[0], searchString);
-      //   activeStep = initStep;
-      //   if (initStep) {
-      //     let x = (initStep.position.x );
-      //     let z = (initStep.position.z );
-      //     moveCamera(x, 1,z);
-          
-      //   } else {
-      //     // Object "step1" not found
-      //     console.log("Object not found");
-      //   }
-      // }  
+    function findAnimationName(object, animationName) {
+      if (object.animations && object.animations.length > 0) {
+        for (let i = 0; i < object.animations.length; i++) {
+          const animationClip = object.animations[i];
+          if (animationClip.name === animationName) {
+            console.log(`Animation name for object '${object.name}': ${animationClip.name}`);
+            break;
+          }
+        }
+      }
+    }
+    
+
 
 
 
@@ -821,84 +764,6 @@ export default class Experience{
     
 
 
-      ///////////////////////////////////////////////////// Small Renderer functions ////////////////////////////////////////////////////////////////////
-      let sRModelRotAcceleration = 0;
-      const MAX_ROTATION = 3;
-      const ROTATION_PERIOD = 8;
-      
-
-      function updateSmallRendererPosition() {
-          if(decDefineTrue)
-          {
-              const mainRendererWidth = renderer.getSize().width;
-              const mainRendererHeight = renderer.getSize().height;
-              const smallRendererWidth = smallRenderer.getSize().width;
-              const smallRendererHeight = smallRenderer.getSize().height;
-              const smallRendererLeft = (mainRendererWidth - smallRendererWidth) / 2;
-              const smallRendererTop = (mainRendererHeight - smallRendererHeight) / 2;
-              smallRenderer.domElement.style.left = smallRendererLeft + "px";
-              smallRenderer.domElement.style.top = smallRendererTop + "px";
-          }
-          else
-          {
-              console.log("Model viewer renderer not defined");
-          }
-      }
-
-      updateSmallRendererPosition();
-
-
-      
-    function removeExhibitObjectsFromScene(screenToDeleteFrom) {
-      const objectsToRemove = [];
-    
-      screenToDeleteFrom.traverse((child) => {
-        if (child instanceof THREE.Object3D && child.name.includes("exhibit")) {
-          objectsToRemove.push(child);
-        }
-      });
-    
-      objectsToRemove.forEach((object) => {
-        screenToDeleteFrom.remove(object);
-      });
-    }
-
-
-    function addExhibitToScene(exhibit, smallRenderer) {
-      if (activeObjSmallRenderer.includes(exhibit)) {
-        return;
-      }
-  
-      // Create a new instance of the object's geometry and material for the second scene
-      const clonedGeometry = exhibit.geometry.clone();
-      const clonedMaterial = exhibit.material.clone();
-      const clonedObject = new THREE.Mesh(clonedGeometry, clonedMaterial);
-      clonedObject.position.set(0, 0.4, 0);
-      clonedObject.name = "active_exhibit";
-      
-      activeObjSmallRenderer.push(clonedObject);
-
-      smallRenderer.add(clonedObject);
-
-      //Camera rescaling based on dimensions of object
-      const boundingBox = new THREE.Box3().setFromObject(clonedObject);
-      const dimensions = boundingBox.getSize(new THREE.Vector3());
-      const diagonalDistance = dimensions.length();
-      
-      const desiredFov = 2 * Math.atan(diagonalDistance / (2 * smallCamera.position.z)) * (180 / Math.PI);
-      smallCamera.fov = desiredFov;
-      smallCamera.aspect = window.innerWidth/2 / (window.innerHeight/2);
-      smallCamera.updateProjectionMatrix();
-      
-      
-    }
-    
-    
-
-
-      
-      //////////////////////////////////////////////////// ~Small Renderer functions ////////////////////////////////////////////////////////////////////
-
       
 
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -916,35 +781,28 @@ export default class Experience{
       var clock = new THREE.Clock();
       
      
-      function animate(currentTime) {
+      function animate() {
+        requestAnimationFrame(animate);
 
         keyControls.update();
            
         var delta = clock.getDelta();
+        
+        
+        const mixers = roomMixersMap.get(activeRoom);
+        if (mixers) {
+          mixers.forEach((mixer) => {
+            mixer.update(delta); 
+          });
+        }
 
-
-        smallCamera.position.y = 0.4;
         camera.position.y = cameraHeight;
         //camera.fov = effectController.fov;
         camera.updateProjectionMatrix();
+        
         renderer.render(scene, camera);
 
-
-
-        if(smallRenderer.domElement.style.display === "block" && activeObjSmallRenderer[0])
-        {   
-          sRModelRotAcceleration += delta;
-          const rotationAngle = Math.sin((sRModelRotAcceleration / ROTATION_PERIOD) * Math.PI * 2) * MAX_ROTATION;
-
-          activeObjSmallRenderer[0].rotation.set(rotationAngle / 10, rotationAngle / 10, 0);
-
-          // Reset rotation acceleration if necessary
-          if (sRModelRotAcceleration >= ROTATION_PERIOD) {
-              sRModelRotAcceleration -= ROTATION_PERIOD;
-          }
-          smallRenderer.render(smallScene, smallCamera);
-        }
-
+        
 
 
 
@@ -954,8 +812,8 @@ export default class Experience{
         stats.update();
 
       }
-      
-      renderer.setAnimationLoop(animate);
+      animate();
+      //renderer.setAnimationLoop(animate);
       ////////////////////////////////////// ~Update Animate ////////////////////////////////////////////////////////
 
 
@@ -1001,10 +859,6 @@ export default class Experience{
         renderer.setSize(window.innerWidth, window.innerHeight);
 
 
-        smallCamera.aspect = (window.innerWidth/2) / (window.innerHeight/2);
-        smallCamera.updateProjectionMatrix();
-        smallRenderer.setSize(window.innerWidth/2, window.innerHeight/2);
-        updateSmallRendererPosition();
       });
         
         

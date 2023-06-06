@@ -1,4 +1,3 @@
-import * as THREE from 'three';
 import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader.js'
 import {GLTFLoader} from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { DRACOLoader } from "three/examples/jsm/loaders/DRACOLoader.js";
@@ -51,34 +50,31 @@ export default class LoadFiles {
         case 'gltf':
           data = await loadFile(url);
           loader = new GLTFLoader();
-          return loader.parse(data);
+          const gltf = await loader.parse(data);
+          return gltf.scene;
   
         case 'glb':
           data = await loadFile(url);
+          loader = new GLTFLoader();
           return new Promise((resolve, reject) => {
-            loader = new GLTFLoader();
             loader.parse(data, '', (gltf) => {
               resolve(gltf.scene);
             }, reject);
           });
 
         case 'glbDraco':
-        data = await loadFile(url);
-        return new Promise((resolve, reject) => {
-          
+          data = await loadFile(url);
           loader = new GLTFLoader();
-          let dracoLoader = new DRACOLoader(); // Create a new instance of the DRACOLoader
-
-        // or use dracoLoader.setDecoderPath('/draco/');
-          dracoLoader.setDecoderPath('https://www.gstatic.com/draco/versioned/decoders/1.5.6/'); // Set the path to the Draco decoder files
-          dracoLoader.setDecoderConfig({type: 'js'})
-
-          loader.setDRACOLoader(dracoLoader); // Set the DRACOLoader for the GLTFLoader
-
-          loader.parse(data, '', (gltf) => {
-            resolve(gltf.scene);
-          }, reject);
-        });
+          const dracoLoader = new DRACOLoader();
+          dracoLoader.setDecoderPath('https://www.gstatic.com/draco/versioned/decoders/1.5.6/');
+          dracoLoader.setDecoderConfig({ type: 'js' });
+          dracoLoader.preload();
+          loader.setDRACOLoader(dracoLoader);
+          return new Promise((resolve, reject) => {
+            loader.parse(data, '', (gltf) => {
+              resolve(gltf.scene);
+            }, reject);
+          });
 
   
         case 'fbx':
@@ -114,52 +110,9 @@ export default class LoadFiles {
             
 
       function handleLoadedObjects(objects) {
-        // const menuRoom = objects[0];
-        // menuRoom.position.set(0, 0, 0);
-
         
-        // traverseHierarchyAnim(menuRoom);
-
-        // const room1 = objects[1];
-        // room1.position.set(0, 0.1, 0);
-        // room1.name = 'room01';
-        // room1.visible = false;
-
-
-        // const MoveArrow = objects[2];
-        // MoveArrow.name = "movearrow";
-        // MoveArrow.position.set(0, 0.3, 0);
-
-        // rooms.push(menuRoom);
-        // rooms.push(room1);
-        // rooms.push(MoveArrow);
       }
 
-            
-
-      function traverseHierarchyAnim(object) {
-        if (object instanceof THREE.Mesh) {
-          // Check if the object's name contains "TAB" to determine if it has an animation
-          
-          if (object.name.toLowerCase().includes('tab')) {
-            // Create a mixer for the object
-            const mixer = new THREE.AnimationMixer(object);
-
-            // Play the animations of the object
-            object.animations.forEach((animationClip) => {
-              const action = mixer.clipAction(animationClip);
-              action.setLoop(THREE.LoopOnce);
-              action.play();
-            });
-          }
-        }
-
-        if (object.children.length > 0) {
-          object.children.forEach((child) => {
-            traverseHierarchyAnim(child);
-          });
-        }
-      }
   
       return allSceneObjects;
     } catch (error) {

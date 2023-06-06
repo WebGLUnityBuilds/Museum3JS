@@ -1,42 +1,3 @@
-// import * as THREE from 'three';
-
-
-// function handleTouchStart(event) {
-//     isMouseDown = true;
-//     previousMousePosition = {
-//       x: event.touches[0].clientX,
-//       y: event.touches[0].clientY
-//     };
-//   }
-  
-//   function handleTouchMove(event, camera) {
-//     if (isMouseDown) {
-//       const deltaMove = {
-//         x: previousMousePosition.x - event.touches[0].clientX,
-//         y: previousMousePosition.y - event.touches[0].clientY
-//       };
-  
-//       // Reverse controls
-//       rotationEuler.y += -deltaMove.x * rotationSpeed;
-//       rotationEuler.x += -deltaMove.y * rotationSpeed;
-  
-//       // Clamp the vertical rotation angle within the defined range
-//       rotationEuler.x = Math.max(minVerticalAngle, Math.min(maxVerticalAngle, rotationEuler.x));
-  
-//       camera.rotation.set(rotationEuler.x, rotationEuler.y, rotationEuler.z, 'YXZ');
-//     }
-  
-//     previousMousePosition = {
-//       x: event.touches[0].clientX,
-//       y: event.touches[0].clientY
-//     };
-//   }
-
-// export {
-//     handleTouchStart,
-//     handleTouchMove
-//   };
-
 import * as THREE from 'three';
 import { gsap } from 'gsap'; // Import the gsap library if not already imported
 
@@ -111,15 +72,12 @@ function handleTouchZoom(event, camera) {
     // Make sure the target zoom level stays within a reasonable range
     targetZoomLevel = Math.max(1, Math.min(2, targetZoomLevel));
 
-    // Create a GSAP animation to smoothly transition the zoom level
-    gsap.to(camera, {
-      duration: 0.5,
-      zoom: targetZoomLevel,
-      onUpdate: function () {
-        // Set the camera zoom
-        camera.updateProjectionMatrix();
-      }
-    });
+    // Calculate the new focal length based on the target zoom level
+    const newFocalLength = camera.getFocalLength() / targetZoomLevel;
+    // Set the new focal length for the camera
+    camera.setFocalLength(newFocalLength);
+    // Update the camera's projection matrix
+    camera.updateProjectionMatrix();
 
     previousDistance = distance;
   }
