@@ -10,16 +10,6 @@ export default assets = {
           type: "glbDraco",
           path: "./Models/Environment/Room00/MenuRoomMetNoAnimv2.glb"
         },
-        {
-          classification: "exhibit",
-          type: "glbDraco",
-          path: "./Models/Environment/Room00/RR.glb"
-        },
-        {
-          classification: "exhibit",
-          type: "glbDraco",
-          path: "./Models/Environment/Room00/glub.glb"
-        }
       ]
     },
     {

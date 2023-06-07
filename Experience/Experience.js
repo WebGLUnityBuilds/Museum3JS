@@ -24,12 +24,7 @@ import {
   handleMouseUp,
   handleMouseMove 
 } from './Controls/MouseControls.js';
-import {
-   handleTouchStart, 
-   handleTouchMove, 
-   handleTouchEnd, 
-   handleTouchZoom 
-  } from './Controls/TouchControls.js';
+import { setupTouchControls } from './/Controls/TouchControls.js';
 import handleRegularMouseScroll from './Controls/ZoomControls/regularMouseScroll.js';
 import handleAppleDeviceScroll from './Controls/ZoomControls/appleDeviceScroll.js';
 //Controls
@@ -237,12 +232,15 @@ export default class Experience{
       // Check if the device is a touchscreen
       const isTouchDevice = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0) || (navigator.msMaxTouchPoints > 0);
 
+      const rotationSpeed = 0.018;// Your desired rotation speed
+      const minVerticalAngle = Math.PI / 7;// Your desired minimum vertical angle
+      const maxVerticalAngle = -Math.PI / 7;// Your desired maximum vertical angle
       // Add event listeners based on device
       if (isTouchDevice) {
-        document.addEventListener('touchstart', event => handleTouchStart(event));
-        document.addEventListener('touchmove', event => handleTouchMove(event, camera));
-        document.addEventListener('touchend', handleTouchEnd);
-        document.addEventListener('touchmove', event => handleTouchZoom(event, camera));
+
+
+// Call the setupTouchControls function passing the necessary arguments
+setupTouchControls(camera, rotationSpeed, minVerticalAngle, maxVerticalAngle);
       } else {
         // Mouse controls listeners
         document.addEventListener('mousedown', handleMouseDown);

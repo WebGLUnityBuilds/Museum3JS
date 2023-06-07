@@ -1,25 +1,36 @@
-export function handleTouchStart(event) {
-  startX = event.touches[0].clientX;
-  startY = event.touches[0].clientY;
-  startCameraRotation = camera.rotation.y;
-}
+export function setupTouchControls(camera, rotationSpeed, minVerticalAngle, maxVerticalAngle) {
+  let isMouseDown = false;
+  let previousMousePosition = { x: 0, y: 0 };
+  const rotationEuler = { x: 0, y: 0, z: 0 };
 
-export function handleTouchMove(event, camera) {
-  var deltaX = event.touches[0].clientX - startX;
-  var deltaY = event.touches[0].clientY - startY;
+  document.addEventListener('touchstart', event => {
+    isMouseDown = true;
+    previousMousePosition = {
+      x: event.touches[0].clientX,
+      y: event.touches[0].clientY
+    };
+  });
 
-  // Calculate the rotation based on the touch movement
-  var rotationX = startCameraRotation + deltaX * 0.01;
-  var rotationY = camera.rotation.y + deltaY * 0.01;
+  document.addEventListener('touchmove', event => {
+    if (isMouseDown) {
+      const deltaMove = {
+        x: previousMousePosition.x - event.touches[0].clientX,
+        y: previousMousePosition.y - event.touches[0].clientY
+      };
 
-  // Set the new rotation values to the camera
-  camera.rotation.set(0, rotationY, 0);
-}
+      // Reverse controls
+      rotationEuler.y += -deltaMove.x * rotationSpeed;
+      rotationEuler.x += -deltaMove.y * rotationSpeed;
 
-export function handleTouchEnd() {
-  // Handle touch end event if needed
-}
+      // Clamp the vertical rotation angle within the defined range
+      rotationEuler.x = Math.max(minVerticalAngle, Math.min(maxVerticalAngle, rotationEuler.x));
 
-export function handleTouchZoom(event, camera) {
-  // Handle touch zoom event if needed
+      camera.rotation.set(rotationEuler.x, rotationEuler.y, rotationEuler.z, 'YXZ');
+    }
+
+    previousMousePosition = {
+      x: event.touches[0].clientX,
+      y: event.touches[0].clientY
+    };
+  });
 }
