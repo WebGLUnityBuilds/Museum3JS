@@ -180,8 +180,8 @@ z-index: 4000;
   /* Media query for smaller devices */
   @media screen and (max-width: 768px) {
     .arrow-container {
-      top: 65%; /* Adjust the distance from the bottom for smaller devices */
-      right: 5%; /* Adjust the distance from the right for smaller devices */
+      bottom: 30%; /* Adjust the distance from the bottom for smaller devices */
+      right: 30%; /* Adjust the distance from the right for smaller devices */
     }
     .right {
       transform: rotate(90deg);

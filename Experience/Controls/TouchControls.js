@@ -1,91 +1,25 @@
-import * as THREE from 'three';
-import { gsap } from 'gsap'; // Import the gsap library if not already imported
-
-// Variables for rotation control
-let isMouseDown = false;
-let previousMousePosition = {
-  x: 0,
-  y: 0
-};
-
-// Euler rotation
-const rotationSpeed = 0.0018 * window.devicePixelRatio; // Adjust the sensitivity factor as needed
-const rotationEuler = new THREE.Euler(0, 0, 0, 'YXZ');
-
-// Define the minimum and maximum vertical rotation angles in radians
-const minVerticalAngle = -Math.PI / 7; // 30 degrees looking down
-const maxVerticalAngle = Math.PI / 7; // 30 degrees looking up
-
-// Variables for zoom control
-let targetZoomLevel = 0.5; // set the initial zoom level
-let previousDistance = 0; // store the previous touch distance for zoom calculation
-
-function handleTouchStart(event) {
-  event.preventDefault(); // Prevent default touch behavior
-  isMouseDown = true;
-  previousMousePosition = {
-    x: event.touches[0].clientX,
-    y: event.touches[0].clientY
-  };
+export function handleTouchStart(event) {
+  startX = event.touches[0].clientX;
+  startY = event.touches[0].clientY;
+  startCameraRotation = camera.rotation.y;
 }
 
-function handleTouchMove(event, camera) {
-  event.preventDefault(); // Prevent default touch behavior
-  if (isMouseDown) {
-    const deltaMove = {
-      x: previousMousePosition.x - event.touches[0].clientX,
-      y: previousMousePosition.y - event.touches[0].clientY
-    };
+export function handleTouchMove(event, camera) {
+  var deltaX = event.touches[0].clientX - startX;
+  var deltaY = event.touches[0].clientY - startY;
 
-    // Reverse controls
-    rotationEuler.y += -deltaMove.x * rotationSpeed;
-    rotationEuler.x += -deltaMove.y * rotationSpeed;
+  // Calculate the rotation based on the touch movement
+  var rotationX = startCameraRotation + deltaX * 0.01;
+  var rotationY = camera.rotation.y + deltaY * 0.01;
 
-    // Clamp the vertical rotation angle within the defined range
-    rotationEuler.x = Math.max(minVerticalAngle, Math.min(maxVerticalAngle, rotationEuler.x));
-
-    camera.rotation.set(rotationEuler.x, rotationEuler.y, rotationEuler.z, 'YXZ');
-  }
-
-  previousMousePosition = {
-    x: event.touches[0].clientX,
-    y: event.touches[0].clientY
-  };
+  // Set the new rotation values to the camera
+  camera.rotation.set(0, rotationY, 0);
 }
 
-function handleTouchEnd() {
-  isMouseDown = false;
+export function handleTouchEnd() {
+  // Handle touch end event if needed
 }
 
-function handleTouchZoom(event, camera) {
-  const touch1 = event.touches[0];
-  const touch2 = event.touches[1];
-
-  if (touch1 && touch2) {
-    const distance = Math.sqrt(
-      Math.pow(touch2.clientX - touch1.clientX, 2) +
-      Math.pow(touch2.clientY - touch1.clientY, 2)
-    );
-
-    // Adjust the target zoom level based on the pinch gesture
-    targetZoomLevel += (distance - previousDistance) * -0.001;
-    // Make sure the target zoom level stays within a reasonable range
-    targetZoomLevel = Math.max(1, Math.min(2, targetZoomLevel));
-
-    // Calculate the new focal length based on the target zoom level
-    const newFocalLength = camera.getFocalLength() / targetZoomLevel;
-    // Set the new focal length for the camera
-    camera.setFocalLength(newFocalLength);
-    // Update the camera's projection matrix
-    camera.updateProjectionMatrix();
-
-    previousDistance = distance;
-  }
+export function handleTouchZoom(event, camera) {
+  // Handle touch zoom event if needed
 }
-
-export {
-  handleTouchStart,
-  handleTouchMove,
-  handleTouchEnd,
-  handleTouchZoom
-};

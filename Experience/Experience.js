@@ -2,11 +2,21 @@ import * as THREE from 'three';
 import gsap from 'gsap';
 import Stats from 'three/addons/libs/stats.module.js';
 
-import { RGBELoader } from  'three/examples/jsm/loaders/RGBELoader.js';
 
 
+// Scene Settings
+import createRenderer from './SceneManagement/Renderer.js'; // Has The hdr, affects lighting settings with toneMapping property
+import { setupLights } from './SceneManagement/Lighting/BaseLighting.js';
+// Scene Settings
+
+
+// Load Assets
 import LoadLevel from './LoadLevel.js';
 import assets from './AssetsManagement/EnvironmentFiles.js';
+// Load Assets
+
+
+//Controls
 import { keyboardControls } from './Controls/KeyboardControls.js';
 import { screenControls } from './Controls/ScreenControls.js';
 import { 
@@ -15,61 +25,51 @@ import {
   handleMouseMove 
 } from './Controls/MouseControls.js';
 import {
-  handleTouchStart,
-  handleTouchMove,
-  handleTouchEnd, 
-  handleTouchZoom
-} from './Controls/TouchControls.js';
+   handleTouchStart, 
+   handleTouchMove, 
+   handleTouchEnd, 
+   handleTouchZoom 
+  } from './Controls/TouchControls.js';
 import handleRegularMouseScroll from './Controls/ZoomControls/regularMouseScroll.js';
 import handleAppleDeviceScroll from './Controls/ZoomControls/appleDeviceScroll.js';
+//Controls
 
 
-//import ClickEvents from './ClickEvents.js'
+
 
 
 export default class Experience{
     constructor(canvas){
         this.canvas = canvas;
-        //this.LoadFiles = new LoadFiles();
         
-        //this.ClickEvents = new ClickEvents(canvas);
-
         this.init();
-
-
     }
    
       
         
     init(){
-        let decDefineTrue = false;
-       
-
-
-
-        const renderer = new THREE.WebGLRenderer({antialias: true});
-
-        renderer.setPixelRatio( window.devicePixelRatio ); // *0.8;
-        renderer.setSize(window.innerWidth, window.innerHeight);
-
-        document.body.appendChild(renderer.domElement);
-        renderer.shadowMap.enabled = true;
-        renderer.shadowMap.type = THREE.PCFShadowMap; 
-
       
 
-        const camera = new THREE.PerspectiveCamera(
-          50,
-          window.innerWidth / window.innerHeight,
-          0.1,
-          100
-        );
-        let cameraHeight  = 1.8;
-        
 
-        camera.position.set(0, 0, 0);
-          
-        const scene = new THREE.Scene();
+      const scene = new THREE.Scene();
+                             
+                            
+      const renderer = createRenderer(scene);
+      
+      const camera = new THREE.PerspectiveCamera(
+        50,
+        window.innerWidth / window.innerHeight,
+        0.1,
+        100
+      );
+      let cameraHeight  = 1.8;
+      
+
+      camera.position.set(0, 0, 0);
+        
+      setupLights(scene);
+
+
 
 
 
@@ -130,45 +130,6 @@ export default class Experience{
           }
         }
 
-
-
-
-        renderer.shadowMap.enabled = true;
-
-        renderer.shadowMap.type = THREE.PCFSoftShadowMap; 
-
-        const ambientLight = new THREE.HemisphereLight(0xffffff, 0x000000, 0.1); // Parameters: sky color, ground color, intensity
-        scene.add(ambientLight);
-
-        const directionalLight = new THREE.DirectionalLight(0xffffff, 0.2);
-        directionalLight.position.set(-6, 3, 5);
-        directionalLight.castShadow = true;
-        directionalLight.shadow.mapSize.width = 512;
-        directionalLight.shadow.mapSize.height = 512;
-        directionalLight.shadow.camera.near = 0.5;
-        directionalLight.shadow.camera.far = 500;
-        scene.add(directionalLight);
-
-
-        const helper = new THREE.CameraHelper( directionalLight.shadow.camera );
-        // //scene.add( helper );
-        
-   
-
-
-        const hdrTexture = new URL('../heavyAssets/kloppenheim_06_puresky_4k.hdr', import.meta.url);
-        renderer.outputColorSpace = THREE.SRGBColorSpace;
-        renderer.toneMapping = THREE.ACESFilmicToneMapping;
-        renderer.toneMappingExposure = 1.8;
-          
-
-        const loader = new RGBELoader();
-        loader.load(hdrTexture, function(texture){
-          texture.mapping = THREE.EquirectangularReflectionMapping;
-          scene.background = texture;
-          scene.environment = texture;
-        });                                
-                            
 
 
 
@@ -256,80 +217,7 @@ export default class Experience{
         ///////////////////////////////////////////////////////////////// START EVENTS PC/LAPTOP /////////////////////////////////////////////////////////////////
       
 
-        const pointer = new THREE.Vector2();
-        
-
-        function listAllEventListeners() {
-          const allElements = Array.prototype.slice.call(document.querySelectorAll('*'));
-          allElements.push(document);
-          allElements.push(window);
-        
-          const types = [];
-        
-          for (let ev in window) {
-            if (/^on/.test(ev)) types[types.length] = ev;
-          }
-        
-          let elements = [];
-          for (let i = 0; i < allElements.length; i++) {
-            const currentElement = allElements[i];
-            for (let j = 0; j < types.length; j++) {
-              if (typeof currentElement[types[j]] === 'function') {
-                elements.push({
-                  "node": currentElement,
-                  "type": types[j],
-                  "func": currentElement[types[j]].toString(),
-                });
-              }
-            }
-          }
-        
-          return elements.sort(function(a,b) {
-            return a.type.localeCompare(b.type);
-          });
-        }
-
-
-      function onClick( event ) {
-
-        pointer.x = (event.clientX / window.innerWidth) * 2 - 1;
-        pointer.y = -(event.clientY / window.innerHeight) * 2 + 1;
-
-        document.onpointerdown = function(event) {
-
-          switch ( event.button ) {
-              case 0:
-                mainRendererRaycaster(pointer, event);
-                
-                break;
-              case 1: 
-              
-                console.log("Active Drawcalls:", renderer.info.render.calls);
-                console.log("Number of Vertices:", renderer.info.render.vertices);
-                console.log("Number of Triangles :", renderer.info.render.triangles);
-                console.log("Geometries in Memory", renderer.info.memory.geometries);
-                console.log("Textures in Memory", renderer.info.memory.textures);
-                console.log("Programs(Shaders) in Memory", renderer.info.programs.length);
-                console.table(listAllEventListeners());
-
-                console.log("------------------------------------------");
-                break;
-              case 2: 
-                break;
-        }
-        
-      }
-      
-      if (!timer) {
-        timer = setTimeout(() => {
-          // Reset the timer after x seconds 1000 = 1 second.
-          timer = null;
-        }, 1000);
-      }
-    
-      }
-  
-      ////////////////////////////////////////////////////////////////////////////////
+       
       
       ///////// Control Events ////////////
       
@@ -366,12 +254,7 @@ export default class Experience{
       // ///////// ~Control Events //////////
 
 
-    // // ///////////////////////////////////////////////////////////////////////
-
-      
-      
-      
-
+      /// Button Navigation Events
 
 
     // Get the navigation menu items of the specific menu
@@ -422,8 +305,6 @@ export default class Experience{
     }
 
 
-    //////////////////// Event Calls ///////////////////////
-    
 
     ///////////////////////////////////////////////////////////////// ~END EVENTS /////////////////////////////////////////////////////////////////
                                                                     //////////
@@ -554,7 +435,85 @@ export default class Experience{
 
        ///////////////////////////////////////////////////// Main Renderer functions ////////////////////////////////////////////////////////////////////
      
+       const pointer = new THREE.Vector2();
+        
+
+       function listAllEventListeners() {
+         const allElements = Array.prototype.slice.call(document.querySelectorAll('*'));
+         allElements.push(document);
+         allElements.push(window);
+       
+         const types = [];
+       
+         for (let ev in window) {
+           if (/^on/.test(ev)) types[types.length] = ev;
+         }
+       
+         let elements = [];
+         for (let i = 0; i < allElements.length; i++) {
+           const currentElement = allElements[i];
+           for (let j = 0; j < types.length; j++) {
+             if (typeof currentElement[types[j]] === 'function') {
+               elements.push({
+                 "node": currentElement,
+                 "type": types[j],
+                 "func": currentElement[types[j]].toString(),
+               });
+             }
+           }
+         }
+       
+         return elements.sort(function(a,b) {
+           return a.type.localeCompare(b.type);
+         });
+       }
+
+
+     function onClick( event ) {
+
+       pointer.x = (event.clientX / window.innerWidth) * 2 - 1;
+       pointer.y = -(event.clientY / window.innerHeight) * 2 + 1;
+
+       document.onpointerdown = function(event) {
+
+         switch ( event.button ) {
+             case 0:
+               mainRendererRaycaster(pointer, event);
+               break;
+             case 1: 
+             
+               console.log("Active Drawcalls:", renderer.info.render.calls);
+               console.log("Number of Vertices:", renderer.info.render.vertices);
+               console.log("Number of Triangles :", renderer.info.render.triangles);
+               console.log("Geometries in Memory", renderer.info.memory.geometries);
+               console.log("Textures in Memory", renderer.info.memory.textures);
+               console.log("Programs(Shaders) in Memory", renderer.info.programs.length);
+               console.table(listAllEventListeners());
+
+               console.log("------------------------------------------");
+               break;
+             case 2: 
+               break;
+       }
+       
+     }
+     
+     if (!timer) {
+       timer = setTimeout(() => {
+         // Reset the timer after x seconds 1000 = 1 second.
+         timer = null;
+       }, 1000);
+     }
+   
+     }
+ 
+
+
+
+
+
       let activeStep = "step1";
+      let isZoomedIn = false;
       const raycaster = new THREE.Raycaster();
       function mainRendererRaycaster(pointer, event)
       {
@@ -568,7 +527,15 @@ export default class Experience{
         {
            console.log(intersects[i].object.name);
           if (intersects[i].object.name.includes("exhibit")) {
-            
+            if (!isZoomedIn) {
+              // Zoom in
+              moveCameraToObject(intersects[i].object);
+              isZoomedIn = true;
+            } else {
+              // Zoom out
+              restoreCamera();
+              isZoomedIn = false;
+            }
             
             break;
           }
@@ -601,9 +568,51 @@ export default class Experience{
       
       }
 
+      let initialCameraPosition;
+      let initialZoom;
+      // Function to move the camera close to the object and adjust zoom
+      function moveCameraToObject(object) {
+        // Store the initial camera position and zoom
+        initialCameraPosition = camera.position.clone();
+        initialZoom = camera.zoom;
+
+        // Calculate the desired position and zoom level
+        const boundingBox = new THREE.Box3().setFromObject(object);
+        const center = boundingBox.getCenter(new THREE.Vector3());
+        const size = boundingBox.getSize(new THREE.Vector3());
+        const diagonalDistance = size.length();
+        const distance = diagonalDistance / Math.tan(Math.PI * camera.fov / 360);
+
+        // Move the camera closer to the object
+        const targetPosition = center.clone().add(new THREE.Vector3(0, 0, distance));
+        camera.position.copy(targetPosition);
+
+        // Adjust zoom to make the object appear the same size regardless of proportions
+        const desiredZoom = initialZoom * (diagonalDistance / 2);
+        camera.zoom = desiredZoom;
+
+        // Update camera settings
+        camera.updateProjectionMatrix();
+      }
+
+
+      // Function to restore the camera to its initial position and zoom
+      function restoreCamera() {
+        camera.position.copy(initialCameraPosition);
+        camera.zoom = initialZoom;
+        camera.updateProjectionMatrix();
+      }
 
 
 
+
+
+      
+
+
+
+
+      // Load Senes System ///
 
       let activeRoom = "0";
       // Function to handle switching to a different room
@@ -718,20 +727,17 @@ export default class Experience{
     }
 
 
-
-
-
-    function findAnimationName(object, animationName) {
-      if (object.animations && object.animations.length > 0) {
-        for (let i = 0; i < object.animations.length; i++) {
-          const animationClip = object.animations[i];
-          if (animationClip.name === animationName) {
-            console.log(`Animation name for object '${object.name}': ${animationClip.name}`);
-            break;
-          }
-        }
-      }
-    }
+    // function findAnimationName(object, animationName) {
+    //   if (object.animations && object.animations.length > 0) {
+    //     for (let i = 0; i < object.animations.length; i++) {
+    //       const animationClip = object.animations[i];
+    //       if (animationClip.name === animationName) {
+    //         console.log(`Animation name for object '${object.name}': ${animationClip.name}`);
+    //         break;
+    //       }
+    //     }
+    //   }
+    // }
     
 
 
@@ -796,17 +802,22 @@ export default class Experience{
           });
         }
 
+
+        if(camera.position.x > 20){
+          camera.position.x = 20;
+        } 
+        if(camera.position.z > 20){
+          camera.position.z = 20;
+        } 
         camera.position.y = cameraHeight;
+
+
         //camera.fov = effectController.fov;
         camera.updateProjectionMatrix();
-        
         renderer.render(scene, camera);
 
         
 
-
-
-        decDefineTrue = true;
         
         //updatGrabablePosition();
         stats.update();
