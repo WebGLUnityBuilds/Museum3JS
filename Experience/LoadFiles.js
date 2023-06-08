@@ -7,6 +7,7 @@ import { DRACOLoader } from "three/examples/jsm/loaders/DRACOLoader.js";
 export default class LoadFiles {
   constructor() {}
 
+  
   async gltfloaderFunc(scene, assetsData) {
     function loadFile(url) {
       return new Promise((resolve, reject) => {
@@ -105,12 +106,12 @@ export default class LoadFiles {
       });
   
       handleLoadedObjects(allSceneObjects);
-      hideProgressBar();
+      
   
             
 
       function handleLoadedObjects(objects) {
-        
+        hideProgressBar();
       }
 
   

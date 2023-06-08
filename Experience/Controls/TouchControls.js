@@ -1,36 +1,41 @@
-export function setupTouchControls(camera, rotationSpeed, minVerticalAngle, maxVerticalAngle) {
-  let isMouseDown = false;
-  let previousMousePosition = { x: 0, y: 0 };
-  const rotationEuler = { x: 0, y: 0, z: 0 };
+const rotationSpeed = 0.0018;
+const minVerticalAngle = -Math.PI / 7;
+const maxVerticalAngle = Math.PI / 7;
 
-  document.addEventListener('touchstart', event => {
-    isMouseDown = true;
-    previousMousePosition = {
-      x: event.touches[0].clientX,
-      y: event.touches[0].clientY
+let isMouseDown = false;
+let previousMousePosition = { x: 0, y: 0 };
+
+function handleTouchStart(event) {
+  isMouseDown = true;
+  previousMousePosition = {
+    x: event.touches[0].clientX,
+    y: event.touches[0].clientY
+  };
+}
+
+function handleTouchMove(event, camera) {
+  if (isMouseDown) {
+    const deltaMove = {
+      x: event.touches[0].clientX - previousMousePosition.x,
+      y: event.touches[0].clientY - previousMousePosition.y
     };
-  });
 
-  document.addEventListener('touchmove', event => {
-    if (isMouseDown) {
-      const deltaMove = {
-        x: previousMousePosition.x - event.touches[0].clientX,
-        y: previousMousePosition.y - event.touches[0].clientY
-      };
+    camera.rotation.y += deltaMove.x * rotationSpeed;
+    camera.rotation.x += deltaMove.y * rotationSpeed;
 
-      // Reverse controls
-      rotationEuler.y += -deltaMove.x * rotationSpeed;
-      rotationEuler.x += -deltaMove.y * rotationSpeed;
+    camera.rotation.x = Math.max(minVerticalAngle, Math.min(maxVerticalAngle, camera.rotation.x));
 
-      // Clamp the vertical rotation angle within the defined range
-      rotationEuler.x = Math.max(minVerticalAngle, Math.min(maxVerticalAngle, rotationEuler.x));
+    camera.rotation.order = 'YXZ';
+    camera.rotation.set(camera.rotation.x, camera.rotation.y, 0);
+  }
 
-      camera.rotation.set(rotationEuler.x, rotationEuler.y, rotationEuler.z, 'YXZ');
-    }
+  previousMousePosition = {
+    x: event.touches[0].clientX,
+    y: event.touches[0].clientY
+  };
+}
 
-    previousMousePosition = {
-      x: event.touches[0].clientX,
-      y: event.touches[0].clientY
-    };
-  });
+export function setupTouchControls(camera) {
+  document.addEventListener('touchstart', handleTouchStart);
+  document.addEventListener('touchmove', event => handleTouchMove(event, camera));
 }

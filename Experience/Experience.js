@@ -24,10 +24,11 @@ import {
   handleMouseUp,
   handleMouseMove 
 } from './Controls/MouseControls.js';
-import { setupTouchControls } from './/Controls/TouchControls.js';
+import { setupTouchControls } from './Controls/TouchControls.js';
 import handleRegularMouseScroll from './Controls/ZoomControls/regularMouseScroll.js';
 import handleAppleDeviceScroll from './Controls/ZoomControls/appleDeviceScroll.js';
-//Controls
+
+
 
 
 
@@ -71,6 +72,7 @@ export default class Experience{
         const loadedScenes = new Map(); // Map to store the loaded scene objects
         const roomMixersMap = new Map();
         let interactableObjects = [];
+   
         
         const loadSceneObjects = async (desiredRoom) => {
           console.log("Loading scene objects for room", desiredRoom);
@@ -216,38 +218,31 @@ export default class Experience{
       
       ///////// Control Events ////////////
       
+// Check the platform and apply the appropriate event listener
+if (/Macintosh|iPad|iPhone|iPod/.test(navigator.userAgent)) {
+  // Apple device scroll event listener
+  document.addEventListener("wheel", (event) => handleAppleDeviceScroll(event, camera));
+} else {
+  // Regular mouse scroll event listener
+  document.addEventListener("wheel", (event) => handleRegularMouseScroll(event, camera));
+}
 
-      // Check the platform and apply the appropriate event listener
-      if (/Macintosh|iPad|iPhone|iPod/.test(navigator.userAgent)) {
-        // Apple device scroll event listener
-        document.addEventListener("wheel", (event) => handleAppleDeviceScroll(event, camera));
-      } else {
-        // Regular mouse scroll event listener
-        document.addEventListener("wheel", (event) => handleRegularMouseScroll(event, camera));
-      }
+// Check if the device is a touchscreen
+const isTouchDevice = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0) || (navigator.msMaxTouchPoints > 0);
 
-      const keyControls = keyboardControls(camera);
-      screenControls(camera);
+// Add event listeners based on device
+if (isTouchDevice) {
+  setupTouchControls(camera);
+} else {
+  // Mouse controls listeners
+  document.addEventListener('mousedown', handleMouseDown);
+  document.addEventListener('mouseup', handleMouseUp);
+  document.addEventListener('mousemove', event => handleMouseMove(event, camera));
+}
 
-      // Check if the device is a touchscreen
-      const isTouchDevice = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0) || (navigator.msMaxTouchPoints > 0);
+const keyControls = keyboardControls(camera);
+screenControls(camera);
 
-      const rotationSpeed = 0.018;// Your desired rotation speed
-      const minVerticalAngle = Math.PI / 7;// Your desired minimum vertical angle
-      const maxVerticalAngle = -Math.PI / 7;// Your desired maximum vertical angle
-      // Add event listeners based on device
-      if (isTouchDevice) {
-
-
-// Call the setupTouchControls function passing the necessary arguments
-setupTouchControls(camera, rotationSpeed, minVerticalAngle, maxVerticalAngle);
-      } else {
-        // Mouse controls listeners
-        document.addEventListener('mousedown', handleMouseDown);
-        document.addEventListener('mouseup', handleMouseUp);
-        document.addEventListener('mousemove', event => handleMouseMove(event, camera));
-      }
-                  
 
       // ///////// ~Control Events //////////
 
