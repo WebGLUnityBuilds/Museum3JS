@@ -49,7 +49,7 @@ a{
   position: absolute;
   top: 50%;
   height: 2px;
-  background: #858585;
+  background: #484e31;
 }
 
 
@@ -60,7 +60,7 @@ a{
   transform: translate(-50%, -50%);
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.8);
+  background-color: rgba(131, 134, 116, 0.911);
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -70,16 +70,16 @@ a{
 #progress-bar {
   width: 50%;
   margin-top: 0.5%;
-  height: 2%;
+  height: 1%;
 }
 
 /* For Firefox */
 progress::-moz-progress-bar {
   /* Permalink - use to edit and share this gradient: https://colorzilla.com/gradient-editor/#b78628+0,fcc201+100 */
-  background: #bd2727; /* Old browsers */
-  background: -moz-linear-gradient(left,  #bd2727 0%, #bd2727 100%); /* FF3.6-15 */
-  background: -webkit-linear-gradient(left,  #b78628 0%,#bd2727 100%); /* Chrome10-25,Safari5.1-6 */
-  background: linear-gradient(to right,  #bd2727 0%,#bd2727 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+  background: #7cbd27; /* Old browsers */
+  background: -moz-linear-gradient(left,  #7cbd27 0%, #7cbd27 100%); /* FF3.6-15 */
+  background: -webkit-linear-gradient(left,  #b78628 0%,#7cbd27 100%); /* Chrome10-25,Safari5.1-6 */
+  background: linear-gradient(to right,  #7cbd27 0%,#7cbd27 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
   filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#b78628', endColorstr='#fcc201',GradientType=1 ); /* IE6-9 */
   border-radius: 10px;
 }
@@ -87,10 +87,10 @@ progress::-moz-progress-bar {
 /* For Chrome or Safari */
 progress::-webkit-progress-value {
  /* Permalink - use to edit and share this gradient: https://colorzilla.com/gradient-editor/#b78628+0,fcc201+100 */
-  background: #bd2727; /* Old browsers */
-  background: -moz-linear-gradient(left,  #bd2727 0%, #bd2727 100%); /* FF3.6-15 */
-  background: -webkit-linear-gradient(left,  #bd2727 0%,#bd2727 100%); /* Chrome10-25,Safari5.1-6 */
-  background: linear-gradient(to right,  #bd2727 0%,#bd2727 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+  background: #7cbd27; /* Old browsers */
+  background: -moz-linear-gradient(left,  #7cbd27 0%, #7cbd27 100%); /* FF3.6-15 */
+  background: -webkit-linear-gradient(left,  #7cbd27 0%,#7cbd27 100%); /* Chrome10-25,Safari5.1-6 */
+  background: linear-gradient(to right,  #7cbd27 0%,#7cbd27 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
   filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#b78628', endColorstr='#fcc201',GradientType=1 ); /* IE6-9 */
   border-radius: 10px;
 }
@@ -102,11 +102,11 @@ progress::-webkit-progress-bar {
 /* For IE10 */
 progress {
   /* Permalink - use to edit and share this gradient: https://colorzilla.com/gradient-editor/#b78628+0,fcc201+100 */
-  background: #bd2727; /* Old browsers */
-  background: -moz-linear-gradient(left,  #bd2727 0%, #fcc201 100%); /* FF3.6-15 */
-  background: -webkit-linear-gradient(left,  #bd2727 0%,#fcc201 100%); /* Chrome10-25,Safari5.1-6 */
-  background: linear-gradient(to right,  #bd2727 0%,#fcc201 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
-  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#bd2727', endColorstr='#fcc201',GradientType=1 ); /* IE6-9 */
+  background: #7cbd27; /* Old browsers */
+  background: -moz-linear-gradient(left,  #7cbd27 0%, #fcc201 100%); /* FF3.6-15 */
+  background: -webkit-linear-gradient(left,  #7cbd27 0%,#fcc201 100%); /* Chrome10-25,Safari5.1-6 */
+  background: linear-gradient(to right,  #7cbd27 0%,#fcc201 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#7cbd27', endColorstr='#fcc201',GradientType=1 ); /* IE6-9 */
   border-radius: 10px;
 }
 
@@ -122,7 +122,7 @@ label {
   top: 0;
   height: 100%;
   width: 100%;
-  transition: all .33s ease;
+  transition: all .2s ease;
 }
 
 
@@ -140,20 +140,22 @@ h1 {
   margin: 0 auto;
   text-align: center;
 } */
-.button img {
+.box-button.info-button > img {
   width: 3vw;
   height: 3vw;
 }
 .box {
   position: fixed;
-  left: -90%;
+  left: -89%;
   right: 0;
   bottom: 5%;
-  text-align: center;
+  text-align: left;
+  display: flex;
+  justify-content: center;
 }
 
-.button {
-  padding: 0%;
+.box-button {
+  padding: 0.5%;
   color: #fff;
   border-radius: 100%;
   text-decoration: none;
@@ -161,8 +163,8 @@ h1 {
   transition: all 0.3s ease-out;
 }
 
-.button:hover {
-  background: #d80606;
+.box-button:hover {
+  background: rgba(233, 66, 66, 0.363);
 }
 
 .overlay {
@@ -221,24 +223,37 @@ h1 {
 
 @media screen and (max-width: 768px) {
   .box {
-    width: 70%;
+    width: 20%;
   }
 
-  .popup {
-    width: 70%;
+  #popup1 {
+    width: 20%;
+  }
+  #popup1 .content p {
+    font-size: 2px; /* Adjust the font size to your desired value */
   }
   .arrow {
     width: 10vw;
     height: 10vw;
-    border-top-width: 3vw;
-    border-right-width: 3vw;
-    box-shadow: 1.5vw 0 0 lightgray;
+    border-top-width: 2vw;
+    border-right-width: 2vw;
   }
 }
 
 @media screen and (max-width: 480px) {
+  .box {
+    text-align: center;
+  }
   
-  .popup {
+  .box-button.info-button img {
+    max-width: 100%;
+    max-height: 100%;
+  }
+  
+  #popup1 .content p {
+    font-size: 12px; /* Adjust the font size to your desired value */
+  }
+  #popup1 {
     width: 90%;
     height: 90%;
   }
