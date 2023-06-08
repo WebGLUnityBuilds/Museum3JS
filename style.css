@@ -232,12 +232,6 @@ h1 {
   #popup1 .content p {
     font-size: 2px; /* Adjust the font size to your desired value */
   }
-  .arrow {
-    width: 10vw;
-    height: 10vw;
-    border-top-width: 2vw;
-    border-right-width: 2vw;
-  }
 }
 
 @media screen and (max-width: 480px) {

@@ -16,6 +16,21 @@ const createRenderer = (scene) => {
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
   renderer.toneMappingExposure = 1.2;
 
+
+
+
+  // If you want to check display if supports hdri use this code.
+  // also need replicate of all assets with metallic property set close to 0.
+  // Lighting settings might need tweaking too.
+  
+  // console.log("SDR:", window.matchMedia("(dynamic-range: standard)").matches)
+  // console.log("HDR:", window.matchMedia("(dynamic-range: high)").matches)
+
+
+
+
+
+
   if (hdrTexture) {
     // HDR texture is already loaded, apply it to the scene
     setSceneBackgroundAndEnvironment(scene, hdrTexture);
