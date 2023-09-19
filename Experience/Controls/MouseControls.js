@@ -25,6 +25,7 @@ function handleMouseUp() {
 
 function handleMouseMove(event, camera) {
   if (isMouseDown) {
+    camera.dispatchEvent({ type: 'update' });
     const deltaMove = {
       x: previousMousePosition.x - event.clientX,
       y: previousMousePosition.y - event.clientY
@@ -44,7 +45,15 @@ function handleMouseMove(event, camera) {
     x: event.clientX,
     y: event.clientY
   };
+
+  camera.addEventListener('update', () => {
+    // Update the rotationEuler with the camera's current rotation
+    rotationEuler.copy(camera.rotation);
+  });
+  
 }
+
+
 
 export {
   handleMouseDown,

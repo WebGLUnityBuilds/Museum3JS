@@ -13,6 +13,7 @@ import { setupLights } from './SceneManagement/Lighting/BaseLighting.js';
 // Load Assets
 import LoadLevel from './LoadLevel.js';
 import assets from './AssetsManagement/EnvironmentFiles.js';
+import setupVideo from './VideoPlayer.js';
 // Load Assets
 
 
@@ -28,6 +29,9 @@ import { setupTouchControls } from './Controls/TouchControls.js';
 import handleRegularMouseScroll from './Controls/ZoomControls/regularMouseScroll.js';
 import handleAppleDeviceScroll from './Controls/ZoomControls/appleDeviceScroll.js';
 
+
+//Toggle Full Screen
+import { toggleFullscreen } from './Controls/ZoomControls/FullScreen.js';
 
 
 
@@ -168,46 +172,11 @@ export default class Experience{
         //   audio.setBuffer(buffer);
         // });
 
-
-        // const video = document.createElement('video');
-        // video.src = '/RawTextures/VideoTextures/Mov1_1821.mp4';
-        // video.crossOrigin = 'anonymous';
-        // video.loop = true;
-        // video.muted = true; // Mute the video to comply with autoplay policies
-        // video.playsInline = true; // Ensure video playback on mobile devices
-
-        // // Create a texture from the video element
-        // const videoTexture = new THREE.VideoTexture(video);
-        // videoTexture.minFilter = THREE.LinearFilter;
-        // videoTexture.magFilter = THREE.LinearFilter;
-
-        // // Create a material and assign the video texture
-        // const material = new THREE.MeshBasicMaterial({ map: videoTexture });
-
-        // // Create a geometry and mesh
-        // const geometry = new THREE.PlaneGeometry(2, 1.125); // Adjust the size of the plane as needed
-        // const mesh = new THREE.Mesh(geometry, material);
-        // mesh.position.set(-4.3,1.4,-8);
-        // // Add the mesh to the scene
-        // scene.add(mesh);
-
-        // const svideo = document.getElementById('myVideo');
-        // function startVideoPlayback() {
-        //   if (video) {
-        //     video.play(); // Play the audio if it's loaded
-        //   }
-        //   // if (audio) {
-        //   //   audio.play(); // Play the audio if it's loaded
-        //   // }
-        // }
-        // document.addEventListener('click', startVideoPlayback);
+          // if (audio) {
+          //   audio.play(); // Play the audio if it's loaded
+          // }
 
 
-
-        // Audio Video Creation
-
-
-      
 
         moveCamera(-0.020159, 0,4.3341);
         
@@ -220,43 +189,8 @@ export default class Experience{
       
 
 
-
-
-      const toggleFullscreen = () => {
-        if (document.fullscreenElement || document.webkitFullscreenElement ||
-            document.mozFullScreenElement || document.msFullscreenElement) {
-          // Check if the document is currently in full-screen mode
-      
-          if (document.exitFullscreen) {
-            document.exitFullscreen(); // Standard method for modern browsers
-          } else if (document.mozCancelFullScreen) {
-            document.mozCancelFullScreen(); // Firefox-specific method
-          } else if (document.webkitExitFullscreen) {
-            document.webkitExitFullscreen(); // Chrome, Safari, and Opera-specific method
-          } else if (document.msExitFullscreen) {
-            document.msExitFullscreen(); // Internet Explorer-specific method
-          }
-        } else {
-          // If not in full-screen mode, enter full screen
-      
-          const element = document.documentElement; // Get the root element of your document
-      
-          if (element.requestFullscreen) {
-            element.requestFullscreen(); // Standard method for modern browsers
-          } else if (element.mozRequestFullScreen) {
-            element.mozRequestFullScreen(); // Firefox-specific method
-          } else if (element.webkitRequestFullscreen) {
-            element.webkitRequestFullscreen(); // Chrome, Safari, and Opera-specific method
-          } else if (element.msRequestFullscreen) {
-            element.msRequestFullscreen(); // Internet Explorer-specific method
-          }
-        }
-      };
-      
-      // Add an event listener to the fullscreen button
       const fullscreenButton = document.getElementById('fullscreenButton');
       fullscreenButton.addEventListener('click', toggleFullscreen);
-
 
 
 
@@ -513,6 +447,8 @@ screenControls(camera);
 
 
      function onClick( event ) {
+ 
+
 
        pointer.x = (event.clientX / window.innerWidth) * 2 - 1;
        pointer.y = -(event.clientY / window.innerHeight) * 2 + 1;
@@ -534,6 +470,7 @@ screenControls(camera);
                console.table(listAllEventListeners());
 
                console.log("------------------------------------------");
+
                break;
              case 2: 
                break;
@@ -548,15 +485,33 @@ screenControls(camera);
        }, 1000);
      }
    
-     }
- 
+      
+    }
+
+    function destroyVideoElement() {
+
+      const videoMesh = scene.getObjectByName("videoMesh");
+
+      if(videoMesh)
+      {
+        console.log("Destroyed");
+        scene.remove(videoMesh);
+
+        // Optionally, you can dispose of the mesh's geometry and material to release additional resources:
+        videoMesh.geometry.dispose();
+        videoMesh.material.dispose();
+      }
+
+    }
+    
 
 
-
+    
 
 
       let activeStep = "step1";
-      let isZoomedIn = false;
+      let scaleSelect = false;
+      let objBackToScale = null;
       const raycaster = new THREE.Raycaster();
       function mainRendererRaycaster(pointer, event)
       {
@@ -569,32 +524,68 @@ screenControls(camera);
         for (let i=0; i < intersects.length; i++)
         {
            console.log(intersects[i].object.name);
-          if (intersects[i].object.name.includes("exhibit")) {
-            if (!isZoomedIn) {
-              // Zoom in
-              moveCameraToObject(intersects[i].object);
-              isZoomedIn = true;
-            } else {
-              // Zoom out
-              restoreCamera();
-              isZoomedIn = false;
+          
+          if (intersects[i].object.name.includes("exhibit")) 
+          {
+            moveCameraToObject(intersects[i].object);
+            break;
+          }
+
+
+          if(intersects[i].object.name.includes("tab"))
+          {
+            objBackToScale = intersects[i].object;
+            if(!scaleSelect)
+            {
+              gsap.to(intersects[i].object.scale, {
+                duration: 1,
+                x: 1.1,
+                y: 1.1,
+                z: 1.1,
+                // onComplete: () => {
+                //   scaleSelect = true;
+                // },
+              });
+              scaleSelect = true;
             }
+            else
+            {
+              if(intersects[i].object.name.includes("tab00"))
+              {
+                loadScene("0");
+
+                break;
+              }
+              if(intersects[i].object.name.includes("tab01"))
+              {
+                loadScene("1");
+
+                break;
+              }
+              if(intersects[i].object.name.includes("tab02"))
+              {
+                const roomNumber = "0";
+                const searchString = "Mov";
+                
+                setupVideo(roomNumber, searchString, camera, scene);
+                //loadScene("1");
+
+                break;
+              }
+              if(intersects[i].object.name.includes("tab08"))
+              {
+
+                loadScene("4");
+                break;
+              }
             
-            break;
+                      
+              //scaleSelect = false;
+            }
           }
 
-          if(intersects[i].object.name.includes("tab00"))
-          {
-            loadScene("0");
 
-            break;
-          }
-          if(intersects[i].object.name.includes("tab01"))
-          {
-            loadScene("1");
 
-            break;
-          }
           if (intersects[i].object.name.includes("step")) {
 
             activeStep = intersects[i].object.name;
@@ -611,46 +602,65 @@ screenControls(camera);
       
       }
 
-      let initialCameraPosition;
-      let initialZoom;
-      // Function to move the camera close to the object and adjust zoom
-      function moveCameraToObject(object) {
-        // Store the initial camera position and zoom
-        initialCameraPosition = camera.position.clone();
-        initialZoom = camera.zoom;
-
-        // Calculate the desired position and zoom level
-        const boundingBox = new THREE.Box3().setFromObject(object);
-        const center = boundingBox.getCenter(new THREE.Vector3());
-        const size = boundingBox.getSize(new THREE.Vector3());
-        const diagonalDistance = size.length();
-        const distance = diagonalDistance / Math.tan(Math.PI * camera.fov / 360);
-
-        // Move the camera closer to the object
-        const targetPosition = center.clone().add(new THREE.Vector3(0, 0, distance));
-        camera.position.copy(targetPosition);
-
-        // Adjust zoom to make the object appear the same size regardless of proportions
-        const desiredZoom = initialZoom * (diagonalDistance / 2);
-        camera.zoom = desiredZoom;
-
-        // Update camera settings
-        camera.updateProjectionMatrix();
-      }
 
 
-      // Function to restore the camera to its initial position and zoom
-      function restoreCamera() {
-        camera.position.copy(initialCameraPosition);
-        camera.zoom = initialZoom;
-        camera.updateProjectionMatrix();
-      }
+      // Add an event listener to the document to detect general mouse clicks
+      document.addEventListener('click', function(event) {
+        // Check if the left or right mouse button was clicked
+        if (event.button === 0 || event.button === 2) {
+          // Scale the object back to its original scale using GSAP
+          if(objBackToScale === null)
+          {
+            console.log("No object to scale back");
+          }
+          else
+          {
+            gsap.to(objBackToScale.scale, {
+              duration: 1, // Animation duration in seconds
+              x: 1,       // Scale back to 1 on the X-axis
+              y: 1,       // Scale back to 1 on the Y-axis
+              z: 1,       // Scale back to 1 on the Z-axis
+            });
+            scaleSelect = false;
+          }
+          
+          objBackToScale = null;
+        }
+      });
 
 
 
-
-
+    
       
+      // Function to move the camera close to the object and adjust zoom
+      function moveCameraToObject(intersectObj) {
+
+        // Calculate the desired position based on the desired object's position
+        const desiredPosition = intersectObj.position.clone();
+
+        // Define the duration of the animation in seconds
+        const animationDuration = 3; // Adjust as needed
+
+        // Use GSAP to animate the camera to the desired position
+        gsap.to(camera.position, {
+          duration: animationDuration,
+          x: desiredPosition.x,
+          y: desiredPosition.y,
+          z: desiredPosition.z + 1.8,
+          onUpdate: () => {
+            // Optionally, update the camera's lookAt target while moving
+            camera.lookAt(desiredPosition);
+          },
+          onComplete: () => {
+            // Animation completed callback (if needed)
+            console.log('Camera animation completed');
+          },
+        });
+              
+      }
+
+
+
 
 
 
@@ -770,19 +780,122 @@ screenControls(camera);
     }
 
 
-    // function findAnimationName(object, animationName) {
-    //   if (object.animations && object.animations.length > 0) {
-    //     for (let i = 0; i < object.animations.length; i++) {
-    //       const animationClip = object.animations[i];
-    //       if (animationClip.name === animationName) {
-    //         console.log(`Animation name for object '${object.name}': ${animationClip.name}`);
-    //         break;
-    //       }
-    //     }
-    //   }
-    // }
-    
+    function traverseRayHierarchy(object) {
 
+
+      if (object instanceof THREE.Mesh) {
+        if (
+          object.name.includes("exhibit") ||
+          object.name.includes("tab") ||
+          object.name.includes("step") ||
+          object.name.includes("media")
+        ) {
+          interactableObjects.push(object); // Add the object to the interactableObjects array
+        }
+        if(object.name.includes("step1") && object.visible)
+        {
+          moveCamera(object.position.x, camera.position.y, object.position.z);
+        }
+      }
+
+      if (object instanceof THREE.Group) {
+
+        for (let i = 0; i < object.children.length; i++) {
+          traverseRayHierarchy(object.children[i]);
+        }
+      }
+    }
+
+
+    ////////////// Object select animation part //////////////////////
+
+        
+    // Create a raycaster and initialize it
+    const onMoveRaycaster = new THREE.Raycaster();
+    const onMoveMouse = new THREE.Vector2();
+    const scaledObjects = new Set();
+
+    // Function to handle mousemove events
+    function onMouseMove(event, camera, scene) {
+      // Calculate normalized device coordinates (NDC) from mouse position
+      const rect = event.target.getBoundingClientRect();
+      onMoveMouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
+      onMoveMouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
+
+      // Update the raycaster with the mouse's NDC
+      onMoveRaycaster.setFromCamera(onMoveMouse, camera);
+
+      // Perform raycasting and get the intersections
+      const intersects = onMoveRaycaster.intersectObjects(scene.children, true);
+
+      // Filter the intersections to include only objects with names containing "tab"
+      const tabIntersects = intersects.filter((intersect) => {
+        return intersect.object.name.includes("tab");
+      });
+
+      // Log the names of the filtered objects
+      tabIntersects.forEach((intersect) => {
+        
+
+        if (!scaledObjects.has(intersect.object)) {
+
+
+          gsap.to(intersect.object.position, {
+            duration: 2,
+            x: intersect.object.position.x,
+            y: intersect.object.position.y + 0.4,
+            z: intersect.object.position.z,
+          });
+
+
+
+
+          // Object was not previously scaled, scale it up
+          gsap.to(intersect.object.scale, {
+            duration: 2,
+            x: 1.1,
+            y: 1.1,
+            z: 1.1,
+          });
+
+          // Add the object to the set of scaled objects
+          scaledObjects.add(intersect.object);
+        }
+      });
+
+      // Check if any previously scaled objects are no longer intersected
+      scaledObjects.forEach((object) => {
+        if (!tabIntersects.some((intersect) => intersect.object === object)) {
+
+          gsap.to(object.position, {
+            duration: 2,
+            x: object.position.x,
+            y: -0.4,
+            z: object.position.z,
+          });
+
+          // Object is no longer intersected, scale it back down
+          gsap.to(object.scale, {
+            duration: 2,
+            x: 1,
+            y: 1,
+            z: 1,
+          });
+
+          // Remove the object from the set of scaled objects
+          scaledObjects.delete(object);
+        }
+      });
+    }
+
+    // Add a mousemove event listener to your canvas or window
+    window.addEventListener('mousemove', (event) => {
+      onMouseMove(event, camera, scene); // Replace "camera" and "scene" with your camera and scene objects
+    });
+
+
+
+    ////////////// ~ Object select animation part //////////////////////
 
 
 
