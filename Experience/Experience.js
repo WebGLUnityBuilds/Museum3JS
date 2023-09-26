@@ -56,7 +56,7 @@ export default class Experience{
                              
                             
       const renderer = createRenderer(scene);
-      renderer.xr.enabled = true;
+      
       document.body.appendChild(VRButton.createButton(renderer));
 
       const camera = new THREE.PerspectiveCamera(
@@ -962,7 +962,10 @@ screenControls(camera);
 
       function animate() {
         requestAnimationFrame(animate);
-renderer.setAnimationLoop() 
+
+
+        renderer.setAnimationLoop( render );
+
         keyControls.update();
            
         var delta = clock.getDelta();
@@ -990,10 +993,6 @@ renderer.setAnimationLoop()
         } 
         camera.position.y = cameraHeight;
 
-
-        //camera.fov = effectController.fov;
-        camera.updateProjectionMatrix();
-        renderer.render(scene, camera);
 
      
 
@@ -1023,11 +1022,24 @@ renderer.setAnimationLoop()
           });
 
 
+          camera.updateProjectionMatrix();
+          //renderer.render(scene, camera);
+  
         }
         //updatGrabablePosition();
         stats.update();
 
       }
+
+
+			function render() {
+
+		
+
+				renderer.render( scene, camera );
+			
+
+			}
       animate();
       //renderer.setAnimationLoop(animate);
       ////////////////////////////////////// ~Update Animate ////////////////////////////////////////////////////////

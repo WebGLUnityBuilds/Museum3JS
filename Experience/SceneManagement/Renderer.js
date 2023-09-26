@@ -18,7 +18,7 @@ const createRenderer = (scene) => {
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
   renderer.toneMappingExposure = 0.3;
 
-
+  renderer.xr.enabled = true;
 
 
   // If you want to check display if supports hdri use this code.
