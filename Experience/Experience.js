@@ -56,7 +56,7 @@ export default class Experience{
                              
                             
       const renderer = createRenderer(scene);
-      renderer.xr.enabled = true
+      renderer.xr.enabled = true;
       document.body.appendChild(VRButton.createButton(renderer));
 
       const camera = new THREE.PerspectiveCamera(
