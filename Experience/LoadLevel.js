@@ -13,14 +13,27 @@ const LoadLevel = {
 
     sceneObjects.forEach((object) => {
       scene.add(object);
+      a(object);
+      function a(object) {
 
-      const mixer = new THREE.AnimationMixer(object);
-      mixerArray.push(mixer);
-      
-      object.animations.forEach((animationClip) => {
-        const action = mixer.clipAction(animationClip);
-        action.play();
-      });
+        if (object instanceof THREE.Mesh) {
+         
+          if (
+            object.name.includes("exhibit") ||
+            object.name.includes("tab") 
+          ) 
+          {
+            const mixer = new THREE.AnimationMixer(object);
+            mixerArray.push(mixer);
+          }
+        } 
+  
+        if (object instanceof THREE.Group) {
+          for (let i = 0; i < object.children.length; i++) {
+            a(object.children[i]);
+          }
+        }
+      }
     });
 
     // Now you can use the loaded sceneObjects for further processing or rendering
@@ -56,5 +69,7 @@ function getRoomAssets(exhibits, desiredRoom) {
   
     return assetsData;
   }
+
+
   
 export default LoadLevel;

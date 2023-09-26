@@ -1,7 +1,7 @@
 import * as THREE from 'three'; // Import the THREE module
 
 
-const movementSpeed = 0.05;
+let movementSpeed = 0.05;
 const keyboard = {};
 const cameraAreaLim = 20;
 
@@ -11,6 +11,7 @@ function updateCameraPosition(camera) {
 
   forward.applyQuaternion(camera.quaternion);
   right.applyQuaternion(camera.quaternion);
+
 
   if (keyboard['ArrowUp'] || keyboard['KeyW']) {
     camera.position.add(forward.multiplyScalar(movementSpeed));
@@ -25,6 +26,25 @@ function updateCameraPosition(camera) {
     camera.position.add(right.multiplyScalar(movementSpeed));
   }
 }
+
+document.addEventListener("keydown", onShiftkeyDown);
+function onShiftkeyDown(event) {
+    var keyCode = event.which;
+    if (keyCode == 16/* For shift key */) {
+      movementSpeed = 0.1;
+    }
+};
+document.addEventListener("keyup", onShiftkeyUp);
+function onShiftkeyUp(event) {
+  var keyCode = event.which;
+  // up
+  if (keyCode == 16/* For shift key */) {
+    movementSpeed = 0.05;
+      // down
+  }
+};
+
+
 
 export function keyboardControls(camera) {
   document.addEventListener('keydown', (event) => {

@@ -6,7 +6,7 @@ import { gsap } from 'gsap';
 const movementSpeed = 1.8; 
 const cameraLimits = 20;
 export function screenControls(camera) {
-  
+
     const moveDistance = movementSpeed; // Set the movement distance
 
     function moveForward() {

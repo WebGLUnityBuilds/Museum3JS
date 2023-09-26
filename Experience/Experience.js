@@ -34,6 +34,7 @@ import handleAppleDeviceScroll from './Controls/ZoomControls/appleDeviceScroll.j
 import { toggleFullscreen } from './Controls/ZoomControls/FullScreen.js';
 
 
+import { VRButton } from 'three/addons/webxr/VRButton.js';
 
 
 
@@ -55,7 +56,9 @@ export default class Experience{
                              
                             
       const renderer = createRenderer(scene);
-      
+      renderer.xr.enabled = true
+      document.body.appendChild(VRButton.createButton(renderer));
+
       const camera = new THREE.PerspectiveCamera(
         50,
         window.innerWidth / window.innerHeight,
@@ -117,11 +120,11 @@ export default class Experience{
           const mixers = roomMixersMap.get(desiredRoomInit);
           if (mixers && mixers.length > 0) {
             mixers.forEach((mixer) => {
-              console.log(mixer);
               result.sceneObjects.forEach((object) => {
                 console.log(object.animations);
                 if (object.animations && object.animations.length > 0) {
                   object.animations.forEach((animationClip) => {
+                    console.log("AGAAA");
                     const action = mixer.clipAction(animationClip);
                     action.play();
                   });
@@ -697,8 +700,6 @@ screenControls(camera);
 
 
 
-
-
     function findInteractableObjects(desiredRoom) {
       interactableObjects.length = 0;
       if (loadedScenes.has(desiredRoom)) {
@@ -769,7 +770,7 @@ screenControls(camera);
         {
           object.visible = true;
         }
-        
+       
       } 
 
       if (object instanceof THREE.Group) {
@@ -941,11 +942,27 @@ screenControls(camera);
       // element.name("field of view");
 
       var clock = new THREE.Clock();
-      
+      const mapLim = 20;
      
+
+      const spotLight = new THREE.SpotLight(0x00FFFF);
+      scene.add(spotLight);
+      spotLight.position.set(0,0,0);
+      spotLight.intensity = 4;
+      spotLight.angle = 0.4;
+      spotLight.penumbra = 0.5;
+      spotLight.castShadow = true;
+
+      spotLight.shadow.mapSize.width = 512;
+      spotLight.shadow.mapSize.height = 512;
+      spotLight.shadow.camera.near = 0.5;
+      spotLight.shadow.camera.far = 50;
+      spotLight.shadow.focus = 1;
+
+
       function animate() {
         requestAnimationFrame(animate);
-
+renderer.setAnimationLoop() 
         keyControls.update();
            
         var delta = clock.getDelta();
@@ -959,11 +976,17 @@ screenControls(camera);
         }
 
 
-        if(camera.position.x > 20){
-          camera.position.x = 20;
+        if(camera.position.x > mapLim ){
+          camera.position.x = mapLim;
         } 
-        if(camera.position.z > 20){
-          camera.position.z = 20;
+        if(camera.position.x < -mapLim ){
+          camera.position.x = -mapLim;
+        } 
+        if(camera.position.z > mapLim){
+          camera.position.z = mapLim;
+        } 
+        if(camera.position.z < -mapLim ){
+          camera.position.z = -mapLim;
         } 
         camera.position.y = cameraHeight;
 
@@ -972,9 +995,35 @@ screenControls(camera);
         camera.updateProjectionMatrix();
         renderer.render(scene, camera);
 
-        
+     
 
-        
+        if(Array.isArray(interactableObjects))
+        {
+          interactableObjects.forEach(exhibit => {
+            
+            let shadowedExhibit = null;
+            if(exhibit.name.includes("exhibit"))
+            {
+              let dist  = measureDistance(camera, exhibit);
+              
+              if (dist < 3)
+              {
+                //shadowedExhibit = exhibit;  
+                exhibit.traverse(function(node)
+                {
+                  if(node.isMesh)
+                    shadowedExhibit = exhibit;
+                });
+                spotLight.position.set(shadowedExhibit.position.x,shadowedExhibit.position.y+4,shadowedExhibit.position.z+1);
+                spotLight.lookAt(shadowedExhibit);
+              }
+              
+              
+            }
+          });
+
+
+        }
         //updatGrabablePosition();
         stats.update();
 
@@ -1019,7 +1068,7 @@ screenControls(camera);
 
       ///////////////////////////////////////////////////////////// ~Math FUNCTIONS /////////////////////////////////////////////////////////////
       
-  
+      renderer.setAnimationLoop();
       window.addEventListener("resize", () => {
         camera.aspect = window.innerWidth / window.innerHeight;
         camera.updateProjectionMatrix();

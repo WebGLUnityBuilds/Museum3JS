@@ -1,7 +1,7 @@
 import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader.js'
 import {GLTFLoader} from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { DRACOLoader } from "three/examples/jsm/loaders/DRACOLoader.js";
-
+import * as THREE from 'three'; // Import the THREE module
 
 //"three": "^0.145.0" updated to "three": "^0.153.0",
 export default class LoadFiles {
@@ -102,6 +102,44 @@ export default class LoadFiles {
   
       objects.forEach((object) => {
         scene.add(object);
+        a(object);
+        function a(object) {
+
+
+          if (object instanceof THREE.Mesh) {
+            if (
+              object.name.includes("exhibit") ||
+              object.name.includes("tab") ||
+              object.name.includes("media") ||
+              object.name.includes("stand") 
+            ) 
+            {
+              object.castShadow = true;
+              object.receiveShadow = true;
+            }
+
+            if(
+              object.name.includes("floor") ||
+              object.name.includes("step") ||
+              object.name.includes("wall")
+              )
+            {
+              object.receiveShadow = true;
+            }
+        
+          
+           
+          } 
+    
+          if (object instanceof THREE.Group) {
+            for (let i = 0; i < object.children.length; i++) {
+              a(object.children[i]);
+            }
+          }
+        }
+    
+
+
         allSceneObjects.push(object);
       });
   

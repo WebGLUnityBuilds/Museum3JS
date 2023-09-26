@@ -6,15 +6,17 @@ let hdrTexture = null; // Global variable to store the HDR texture
 const createRenderer = (scene) => {
   const renderer = new THREE.WebGLRenderer({ antialias: true });
 
-  renderer.setPixelRatio(window.devicePixelRatio * 0.86);
+  renderer.setPixelRatio(window.devicePixelRatio * 0.85);
   renderer.setSize(window.innerWidth, window.innerHeight);
   document.body.appendChild(renderer.domElement);
-  renderer.shadowMap.enabled = true;
-  renderer.shadowMap.type = THREE.PCFShadowMap;
+  //renderer.setClearColor(0xA3A3A3);
 
+  renderer.shadowMap.enabled = true;
+  renderer.shadowMap.type = THREE.PCFShadowMap ;
+  
   renderer.outputColorSpace = THREE.SRGBColorSpace;
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
-  renderer.toneMappingExposure = 0.7;
+  renderer.toneMappingExposure = 0.3;
 
 
 

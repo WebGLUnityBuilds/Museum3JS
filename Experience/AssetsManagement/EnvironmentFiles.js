@@ -67,6 +67,11 @@ export default assets = {
       assets: [
         {
           classification: "level",
+          type: "glbDraco",
+          path: "./Models/Environment/Room00/RR.glb"
+        },
+        {
+          classification: "level",
           type: "glb",
           path: "./Models/Environment/Room02/room1.glb"
         },
@@ -74,6 +79,11 @@ export default assets = {
           classification: "exhibit",
           type: "glbDraco",
           path: "./Models/Environment/Room02/Exhibits/3Obj.glb"
+        },
+        {
+          classification: "exhibit",
+          type: "glbDraco",
+          path: "./Models/Environment/Room02/Exhibits/testCon.glb"
         }
       ]
     }
