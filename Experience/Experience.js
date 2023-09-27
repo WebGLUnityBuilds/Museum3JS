@@ -1004,6 +1004,7 @@ screenControls(camera);
       spotLight.shadow.focus = 1;
 
 
+      //animate();
       // function animate() {
       //   requestAnimationFrame(animate);
       //   //render();
@@ -1075,9 +1076,9 @@ screenControls(camera);
       // }
 
 
-      //animate();
 
 
+      renderer.setAnimationLoop(render);
 			function render() {
 
 		
@@ -1149,7 +1150,6 @@ screenControls(camera);
 			
 
 			}
-      renderer.setAnimationLoop(render);
       ////////////////////////////////////// ~Update Animate ////////////////////////////////////////////////////////
 
 
