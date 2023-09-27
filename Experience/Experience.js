@@ -953,6 +953,19 @@ screenControls(camera);
     });
 
 
+    window.addEventListener("resize", () => {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+
+
+    });
+      
+      
+    window.addEventListener('contextmenu', function (e) { 
+        // do something here... 
+        e.preventDefault(); 
+    }, false);
 
     //////////////////////////////////////////////////// ~Main Renderer functions ////////////////////////////////////////////////////////////////////
     
@@ -991,12 +1004,83 @@ screenControls(camera);
       spotLight.shadow.focus = 1;
 
 
-      function animate() {
-        requestAnimationFrame(animate);
+      // function animate() {
+      //   requestAnimationFrame(animate);
+      //   //render();
 
 
-        renderer.setAnimationLoop( render );
+      //   keyControls.update();
+           
+      //   var delta = clock.getDelta();
+        
+        
+      //   const mixers = roomMixersMap.get(activeRoom);
+      //   if (mixers) {
+      //     mixers.forEach((mixer) => {
+      //       mixer.update(delta); 
+      //     });
+      //   }
 
+
+      //   if(camera.position.x > mapLim ){
+      //     camera.position.x = mapLim;
+      //   } 
+      //   if(camera.position.x < -mapLim ){
+      //     camera.position.x = -mapLim;
+      //   } 
+      //   if(camera.position.z > mapLim){
+      //     camera.position.z = mapLim;
+      //   } 
+      //   if(camera.position.z < -mapLim ){
+      //     camera.position.z = -mapLim;
+      //   } 
+      //   camera.position.y = cameraHeight;
+
+
+     
+
+      //   if(Array.isArray(interactableObjects))
+      //   {
+      //     interactableObjects.forEach(exhibit => {
+            
+      //       let shadowedExhibit = null;
+      //       if(exhibit.name.includes("exhibit"))
+      //       {
+      //         let dist  = measureDistance(camera, exhibit);
+              
+      //         if (dist < 3)
+      //         {
+      //           //shadowedExhibit = exhibit;  
+      //           exhibit.traverse(function(node)
+      //           {
+      //             if(node.isMesh)
+      //               shadowedExhibit = exhibit;
+      //           });
+      //           spotLight.position.set(shadowedExhibit.position.x,shadowedExhibit.position.y+4,shadowedExhibit.position.z+1);
+      //           spotLight.lookAt(shadowedExhibit);
+      //         }
+              
+              
+      //       }
+      //     });
+
+
+      //     camera.updateProjectionMatrix();
+      //     //renderer.render(scene, camera);
+  
+      //   }
+      //   //updatGrabablePosition();
+      //   stats.update();
+
+      // }
+
+
+      //animate();
+
+
+			function render() {
+
+		
         keyControls.update();
            
         var delta = clock.getDelta();
@@ -1060,19 +1144,12 @@ screenControls(camera);
         //updatGrabablePosition();
         stats.update();
 
-      }
-
-
-			function render() {
-
-		
 
 				renderer.render( scene, camera );
 			
 
 			}
-      animate();
-      //renderer.setAnimationLoop(animate);
+      renderer.setAnimationLoop(render);
       ////////////////////////////////////// ~Update Animate ////////////////////////////////////////////////////////
 
 
@@ -1112,22 +1189,8 @@ screenControls(camera);
       ///////////////////////////////////////////////////////////// ~Math FUNCTIONS /////////////////////////////////////////////////////////////
       
 
-      window.addEventListener("resize", () => {
-        camera.aspect = window.innerWidth / window.innerHeight;
-        camera.updateProjectionMatrix();
-        renderer.setSize(window.innerWidth, window.innerHeight);
 
 
-      });
-        
-        
-      window.addEventListener('contextmenu', function (e) { 
-          // do something here... 
-          e.preventDefault(); 
-      }, false);
-
-
-      renderer.setAnimationLoop();
 
   }
 
