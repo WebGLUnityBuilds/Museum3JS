@@ -2,6 +2,13 @@ import * as THREE from 'three';
 import AVfiles from './AssetsManagement/MediaFiles.js';
 
 export default function setupVideo(roomNumber, searchString, camera, scene) {
+
+  const videoElement = document.getElementById('CurrentVideo');
+  if(videoElement)
+  {
+    return;
+  }
+
   const room = AVfiles.rooms.find(room => room.room === roomNumber);
 
   if (room) {
@@ -13,12 +20,16 @@ export default function setupVideo(roomNumber, searchString, camera, scene) {
 
       const video = document.createElement('video');
       video.id = "CurrentVideo";
+      video.setAttribute("preload", "auto");
+      video.setAttribute("controls", "true");
+
       video.src = videoPath;
       video.crossOrigin = 'anonymous';
       video.loop = true;
-      video.muted = true;
+      video.muted = false;
       video.playsInline = true;
 
+      document.body.appendChild(video);
       const videoTexture = new THREE.VideoTexture(video);
       videoTexture.minFilter = THREE.LinearFilter;
       videoTexture.magFilter = THREE.LinearFilter;
@@ -26,8 +37,11 @@ export default function setupVideo(roomNumber, searchString, camera, scene) {
       const material = new THREE.MeshBasicMaterial({ map: videoTexture });
 
       const geometry = new THREE.PlaneGeometry(2, 1.125);
+      
       const videoMesh = new THREE.Mesh(geometry, material);
       videoMesh.name = "videoMesh";
+      videoMesh.renderOrder = 999;
+      videoMesh.material.depthTest = false;
       function startVideoPlayback() {
         if (video) {
             camera.add(videoMesh); // Add the mesh as a child of the camera
@@ -41,6 +55,7 @@ export default function setupVideo(roomNumber, searchString, camera, scene) {
           //document.removeEventListener('click', startVideoPlayback);
         }
       }
+      
       startVideoPlayback();
       //document.addEventListener('click', startVideoPlayback);
 
@@ -54,3 +69,5 @@ export default function setupVideo(roomNumber, searchString, camera, scene) {
     console.log("Room not found");
   }
 }
+
+

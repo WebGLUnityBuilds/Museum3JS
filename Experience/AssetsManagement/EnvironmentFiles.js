@@ -25,41 +25,41 @@ export default assets = {
     {
       room: "2",
       assets: [
-        {
-          classification: "level",
-          type: "glbDraco",
-          path: "./Models/Environment/Room00/RR.glb"
-        },
-        {
-          classification: "exhibit",
-          type: "glbDraco",
-          path: "./Models/Environment/Room00/RR.glb"
-        },
-        {
-          classification: "exhibit",
-          type: "glbDraco",
-          path: "./Models/Environment/Room00/RR.glb"
-        }
+        // {
+        //   classification: "level",
+        //   type: "glbDraco",
+        //   path: "./Models/Environment/Room00/RR.glb"
+        // },
+        // {
+        //   classification: "exhibit",
+        //   type: "glbDraco",
+        //   path: "./Models/Environment/Room00/RR.glb"
+        // },
+        // {
+        //   classification: "exhibit",
+        //   type: "glbDraco",
+        //   path: "./Models/Environment/Room00/RR.glb"
+        // }
       ]
     },
     {
       room: "3",
       assets: [
-        {
-          classification: "level",
-          type: "glbDraco",
-          path: "./Models/Environment/Room00/RR.glb"
-        },
-        {
-          classification: "exhibit",
-          type: "glbDraco",
-          path: "./Models/Environment/Room00/RR.glb"
-        },
-        {
-          classification: "exhibit",
-          type: "glbDraco",
-          path: "./Models/Environment/Room00/RR.glb"
-        }
+        // {
+        //   classification: "level",
+        //   type: "glbDraco",
+        //   path: "./Models/Environment/Room00/RR.glb"
+        // },
+        // {
+        //   classification: "exhibit",
+        //   type: "glbDraco",
+        //   path: "./Models/Environment/Room00/RR.glb"
+        // },
+        // {
+        //   classification: "exhibit",
+        //   type: "glbDraco",
+        //   path: "./Models/Environment/Room00/RR.glb"
+        // }
       ]
     },
     {
@@ -67,23 +67,13 @@ export default assets = {
       assets: [
         {
           classification: "level",
-          type: "glbDraco",
-          path: "./Models/Environment/Room00/RR.glb"
-        },
-        {
-          classification: "level",
           type: "glb",
-          path: "./Models/Environment/Room02/room1.glb"
+          path: "./Models/Environment/Room02/RoomExhb.glb"
         },
         {
           classification: "exhibit",
           type: "glbDraco",
-          path: "./Models/Environment/Room02/Exhibits/3Obj.glb"
-        },
-        {
-          classification: "exhibit",
-          type: "glbDraco",
-          path: "./Models/Environment/Room02/Exhibits/testCon.glb"
+          path: "./Models/Environment/Room02/Exhibits/RoomExhb_Exhibits.glb"
         }
       ]
     }

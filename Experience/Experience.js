@@ -34,8 +34,8 @@ import handleAppleDeviceScroll from './Controls/ZoomControls/appleDeviceScroll.j
 import { toggleFullscreen } from './Controls/ZoomControls/FullScreen.js';
 
 
-import { VRButton } from 'three/addons/webxr/VRButton.js';
-import { XRControllerModelFactory } from 'three/addons/webxr/XRControllerModelFactory.js';
+// import { VRButton } from 'three/addons/webxr/VRButton.js';
+// import { XRControllerModelFactory } from 'three/addons/webxr/XRControllerModelFactory.js';
 
 
 
@@ -60,36 +60,39 @@ export default class Experience{
 ///// XR
 
 
-      const geometry = new THREE.BufferGeometry();
-      geometry.setFromPoints( [ new THREE.Vector3( 0, 0, 0 ), new THREE.Vector3( 0, 0, - 5 ) ] );
+      // const geometry = new THREE.BufferGeometry();
+      // geometry.setFromPoints( [ new THREE.Vector3( 0, 0, 0 ), new THREE.Vector3( 0, 0, - 5 ) ] );
 
-      const controller1 = renderer.xr.getController( 0 );
-      controller1.add( new THREE.Line( geometry ) );
-      scene.add( controller1 );
+      // const controller1 = renderer.xr.getController( 0 );
+      // controller1.add( new THREE.Line( geometry ) );
+      // scene.add( controller1 );
 
-      const controller2 = renderer.xr.getController( 1 );
-      controller2.add( new THREE.Line( geometry ) );
-      scene.add( controller2 );
+      // const controller2 = renderer.xr.getController( 1 );
+      // controller2.add( new THREE.Line( geometry ) );
+      // scene.add( controller2 );
 
 
 
-      const controllerModelFactory = new XRControllerModelFactory();
+      // const controllerModelFactory = new XRControllerModelFactory();
 
-      const controllerGrip1 = renderer.xr.getControllerGrip( 0 );
-      controllerGrip1.add( controllerModelFactory.createControllerModel( controllerGrip1 ) );
-      scene.add( controllerGrip1 );
+      // const controllerGrip1 = renderer.xr.getControllerGrip( 0 );
+      // controllerGrip1.add( controllerModelFactory.createControllerModel( controllerGrip1 ) );
+      // scene.add( controllerGrip1 );
 
-      const controllerGrip2 = renderer.xr.getControllerGrip( 1 );
-      controllerGrip2.add( controllerModelFactory.createControllerModel( controllerGrip2 ) );
-      scene.add( controllerGrip2 );
+      // const controllerGrip2 = renderer.xr.getControllerGrip( 1 );
+      // controllerGrip2.add( controllerModelFactory.createControllerModel( controllerGrip2 ) );
+      // scene.add( controllerGrip2 );
 
-      document.body.appendChild(VRButton.createButton(renderer));
+      // document.body.appendChild(VRButton.createButton(renderer));
 
 
 
 
 
 /////// XR
+
+
+
       const camera = new THREE.PerspectiveCamera(
         50,
         window.innerWidth / window.innerHeight,
@@ -284,34 +287,47 @@ screenControls(camera);
       if (menuItemHref === '#scene0') 
       {
         loadScene("0");
+        gsapDirLightIntensityInit();
       } 
       else if (menuItemHref === '#scene1') 
       {
         loadScene("1");
+        gsapDirLightIntensityTarget(0.1);
       } 
       else if (menuItemHref === '#scene2') 
       {
         loadScene("2");
+        gsapDirLightIntensityTarget(0.1);
       }
       else if (menuItemHref === '#scene3') 
       {
         loadScene("3");
+        gsapDirLightIntensityTarget(0.1);
       }
       else if (menuItemHref === '#scene4') 
       {
         loadScene("4");
+        gsapDirLightIntensityTarget(0.1);
       }
       else if (menuItemHref === '#scene5') 
       {
         loadScene("5");
+        gsapDirLightIntensityTarget(0.1);
       }
       else if (menuItemHref === '#scene6') 
       {
         loadScene("6");
+        gsapDirLightIntensityTarget(0.1);
       }
       else if (menuItemHref === '#scene7') 
       {
         loadScene("7");
+        gsapDirLightIntensityTarget(0.1);
+      }
+      else if (menuItemHref === '#scene8') 
+      {
+        loadScene("8");
+        gsapDirLightIntensityTarget(0.1);
       }
     }
 
@@ -367,11 +383,10 @@ screenControls(camera);
         });
     }
 
-    
-    const startingIntensity = 1.5;
+    const startingIntensity = 0.3;
     const rendererProperties = { toneMappingExposure: startingIntensity };
     
-    function gsapDirLightIntensityInit() {
+    function gsapDirLightIntensityInit(targetIntensity) {
       gsap.to(rendererProperties, {
         toneMappingExposure: startingIntensity,
         duration: 2,
@@ -381,8 +396,8 @@ screenControls(camera);
       });
     }
     
-    const targetIntensity = 0.2;
-    function gsapDirLightIntensityTarget() {
+    const targetIntensity = 0.5;
+    function gsapDirLightIntensityTarget(targetIntensity) {
       gsap.to(rendererProperties, {
         toneMappingExposure: targetIntensity,
         duration: 2,
@@ -391,7 +406,6 @@ screenControls(camera);
         }
       });
     }
-    
 
     // color transition
     // let targetColor = new THREE.Color(0x1a1a1a);
@@ -523,144 +537,172 @@ screenControls(camera);
     }
 
     function destroyVideoElement() {
-
-      const videoMesh = scene.getObjectByName("videoMesh");
-
-      if(videoMesh)
-      {
-        console.log("Destroyed");
-        scene.remove(videoMesh);
-
-        // Optionally, you can dispose of the mesh's geometry and material to release additional resources:
-        videoMesh.geometry.dispose();
-        videoMesh.material.dispose();
+      const videoElement = document.getElementById('CurrentVideo');
+      if (videoElement) {
+        videoElement.pause();
+        videoElement.removeAttribute('src');
+        videoElement.load();
+    
+        const videoMesh = scene.getObjectByName("videoMesh");
+        if (videoMesh) {
+          const material = videoMesh.material;
+          if (material.map) {
+            material.map.dispose();
+          }
+          scene.remove(videoMesh);
+        }
+    
+        videoElement.parentNode.removeChild(videoElement);
       }
+      destroyVideoPlane();
+    }
 
+    function destroyVideoPlane() {
+
+    const videoMesh = scene.getObjectByName("videoMesh");
+
+    function removeObjWithChildren(obj) {
+      if (obj.children.length > 0) {
+          for (var x = obj.children.length - 1; x >= 0; x--) {
+              removeObjWithChildren(obj.children[x])
+          }
+      }
+      if (obj.isMesh) {
+          obj.geometry.dispose();
+          obj.material.dispose();
+      }
+      if (obj.parent) {
+          obj.parent.remove(obj)
+  
+      }
+    }
+    removeObjWithChildren(videoMesh);
     }
     
-
-
-    
-
+    document.addEventListener("keydown", onShiftkeyDown);
+    function onShiftkeyDown(event) {
+        var keyCode = event.which;
+        if (keyCode == 27/* For shift key */) {
+          console.log("Escape Hit");
+          destroyVideoElement();
+        }
+    };
 
       let activeStep = "step1";
-      let scaleSelect = false;
-      let objBackToScale = null;
+      // let scaleSelect = false;
+      // let objBackToScale = null;
       const raycaster = new THREE.Raycaster();
       function mainRendererRaycaster(pointer, event)
       {
         
         raycaster.setFromCamera(pointer, camera);
-       
-       // const intersects = raycaster.intersectObjects([...interactableObjects/*, */]);
-       const intersects = raycaster.intersectObjects(interactableObjects, true);
         
-        for (let i=0; i < intersects.length; i++)
-        {
-           console.log(intersects[i].object.name);
-          
-          if (intersects[i].object.name.includes("exhibit")) 
-          {
-            moveCameraToObject(intersects[i].object);
-            break;
-          }
-
-
-          if(intersects[i].object.name.includes("tab"))
-          {
-            objBackToScale = intersects[i].object;
-            if(!scaleSelect)
-            {
-              gsap.to(intersects[i].object.scale, {
-                duration: 1,
-                x: 1.1,
-                y: 1.1,
-                z: 1.1,
-                // onComplete: () => {
-                //   scaleSelect = true;
-                // },
-              });
-              scaleSelect = true;
-            }
-            else
-            {
-              if(intersects[i].object.name.includes("tab00"))
-              {
-                loadScene("0");
-
-                break;
-              }
-              if(intersects[i].object.name.includes("tab01"))
-              {
-                loadScene("1");
-
-                break;
-              }
-              if(intersects[i].object.name.includes("tab02"))
-              {
+        const intersects = raycaster.intersectObjects(interactableObjects, true);
+        
+        if (intersects.length > 0) {
+          const intersectedObject = intersects[0].object;
+      
+        
+         let o_name = intersectedObject.name;
+         console.log(o_name);
+            switch (true) {
+              
+              case o_name.includes("exhibit"):
+                moveCameraToObject(intersectedObject);
+                
+                
                 const roomNumber = "0";
                 const searchString = "Mov";
-                
-                setupVideo(roomNumber, searchString, camera, scene);
-                //loadScene("1");
+                //setupVideo(roomNumber, searchString, camera, scene);
+              break;
 
-                break;
-              }
-              if(intersects[i].object.name.includes("tab08"))
-              {
-
+              case o_name.includes("tab00"):
+                loadScene("0");
+                gsapDirLightIntensityInit(0.3);
+              break;
+              case o_name.includes("tab01"):
+                loadScene("1");
+                gsapDirLightIntensityTarget(0.1);
+              break;
+              case o_name.includes("tab02"):
+                loadScene("2");
+                gsapDirLightIntensityTarget(0.1);
+              break;
+              case o_name.includes("tab03"):
+                loadScene("3");
+                gsapDirLightIntensityTarget(0.1);
+              break;
+              case o_name.includes("tab04"):
                 loadScene("4");
-                break;
-              }
-            
-                      
-              //scaleSelect = false;
-            }
-          }
+                gsapDirLightIntensityTarget(0.1);
+              break;
+              case o_name.includes("tab05"):
+                loadScene("5");
+                gsapDirLightIntensityTarget(0.1);
+              break;
+              case o_name.includes("tab06"):
+                loadScene("6");
+                gsapDirLightIntensityTarget(0.1);
+              break;
+              case o_name.includes("tab07"):
+                loadScene("7");
+                gsapDirLightIntensityTarget(0.1);
+              break;
+              case o_name.includes("tab08"):
+                loadScene("8");
+                gsapDirLightIntensityTarget(0.1);
+              break;
+              case o_name.includes("exit"):
+                loadScene("0");
+                gsapDirLightIntensityInit(0.3);
+              break;
+              case o_name.includes("step"):
+                activeStep = intersectedObject;
+                    let x = 0;
+                    let z = 0;
+                    
+                    x = (intersectedObject.position.x );
+                    z = (intersectedObject.position.z );
+                    moveCamera(x, 1, z);
+              break;
 
-
-
-          if (intersects[i].object.name.includes("step")) {
-
-            activeStep = intersects[i].object.name;
-            let x = 0;
-            let z = 0;
-            
-            x = (intersects[i].object.position.x );
-            z = (intersects[i].object.position.z );
-            moveCamera(x, 1, z);
-            break;
-            
-          }
+            case "other":
+              // Handle cases where the name contains both "tab" and "bear" or neither.
+              console.log("Intersected object's name doesn't match the desired conditions.");
+              // You can handle other cases or log an error message here
+              break;
+          }}
         }
-      
-      }
+
 
 
 
       // Add an event listener to the document to detect general mouse clicks
-      document.addEventListener('click', function(event) {
-        // Check if the left or right mouse button was clicked
-        if (event.button === 0 || event.button === 2) {
-          // Scale the object back to its original scale using GSAP
-          if(objBackToScale === null)
-          {
-            console.log("No object to scale back");
-          }
-          else
-          {
-            gsap.to(objBackToScale.scale, {
-              duration: 1, // Animation duration in seconds
-              x: 1,       // Scale back to 1 on the X-axis
-              y: 1,       // Scale back to 1 on the Y-axis
-              z: 1,       // Scale back to 1 on the Z-axis
-            });
-            scaleSelect = false;
-          }
+      
+      
+      
+      // document.addEventListener('click', function(event) {
+      //   // Check if the left or right mouse button was clicked
+      //   if (event.button === 0 || event.button === 2) {
+      //     // Scale the object back to its original scale using GSAP
+      //     if(objBackToScale === null)
+      //     {
+      //       console.log("No object to scale back");
+      //     }
+      //     else
+      //     {
+      //       gsap.to(objBackToScale.scale, {
+      //         duration: 1, // Animation duration in seconds
+      //         x: 1,       // Scale back to 1 on the X-axis
+      //         y: 1,       // Scale back to 1 on the Y-axis
+      //         z: 1,       // Scale back to 1 on the Z-axis
+      //       });
+      //       scaleSelect = false;
+      //     }
           
-          objBackToScale = null;
-        }
-      });
+      //     objBackToScale = null;
+      //   }
+      // });
 
 
 
@@ -1004,88 +1046,13 @@ screenControls(camera);
       spotLight.shadow.focus = 1;
 
 
-      //animate();
-      // function animate() {
-      //   requestAnimationFrame(animate);
-      //   //render();
-
-
-      //   keyControls.update();
-           
-      //   var delta = clock.getDelta();
-        
-        
-      //   const mixers = roomMixersMap.get(activeRoom);
-      //   if (mixers) {
-      //     mixers.forEach((mixer) => {
-      //       mixer.update(delta); 
-      //     });
-      //   }
-
-
-      //   if(camera.position.x > mapLim ){
-      //     camera.position.x = mapLim;
-      //   } 
-      //   if(camera.position.x < -mapLim ){
-      //     camera.position.x = -mapLim;
-      //   } 
-      //   if(camera.position.z > mapLim){
-      //     camera.position.z = mapLim;
-      //   } 
-      //   if(camera.position.z < -mapLim ){
-      //     camera.position.z = -mapLim;
-      //   } 
-      //   camera.position.y = cameraHeight;
-
-
-     
-
-      //   if(Array.isArray(interactableObjects))
-      //   {
-      //     interactableObjects.forEach(exhibit => {
-            
-      //       let shadowedExhibit = null;
-      //       if(exhibit.name.includes("exhibit"))
-      //       {
-      //         let dist  = measureDistance(camera, exhibit);
-              
-      //         if (dist < 3)
-      //         {
-      //           //shadowedExhibit = exhibit;  
-      //           exhibit.traverse(function(node)
-      //           {
-      //             if(node.isMesh)
-      //               shadowedExhibit = exhibit;
-      //           });
-      //           spotLight.position.set(shadowedExhibit.position.x,shadowedExhibit.position.y+4,shadowedExhibit.position.z+1);
-      //           spotLight.lookAt(shadowedExhibit);
-      //         }
-              
-              
-      //       }
-      //     });
-
-
-      //     camera.updateProjectionMatrix();
-      //     //renderer.render(scene, camera);
-  
-      //   }
-      //   //updatGrabablePosition();
-      //   stats.update();
-
-      // }
-
-
-
-
-      renderer.setAnimationLoop(render);
-			function render() {
+			function animate() {
 
 		
         keyControls.update();
            
         var delta = clock.getDelta();
-        
+        requestAnimationFrame( animate );
         
         const mixers = roomMixersMap.get(activeRoom);
         if (mixers) {
@@ -1143,13 +1110,15 @@ screenControls(camera);
   
         }
         //updatGrabablePosition();
-        stats.update();
-
-
+        stats.begin();
 				renderer.render( scene, camera );
-			
+				stats.end();
 
 			}
+      requestAnimationFrame( animate );
+
+      //renderer.setAnimationLoop(render);
+
       ////////////////////////////////////// ~Update Animate ////////////////////////////////////////////////////////
 
 
