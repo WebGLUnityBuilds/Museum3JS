@@ -32,29 +32,29 @@ const createRenderer = (scene) => {
 
 
 
-  if (hdrTexture) {
-    // HDR texture is already loaded, apply it to the scene
-    setSceneBackgroundAndEnvironment(scene, hdrTexture);
-  } else {
-    // Load the HDR texture
-    const loader = new RGBELoader();
-    loader.load('../heavyAssets/HDRIs/kloppenheim_06_puresky_4k.hdr', function (texture) {
-      hdrTexture = texture; // Store the HDR texture globally
-      setSceneBackgroundAndEnvironment(scene, hdrTexture); // Apply the texture to the scene
-    });
-  }
+  // if (hdrTexture) {
+  //   // HDR texture is already loaded, apply it to the scene
+  //   setSceneBackgroundAndEnvironment(scene, hdrTexture);
+  // } else {
+  //   // Load the HDR texture
+  //   const loader = new RGBELoader();
+  //   loader.load('../heavyAssets/HDRIs/kloppenheim_06_puresky_4k.hdr', function (texture) {
+  //     hdrTexture = texture; // Store the HDR texture globally
+  //     setSceneBackgroundAndEnvironment(scene, hdrTexture); // Apply the texture to the scene
+  //   });
+  //}
 
   return renderer;
 };
 
 // Helper function to set the scene's background and environment
-function setSceneBackgroundAndEnvironment(scene, texture) {
-  texture.mapping = THREE.EquirectangularReflectionMapping;
-  texture.rotation = Math.PI / 2; 
+// function setSceneBackgroundAndEnvironment(scene, texture) {
+//   texture.mapping = THREE.EquirectangularReflectionMapping;
+//   texture.rotation = Math.PI / 2; 
 
-  scene.background = texture;
-  scene.environment = texture;
-}
+//   scene.background = texture;
+//   scene.environment = texture;
+// }
 
 export default createRenderer;
 

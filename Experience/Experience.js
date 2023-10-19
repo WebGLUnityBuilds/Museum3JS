@@ -600,13 +600,12 @@ screenControls(camera);
         const intersects = raycaster.intersectObjects(interactableObjects, true);
         
         if (intersects.length > 0) {
-          const intersectedObject = intersects[0].object;
+         const intersectedObject = intersects[0].object;
       
         
          let o_name = intersectedObject.name;
-         console.log(o_name);
+         
             switch (true) {
-              
               case o_name.includes("exhibit"):
                 moveCameraToObject(intersectedObject);
                 
@@ -615,7 +614,10 @@ screenControls(camera);
                 const searchString = "Mov";
                 //setupVideo(roomNumber, searchString, camera, scene);
               break;
-
+              case o_name.includes("exit"):
+                loadScene("0");
+                gsapDirLightIntensityInit(0.3);
+              break;
               case o_name.includes("tab00"):
                 loadScene("0");
                 gsapDirLightIntensityInit(0.3);
@@ -651,10 +653,6 @@ screenControls(camera);
               case o_name.includes("tab08"):
                 loadScene("8");
                 gsapDirLightIntensityTarget(0.1);
-              break;
-              case o_name.includes("exit"):
-                loadScene("0");
-                gsapDirLightIntensityInit(0.3);
               break;
               case o_name.includes("step"):
                 activeStep = intersectedObject;
@@ -1046,13 +1044,13 @@ screenControls(camera);
       spotLight.shadow.focus = 1;
 
 
-			function animate() {
+			function render() {
 
 		
         keyControls.update();
            
         var delta = clock.getDelta();
-        requestAnimationFrame( animate );
+        //requestAnimationFrame( animate );
         
         const mixers = roomMixersMap.get(activeRoom);
         if (mixers) {
@@ -1106,18 +1104,18 @@ screenControls(camera);
 
 
           camera.updateProjectionMatrix();
-          //renderer.render(scene, camera);
+          renderer.render(scene, camera);
   
         }
         //updatGrabablePosition();
         stats.begin();
-				renderer.render( scene, camera );
+				//renderer.render( scene, camera );
 				stats.end();
 
 			}
-      requestAnimationFrame( animate );
+      //requestAnimationFrame( animate );
 
-      //renderer.setAnimationLoop(render);
+      renderer.setAnimationLoop( render);
 
       ////////////////////////////////////// ~Update Animate ////////////////////////////////////////////////////////
 

@@ -105,13 +105,12 @@ export default class LoadFiles {
         a(object);
         function a(object) {
 
-
+          console.log(object.name);
           if (object instanceof THREE.Mesh) {
             if (
               object.name.includes("exhibit") ||
               object.name.includes("tab") ||
-              object.name.includes("media") ||
-              object.name.includes("stand") 
+              object.name.includes("media") 
             ) 
             {
               object.castShadow = true;
@@ -121,7 +120,9 @@ export default class LoadFiles {
             if(
               object.name.includes("floor") ||
               object.name.includes("step") ||
-              object.name.includes("wall")
+              object.name.includes("wall")||
+              object.name.includes("stand") ||
+              object.name.includes("stand001") 
               )
             {
               object.receiveShadow = true;
