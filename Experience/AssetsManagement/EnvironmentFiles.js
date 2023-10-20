@@ -7,8 +7,8 @@ export default assets = {
       assets: [
         {
           classification: "level",
-          type: "glbDraco",
-          path: "./Models/Environment/Room00/MenuRoomMetNoAnimv2.glb"
+          type: "glb",
+          path: "./Models/Environment/Room00/MenuScene_noHDR.glb"
         },
       ]
     },

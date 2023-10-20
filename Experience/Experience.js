@@ -85,10 +85,6 @@ export default class Experience{
 
       // document.body.appendChild(VRButton.createButton(renderer));
 
-
-
-
-
 /////// XR
 
 
@@ -130,8 +126,6 @@ export default class Experience{
             console.log("Loaded scene objects for room", desiredRoom, ":", result.sceneObjects);
             loadedScenes.set(desiredRoom, result.sceneObjects); // Store the loaded scene objects in the map
             roomMixersMap.set(desiredRoom, result.mixers);
-            console.log(roomMixersMap);
-
             return result; // Return the loaded scene objects and mixers
           });
         };
@@ -144,21 +138,24 @@ export default class Experience{
         loadSceneObjects(desiredRoomInit)
         .then((result) => {
           findInteractableObjects(desiredRoomInit);
-          playanimation(desiredRoomInit, result);
+          //playanimation(desiredRoomInit, result);
         })
         .catch((error) => {
           console.log("Error loading scene objects for room", desiredRoomInit, ":", error);
         });
+
+
+
+
+
 
         function playanimation(desiredRoomInit, result) {
           const mixers = roomMixersMap.get(desiredRoomInit);
           if (mixers && mixers.length > 0) {
             mixers.forEach((mixer) => {
               result.sceneObjects.forEach((object) => {
-                console.log(object.animations);
                 if (object.animations && object.animations.length > 0) {
                   object.animations.forEach((animationClip) => {
-                    console.log("AGAAA");
                     const action = mixer.clipAction(animationClip);
                     action.play();
                   });
@@ -181,8 +178,8 @@ export default class Experience{
         renderer.debug.checkShaderErrors = true;
 
 
-        let stats = new Stats();
-        document.body.appendChild( stats.dom );
+        //let stats = new Stats();
+        //document.body.appendChild( stats.dom );
 
         camera.position.set(0,0,-10);
 
@@ -215,7 +212,7 @@ export default class Experience{
 
 
 
-        moveCamera(-0.020159, 0,4.3341);
+        moveCamera(0, 0, 2.3);
         
         ///////////////////////////////////////////////////////////////// START EVENTS PC/LAPTOP /////////////////////////////////////////////////////////////////
       
@@ -233,36 +230,30 @@ export default class Experience{
 
 
 
+      // Check the platform and apply the appropriate event listener
+      if (/Macintosh|iPad|iPhone|iPod/.test(navigator.userAgent)) {
+        // Apple device scroll event listener
+        document.addEventListener("wheel", (event) => handleAppleDeviceScroll(event, camera));
+      } else {
+        // Regular mouse scroll event listener
+        document.addEventListener("wheel", (event) => handleRegularMouseScroll(event, camera));
+      }
 
+      // Check if the device is a touchscreen
+      const isTouchDevice = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0) || (navigator.msMaxTouchPoints > 0);
 
+      // Add event listeners based on device
+      if (isTouchDevice) {
+        setupTouchControls(camera);
+      } else {
+        // Mouse controls listeners
+        document.addEventListener('mousedown', handleMouseDown);
+        document.addEventListener('mouseup', handleMouseUp);
+        document.addEventListener('mousemove', event => handleMouseMove(event, camera));
+      }
 
-
-
-
-// Check the platform and apply the appropriate event listener
-if (/Macintosh|iPad|iPhone|iPod/.test(navigator.userAgent)) {
-  // Apple device scroll event listener
-  document.addEventListener("wheel", (event) => handleAppleDeviceScroll(event, camera));
-} else {
-  // Regular mouse scroll event listener
-  document.addEventListener("wheel", (event) => handleRegularMouseScroll(event, camera));
-}
-
-// Check if the device is a touchscreen
-const isTouchDevice = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0) || (navigator.msMaxTouchPoints > 0);
-
-// Add event listeners based on device
-if (isTouchDevice) {
-  setupTouchControls(camera);
-} else {
-  // Mouse controls listeners
-  document.addEventListener('mousedown', handleMouseDown);
-  document.addEventListener('mouseup', handleMouseUp);
-  document.addEventListener('mousemove', event => handleMouseMove(event, camera));
-}
-
-const keyControls = keyboardControls(camera);
-screenControls(camera);
+      const keyControls = keyboardControls(camera);
+      screenControls(camera);
 
 
       // ///////// ~Control Events //////////
@@ -357,21 +348,27 @@ screenControls(camera);
             x,
             y,
             z,
-            duration: 4
+            duration: 4,
+            //overwrite: "auto",
         });
         //tween.delay(0.2);
         }
         
     }
-
-    function objToObj(x, y, z, toObj) {
-        let tween = gsap.to(toObj.position, {
-            x,
-            y,
-            z,
-            duration: 4
-        });
-        //tween.delay(0.2);
+    let moveIsAnimating = true;
+    function objToPos(x, y, z, obj) {
+      console.log(x + " : " + y + " : " + z );
+      gsap.to(obj.position, {
+        x,
+        y: y,
+        z,
+        duration: 1.5,    // Animation duration in seconds
+        onComplete: () => {
+          if(obj.name.includes("8"))
+            moveIsAnimating = false;
+        },
+        overwrite: "auto",
+      });
     }
 
     function rotateCamera(x, y, z) {
@@ -501,37 +498,45 @@ screenControls(camera);
        pointer.x = (event.clientX / window.innerWidth) * 2 - 1;
        pointer.y = -(event.clientY / window.innerHeight) * 2 + 1;
 
-       document.onpointerdown = function(event) {
+       document.onpointerup = function (event) {
+        const elementsToIgnore = ['BUTTON', 'UL'];
+    
+        let elementUnderMouse = document.elementFromPoint(event.clientX, event.clientY);
+    
+        while (elementUnderMouse) {
+          if (elementsToIgnore.includes(elementUnderMouse.tagName)) {
+            // Mouse is over an element to be ignored, don't perform raycasting
+            return;
+          }
+    
+          elementUnderMouse = elementUnderMouse.parentElement;
+        }
 
-         switch ( event.button ) {
-             case 0:
-               mainRendererRaycaster(pointer, event);
-               break;
-             case 1: 
-             
-               console.log("Active Drawcalls:", renderer.info.render.calls);
-               console.log("Number of Vertices:", renderer.info.render.vertices);
-               console.log("Number of Triangles :", renderer.info.render.triangles);
-               console.log("Geometries in Memory", renderer.info.memory.geometries);
-               console.log("Textures in Memory", renderer.info.memory.textures);
-               console.log("Programs(Shaders) in Memory", renderer.info.programs.length);
-               console.table(listAllEventListeners());
 
-               console.log("------------------------------------------");
+        
+        switch ( event.button ) {
+            case 0:
+              mainRendererRaycaster(pointer, event);
+              break;
+            case 1: 
+            
+              console.log("Active Drawcalls:", renderer.info.render.calls);
+              console.log("Number of Vertices:", renderer.info.render.vertices);
+              console.log("Number of Triangles :", renderer.info.render.triangles);
+              console.log("Geometries in Memory", renderer.info.memory.geometries);
+              console.log("Textures in Memory", renderer.info.memory.textures);
+              console.log("Programs(Shaders) in Memory", renderer.info.programs.length);
+              console.table(listAllEventListeners());
 
-               break;
-             case 2: 
-               break;
-       }
+              console.log("------------------------------------------");
+
+              break;
+            case 2: 
+              break;
+          }
        
-     }
-     
-     if (!timer) {
-       timer = setTimeout(() => {
-         // Reset the timer after x seconds 1000 = 1 second.
-         timer = null;
-       }, 1000);
-     }
+      }
+    
    
       
     }
@@ -588,121 +593,139 @@ screenControls(camera);
         }
     };
 
+      let rayNoHit = true;
       let activeStep = "step1";
-      // let scaleSelect = false;
-      // let objBackToScale = null;
+      
       const raycaster = new THREE.Raycaster();
       function mainRendererRaycaster(pointer, event)
       {
-        
-        raycaster.setFromCamera(pointer, camera);
+
+        raycaster.setFromCamera(pointer, camera, 0.0 ,0.1);
         
         const intersects = raycaster.intersectObjects(interactableObjects, true);
-        
-        if (intersects.length > 0) {
-         const intersectedObject = intersects[0].object;
-      
-        
-         let o_name = intersectedObject.name;
-         
-            switch (true) {
-              case o_name.includes("exhibit"):
-                moveCameraToObject(intersectedObject);
-                
-                
-                const roomNumber = "0";
-                const searchString = "Mov";
-                //setupVideo(roomNumber, searchString, camera, scene);
-              break;
-              case o_name.includes("exit"):
-                loadScene("0");
-                gsapDirLightIntensityInit(0.3);
-              break;
-              case o_name.includes("tab00"):
-                loadScene("0");
-                gsapDirLightIntensityInit(0.3);
-              break;
-              case o_name.includes("tab01"):
-                loadScene("1");
-                gsapDirLightIntensityTarget(0.1);
-              break;
-              case o_name.includes("tab02"):
-                loadScene("2");
-                gsapDirLightIntensityTarget(0.1);
-              break;
-              case o_name.includes("tab03"):
-                loadScene("3");
-                gsapDirLightIntensityTarget(0.1);
-              break;
-              case o_name.includes("tab04"):
-                loadScene("4");
-                gsapDirLightIntensityTarget(0.1);
-              break;
-              case o_name.includes("tab05"):
-                loadScene("5");
-                gsapDirLightIntensityTarget(0.1);
-              break;
-              case o_name.includes("tab06"):
-                loadScene("6");
-                gsapDirLightIntensityTarget(0.1);
-              break;
-              case o_name.includes("tab07"):
-                loadScene("7");
-                gsapDirLightIntensityTarget(0.1);
-              break;
-              case o_name.includes("tab08"):
-                loadScene("8");
-                gsapDirLightIntensityTarget(0.1);
-              break;
-              case o_name.includes("step"):
-                activeStep = intersectedObject;
-                    let x = 0;
-                    let z = 0;
-                    
-                    x = (intersectedObject.position.x );
-                    z = (intersectedObject.position.z );
-                    moveCamera(x, 1, z);
-              break;
+        rayNoHit = true;
 
-            case "other":
+        if (intersects.length) {
+  
+        const intersectedObject = intersects[0].object;
+    
+      
+        let o_name = intersectedObject.name;
+        
+        
+
+          switch (true) {
+            case o_name.includes("exhibit"):
+              moveCameraToObject(intersectedObject);
+              
+              const roomNumber = "0";
+              const searchString = "Mov";
+              //setupVideo(roomNumber, searchString, camera, scene);
+
+              rayNoHit = false;
+            return;
+            case o_name.includes("exit"):
+              loadScene("0");
+              gsapDirLightIntensityInit(0.3);
+
+              rayNoHit = false;
+            break;
+            case o_name.includes("tab00"):
+              loadScene("0");
+              gsapDirLightIntensityInit(0.3);
+
+              rayNoHit = false;
+            break;
+            case o_name.includes("tab01"):
+              loadScene("1");
+              gsapDirLightIntensityTarget(0.1);
+
+              rayNoHit = false;
+            break;
+            case o_name.includes("tab02"):
+              loadScene("2");
+              gsapDirLightIntensityTarget(0.1);
+
+              rayNoHit = false;
+            break;
+            case o_name.includes("tab03"):
+              loadScene("3");
+              gsapDirLightIntensityTarget(0.1);
+
+              rayNoHit = false;
+            break;
+            case o_name.includes("tab04"):
+              loadScene("4");
+              gsapDirLightIntensityTarget(0.1);
+
+              rayNoHit = false;
+            break;
+            case o_name.includes("tab05"):
+              loadScene("5");
+              gsapDirLightIntensityTarget(0.1);
+
+              rayNoHit = false;
+            break;
+            case o_name.includes("tab06"):
+              loadScene("6");
+              gsapDirLightIntensityTarget(0.1);
+
+              rayNoHit = false;
+            break;
+            case o_name.includes("tab07"):
+              loadScene("7");
+              gsapDirLightIntensityTarget(0.1);
+
+              rayNoHit = false;
+            break;
+            case o_name.includes("tab08"):
+              loadScene("8");
+              gsapDirLightIntensityTarget(0.1);
+
+              rayNoHit = false;
+            break;
+            case o_name.includes("step"):
+              activeStep = intersectedObject;
+              let x = 0;
+              let z = 0;
+              
+              x = (intersectedObject.position.x );
+              z = (intersectedObject.position.z );
+              moveCamera(x, 1, z);
+
+
+            break;
+            default:
+              rayNoHit = true;
               // Handle cases where the name contains both "tab" and "bear" or neither.
               console.log("Intersected object's name doesn't match the desired conditions.");
               // You can handle other cases or log an error message here
               break;
-          }}
+          }
+          
+        
+        }
+
+        if(rayNoHit)
+        {
+          // Define a point on the XZ plane (Y=0) where the ray starts
+          // Define the direction of the ray based on the mouse click
+          // Calculate the parameter 't' for the ray-plane intersection
+          // Calculate the intersection point
+          const rayOrigin = camera.position.clone();
+          const rayDirection = raycaster.ray.direction;
+          const t = -rayOrigin.y / rayDirection.y;
+          if (t >= 0) {
+            const intersection = rayOrigin.clone().add(rayDirection.clone().multiplyScalar(t));
+            moveCamera(intersection.x, intersection.y, intersection.z);
+          }
         }
 
 
 
 
-      // Add an event listener to the document to detect general mouse clicks
-      
-      
-      
-      // document.addEventListener('click', function(event) {
-      //   // Check if the left or right mouse button was clicked
-      //   if (event.button === 0 || event.button === 2) {
-      //     // Scale the object back to its original scale using GSAP
-      //     if(objBackToScale === null)
-      //     {
-      //       console.log("No object to scale back");
-      //     }
-      //     else
-      //     {
-      //       gsap.to(objBackToScale.scale, {
-      //         duration: 1, // Animation duration in seconds
-      //         x: 1,       // Scale back to 1 on the X-axis
-      //         y: 1,       // Scale back to 1 on the Y-axis
-      //         z: 1,       // Scale back to 1 on the Z-axis
-      //       });
-      //       scaleSelect = false;
-      //     }
-          
-      //     objBackToScale = null;
-      //   }
-      // });
 
-
+        }
 
     
       
@@ -729,13 +752,10 @@ screenControls(camera);
             // Animation completed callback (if needed)
             console.log('Camera animation completed');
           },
+          overwrite: "auto",
         });
               
       }
-
-
-
-
 
 
 
@@ -788,33 +808,6 @@ screenControls(camera);
 
 
 
-    function traverseRayHierarchy(object) {
-
-
-      if (object instanceof THREE.Mesh) {
-        if (
-          object.name.includes("exhibit") ||
-          object.name.includes("tab") ||
-          object.name.includes("step") ||
-          object.name.includes("media")
-        ) {
-          interactableObjects.push(object); // Add the object to the interactableObjects array
-        }
-        if(object.name.includes("step1") && object.visible)
-        {
-          moveCamera(object.position.x, camera.position.y, object.position.z);
-        }
-      }
-
-      if (object instanceof THREE.Group) {
-
-        for (let i = 0; i < object.children.length; i++) {
-          traverseRayHierarchy(object.children[i]);
-        }
-      }
-    }
-
-
     function findObjectsToActDeact(desiredRoom) {
 
       if (loadedScenes.has(desiredRoom)) {
@@ -830,7 +823,11 @@ screenControls(camera);
 
 
     function traverseActDeactHierarchy(object) {
-
+      
+    if (object.name.includes("tab")) {
+      object.position.z = 0;
+    }
+      
       if (object instanceof THREE.Mesh) {
         
         if(object.visible)
@@ -852,9 +849,20 @@ screenControls(camera);
     }
 
 
+
+
+
+    let tabAnim_i = 0;
     function traverseRayHierarchy(object) {
-
-
+      
+      if (object.name.includes("tab")) {
+        object.position.z = 0;
+        setTimeout(() => {
+          objToPos(object.position.x, object.position.y, object.position.z - 4, object);
+        }, 100 * tabAnim_i);
+        tabAnim_i++;
+      }
+     
       if (object instanceof THREE.Mesh) {
         if (
           object.name.includes("exhibit") ||
@@ -877,11 +885,12 @@ screenControls(camera);
         }
       }
     }
+   
 
 
     ////////////// Object select animation part //////////////////////
 
-        
+            
     // Create a raycaster and initialize it
     const onMoveRaycaster = new THREE.Raycaster();
     const onMoveMouse = new THREE.Vector2();
@@ -894,103 +903,95 @@ screenControls(camera);
       onMoveMouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
       onMoveMouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
 
+
+ 
       // Update the raycaster with the mouse's NDC
       onMoveRaycaster.setFromCamera(onMoveMouse, camera);
 
       // Perform raycasting and get the intersections
       const intersects = onMoveRaycaster.intersectObjects(scene.children, true);
 
+      // Create a temporary set to keep track of objects currently intersected
+      const currentlyIntersectedObjects = new Set();
+
       // Filter the intersections to include only objects with names containing "tab"
       const tabIntersects = intersects.filter((intersect) => {
         return intersect.object.name.includes("tab");
       });
 
-      // Log the names of the filtered objects
-      tabIntersects.forEach((intersect) => {
-        
 
-        if (!scaledObjects.has(intersect.object)) {
+      if(!moveIsAnimating)
+      {
+        // Log the names of the filtered objects
+        tabIntersects.forEach((intersect) => {
+          currentlyIntersectedObjects.add(intersect.object);
 
+          if (!scaledObjects.has(intersect.object)) {
+            // Object was not previously scaled, scale it up
+            gsap.to(intersect.object.position, {
+              duration: 2,
+              x: intersect.object.position.x,
+              y: -0.25,
+              z: intersect.object.position.z,
+            });
 
-          gsap.to(intersect.object.position, {
-            duration: 2,
-            x: intersect.object.position.x,
-            y: intersect.object.position.y + 0.4,
-            z: intersect.object.position.z,
-          });
+            gsap.to(intersect.object.scale, {
+              duration: 2,
+              x: 1.03,
+              y: 1.03,
+              z: 1.03,
+            });
 
+            // Add the object to the set of scaled objects
+            scaledObjects.add(intersect.object);
+          }
+        });
 
+        // Check if any previously scaled objects are no longer intersected
+        scaledObjects.forEach((object) => {
+          if (!currentlyIntersectedObjects.has(object)) {
+            gsap.to(object.position, {
+              duration: 2,
+              x: object.position.x,
+              y: 0.25,
+              z: object.position.z,
+            });
 
+            // Object is no longer intersected, scale it back down
+            gsap.to(object.scale, {
+              duration: 2,
+              x: 1,
+              y: 1,
+              z: 1,
+            });
 
-          // Object was not previously scaled, scale it up
-          gsap.to(intersect.object.scale, {
-            duration: 2,
-            x: 1.1,
-            y: 1.1,
-            z: 1.1,
-          });
-
-          // Add the object to the set of scaled objects
-          scaledObjects.add(intersect.object);
-        }
-      });
-
-      // Check if any previously scaled objects are no longer intersected
-      scaledObjects.forEach((object) => {
-        if (!tabIntersects.some((intersect) => intersect.object === object)) {
-
-          gsap.to(object.position, {
-            duration: 2,
-            x: object.position.x,
-            y: -0.4,
-            z: object.position.z,
-          });
-
-          // Object is no longer intersected, scale it back down
-          gsap.to(object.scale, {
-            duration: 2,
-            x: 1,
-            y: 1,
-            z: 1,
-          });
-
-          // Remove the object from the set of scaled objects
-          scaledObjects.delete(object);
-        }
-      });
+            // Remove the object from the set of scaled objects
+            scaledObjects.delete(object);
+          }
+        });
+      }
     }
 
     // Add a mousemove event listener to your canvas or window
     window.addEventListener('mousemove', (event) => {
-      onMouseMove(event, camera, scene); // Replace "camera" and "scene" with your camera and scene objects
+      onMouseMove(event, camera, scene);
     });
+
 
 
 
     ////////////// ~ Object select animation part //////////////////////
 
-
-
-    let mouseDown = false;
-    let timer = null;
     
     // Event listener for mouse down
     document.addEventListener('mousedown', (event) => {
       
-      mouseDown = true;
-    
-      // Call the function if the timer is not active
-      if (!timer) {
         onClick(event);
-      }
       
       
     });
 
-    // Event listener for mouse up
-    document.addEventListener('mouseup', () => {
-      mouseDown = false;
-    });
+
 
 
     window.addEventListener("resize", () => {
@@ -1108,9 +1109,9 @@ screenControls(camera);
   
         }
         //updatGrabablePosition();
-        stats.begin();
+        //stats.begin();
 				//renderer.render( scene, camera );
-				stats.end();
+				//stats.end();
 
 			}
       //requestAnimationFrame( animate );

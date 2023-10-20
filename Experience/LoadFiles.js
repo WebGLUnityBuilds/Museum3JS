@@ -51,7 +51,7 @@ export default class LoadFiles {
         case 'gltf':
           data = await loadFile(url);
           loader = new GLTFLoader();
-          const gltf = await loader.parse(data);
+          const gltf = loader.parse(data); //await before loader if fail
           return gltf.scene;
   
         case 'glb':
@@ -105,7 +105,6 @@ export default class LoadFiles {
         a(object);
         function a(object) {
 
-          console.log(object.name);
           if (object instanceof THREE.Mesh) {
             if (
               object.name.includes("exhibit") ||
@@ -127,8 +126,6 @@ export default class LoadFiles {
             {
               object.receiveShadow = true;
             }
-        
-          
            
           } 
     

@@ -6,10 +6,10 @@ let hdrTexture = null; // Global variable to store the HDR texture
 const createRenderer = (scene) => {
   const renderer = new THREE.WebGLRenderer({ antialias: true });
 
-  renderer.setPixelRatio(window.devicePixelRatio * 0.85);
+  renderer.setPixelRatio(window.devicePixelRatio * 0.95);
   renderer.setSize(window.innerWidth, window.innerHeight);
   document.body.appendChild(renderer.domElement);
-  //renderer.setClearColor(0xA3A3A3);
+  renderer.setClearColor(0xdfdfff);
 
   renderer.shadowMap.enabled = true;
   renderer.shadowMap.type = THREE.PCFShadowMap ;
@@ -28,9 +28,30 @@ const createRenderer = (scene) => {
   // console.log("HDR:", window.matchMedia("(dynamic-range: high)").matches)
 
 
+  let materialArray = [];
+  let texture_bk = new THREE.TextureLoader().load('./Models/Environment/Skybox/arid2_bk.jpg');
+  let texture_dn = new THREE.TextureLoader().load('./Models/Environment/Skybox/arid2_dn.jpg');
+  let texture_ft = new THREE.TextureLoader().load('./Models/Environment/Skybox/arid2_ft.jpg');
+  let texture_lf = new THREE.TextureLoader().load('./Models/Environment/Skybox/arid2_lf.jpg');
+  let texture_rt = new THREE.TextureLoader().load('./Models/Environment/Skybox/arid2_rt.jpg');
+  let texture_up = new THREE.TextureLoader().load('./Models/Environment/Skybox/arid2_up.jpg');
 
+  materialArray.push(new THREE.MeshBasicMaterial({map: texture_bk}));
+  materialArray.push(new THREE.MeshBasicMaterial({map: texture_dn}));
+  materialArray.push(new THREE.MeshBasicMaterial({map: texture_ft}));
+  materialArray.push(new THREE.MeshBasicMaterial({map: texture_lf}));
+  materialArray.push(new THREE.MeshBasicMaterial({map: texture_rt}));
+  materialArray.push(new THREE.MeshBasicMaterial({map: texture_up}));
 
+  for(let i=0; i<6; i++)
+  {
+    materialArray[i].side = THREE.BackSide;
+  }
 
+  let skyboxGeo = new THREE.BoxGeometry(10000,10000,10000);
+  let skybox = new THREE.Mesh(skyboxGeo, materialArray);
+  scene.add(skybox);
+  
 
   // if (hdrTexture) {
   //   // HDR texture is already loaded, apply it to the scene
@@ -42,7 +63,7 @@ const createRenderer = (scene) => {
   //     hdrTexture = texture; // Store the HDR texture globally
   //     setSceneBackgroundAndEnvironment(scene, hdrTexture); // Apply the texture to the scene
   //   });
-  //}
+  // }
 
   return renderer;
 };

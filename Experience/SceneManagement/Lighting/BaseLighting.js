@@ -14,7 +14,7 @@ export function setupLights(scene) {
   directionalLight.shadow.mapSize.width = 1024;
   directionalLight.shadow.mapSize.height = 1024;
   directionalLight.shadow.camera.near = 0.5;
-  directionalLight.shadow.camera.far = 100;
+  directionalLight.shadow.camera.far = 1000;
   scene.add(directionalLight);
 
 
