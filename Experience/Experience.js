@@ -868,6 +868,7 @@ export default class Experience{
           object.name.includes("exhibit") ||
           object.name.includes("tab") ||
           object.name.includes("step") ||
+          object.name.includes("light") ||
           object.name.includes("media")
         ) {
           interactableObjects.push(object); // Add the object to the interactableObjects array
@@ -1030,21 +1031,30 @@ export default class Experience{
       const mapLim = 20;
      
 
-      const spotLight = new THREE.SpotLight(0x00FFFF);
+      const spotLight = new THREE.SpotLight(0xEFEFEF);
       scene.add(spotLight);
       spotLight.position.set(0,0,0);
-      spotLight.intensity = 4;
-      spotLight.angle = 0.4;
-      spotLight.penumbra = 0.5;
+      spotLight.intensity = 2;
+      spotLight.angle = Math.PI/20;
+      spotLight.penumbra = 0.3;
       spotLight.castShadow = true;
 
       spotLight.shadow.mapSize.width = 512;
       spotLight.shadow.mapSize.height = 512;
       spotLight.shadow.camera.near = 0.5;
-      spotLight.shadow.camera.far = 50;
+      spotLight.shadow.camera.far = 10;
       spotLight.shadow.focus = 1;
 
 
+      const rlwidth = 1.0;
+      const rlheight = 1.0;
+
+      let rectLight = new THREE.RectAreaLight(0xfaf0b5, 15.0, rlwidth, rlheight);
+      rectLight.position.set(0,-1,0);
+      rectLight.lookAt(0,0,0);
+    
+      scene.add(rectLight);
+    
 			function render() {
 
 		
@@ -1083,22 +1093,36 @@ export default class Experience{
           interactableObjects.forEach(exhibit => {
             
             let shadowedExhibit = null;
-            if(exhibit.name.includes("exhibit"))
+            if( exhibit.name.includes("exhibit"))
             {
               let dist  = measureDistance(camera, exhibit);
               
               if (dist < 3)
               {
-                //shadowedExhibit = exhibit;  
                 exhibit.traverse(function(node)
                 {
                   if(node.isMesh)
+                    console.log("whaaa");
                     shadowedExhibit = exhibit;
                 });
-                spotLight.position.set(shadowedExhibit.position.x,shadowedExhibit.position.y+4,shadowedExhibit.position.z+1);
-                spotLight.lookAt(shadowedExhibit);
+                if (shadowedExhibit) 
+                {
+                  spotLight.position.copy(shadowedExhibit.position);
+
+                  //Set the target of the spotlight to the shadowedExhibit's position
+                  spotLight.target = shadowedExhibit;
+                  
+                  spotLight.position.set(0,3.5,0);
+
+                  //console.log(spotLight.position);
+
+
+                  //rectLight.position.copy(shadowedExhibit.position);
+                  rectLight.position.set(shadowedExhibit.position.x,shadowedExhibit.position.y-0.4,shadowedExhibit.position.z);
+                  spotLight.lookAt(shadowedExhibit);
+                }
+                
               }
-              
               
             }
           });

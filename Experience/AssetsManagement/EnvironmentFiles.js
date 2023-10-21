@@ -68,7 +68,7 @@ export default assets = {
         {
           classification: "level",
           type: "glb",
-          path: "./Models/Environment/Room02/RoomExhb.glb"
+          path: "./Models/Environment/Room02/RoomExhnoHDR.glb"
         },
         {
           classification: "exhibit",

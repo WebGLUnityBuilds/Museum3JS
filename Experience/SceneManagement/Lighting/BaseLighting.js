@@ -3,6 +3,9 @@ import * as THREE from 'three';
 export function setupLights(scene) {
 
 
+
+
+
   const ambientLight = new THREE.HemisphereLight(0xffffff, 0x00ffff, 1);
   scene.add(ambientLight);
 
@@ -16,6 +19,11 @@ export function setupLights(scene) {
   directionalLight.shadow.camera.near = 0.5;
   directionalLight.shadow.camera.far = 1000;
   scene.add(directionalLight);
+
+
+  
+  //RactAreaLightUniformsLib.init();
+
 
 
 }

@@ -104,7 +104,7 @@ export default class LoadFiles {
         scene.add(object);
         a(object);
         function a(object) {
-
+          console.log(object.name);
           if (object instanceof THREE.Mesh) {
             if (
               object.name.includes("exhibit") ||
