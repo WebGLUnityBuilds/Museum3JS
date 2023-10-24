@@ -643,14 +643,14 @@ export default class Experience{
               rayNoHit = false;
             break;
             case o_name.includes("tab02"):
-              loadScene("2");
-              gsapDirLightIntensityTarget(0.1);
+              //loadScene("2");
+              //gsapDirLightIntensityTarget(0.1);
 
               rayNoHit = false;
             break;
             case o_name.includes("tab03"):
-              loadScene("3");
-              gsapDirLightIntensityTarget(0.1);
+              //loadScene("3");
+              //gsapDirLightIntensityTarget(0.1);
 
               rayNoHit = false;
             break;
@@ -661,26 +661,26 @@ export default class Experience{
               rayNoHit = false;
             break;
             case o_name.includes("tab05"):
-              loadScene("5");
-              gsapDirLightIntensityTarget(0.1);
+              //loadScene("5");
+              //gsapDirLightIntensityTarget(0.1);
 
               rayNoHit = false;
             break;
             case o_name.includes("tab06"):
-              loadScene("6");
-              gsapDirLightIntensityTarget(0.1);
+              //loadScene("6");
+              //gsapDirLightIntensityTarget(0.1);
 
               rayNoHit = false;
             break;
             case o_name.includes("tab07"):
-              loadScene("7");
-              gsapDirLightIntensityTarget(0.1);
+              //loadScene("7");
+              //gsapDirLightIntensityTarget(0.1);
 
               rayNoHit = false;
             break;
             case o_name.includes("tab08"):
-              loadScene("8");
-              gsapDirLightIntensityTarget(0.1);
+              //loadScene("8");
+              //gsapDirLightIntensityTarget(0.1);
 
               rayNoHit = false;
             break;
@@ -717,7 +717,20 @@ export default class Experience{
           const t = -rayOrigin.y / rayDirection.y;
           if (t >= 0) {
             const intersection = rayOrigin.clone().add(rayDirection.clone().multiplyScalar(t));
-            moveCamera(intersection.x, intersection.y, intersection.z);
+            
+            const geometry = new THREE.BoxGeometry( 0.1, 0.1, 0.1 ); 
+            const material = new THREE.MeshBasicMaterial( {color: 0x000000} ); 
+            const cube = new THREE.Mesh( geometry, material ); 
+            
+            scene.add( cube );
+            cube.position.copy( intersection );
+            cube.visible = false;
+
+            const d = measureDistance(cube, camera);
+            if(d < 8)
+            {
+              moveCamera(intersection.x, intersection.y, intersection.z);
+            }
           }
         }
 
@@ -1028,7 +1041,7 @@ export default class Experience{
       // element.name("field of view");
 
       var clock = new THREE.Clock();
-      const mapLim = 20;
+      const mapLim = 8;
      
 
       const spotLight = new THREE.SpotLight(0xEFEFEF);
@@ -1050,7 +1063,7 @@ export default class Experience{
       const rlheight = 1.0;
 
       let rectLight = new THREE.RectAreaLight(0xfaf0b5, 15.0, rlwidth, rlheight);
-      rectLight.position.set(0,-1,0);
+      rectLight.position.set(0,1,0);
       rectLight.lookAt(0,0,0);
     
       scene.add(rectLight);
@@ -1080,8 +1093,8 @@ export default class Experience{
         if(camera.position.z > mapLim){
           camera.position.z = mapLim;
         } 
-        if(camera.position.z < -mapLim ){
-          camera.position.z = -mapLim;
+        if(camera.position.z < -mapLim + 2){
+          camera.position.z = -mapLim + 2;
         } 
         camera.position.y = cameraHeight;
 
@@ -1118,7 +1131,7 @@ export default class Experience{
 
 
                   //rectLight.position.copy(shadowedExhibit.position);
-                  rectLight.position.set(shadowedExhibit.position.x,shadowedExhibit.position.y-0.4,shadowedExhibit.position.z);
+                  rectLight.position.set(shadowedExhibit.position.x,shadowedExhibit.position.y + 0.4,shadowedExhibit.position.z);
                   spotLight.lookAt(shadowedExhibit);
                 }
                 

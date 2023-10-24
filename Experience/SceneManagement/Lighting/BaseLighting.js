@@ -6,12 +6,12 @@ export function setupLights(scene) {
 
 
 
-  const ambientLight = new THREE.HemisphereLight(0xffffff, 0x00ffff, 1);
+  const ambientLight = new THREE.HemisphereLight(0xffffff, 0xfffff, 1);
   scene.add(ambientLight);
 
   const directionalLight = new THREE.DirectionalLight(0x4380e0, 1);
   directionalLight.position.set(2, 3, 2);
-  directionalLight.intensity = 1;
+  directionalLight.intensity = 2;
   directionalLight.castShadow = true;
   directionalLight.receiveShadow = true;
   directionalLight.shadow.mapSize.width = 1024;

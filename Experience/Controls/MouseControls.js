@@ -12,8 +12,8 @@ const rotationSpeed = 0.0018 * window.devicePixelRatio; // Adjust the sensitivit
 const rotationEuler = new THREE.Euler(0, 0, 0, 'YXZ');
 
 // Define the minimum and maximum vertical rotation angles in radians
-const minVerticalAngle = -Math.PI / 7; // 30 degrees looking down
-const maxVerticalAngle = Math.PI / 15; // 12 degrees looking up
+const minVerticalAngle = -Math.PI / 28; // 30 degrees looking down
+const maxVerticalAngle = Math.PI / 28; // 12 degrees looking up
 
 function handleMouseDown() {
   isMouseDown = true;
