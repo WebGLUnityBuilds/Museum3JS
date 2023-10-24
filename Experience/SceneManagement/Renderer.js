@@ -16,7 +16,7 @@ const createRenderer = (scene) => {
   
   renderer.outputColorSpace = THREE.SRGBColorSpace;
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
-  renderer.toneMappingExposure = 0.3;
+  renderer.toneMappingExposure = 0.1;
 
 
 

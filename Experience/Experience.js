@@ -602,6 +602,12 @@ export default class Experience{
       let activeStep = "step1";
       
       const raycaster = new THREE.Raycaster();
+
+
+
+
+
+
       function mainRendererRaycaster(pointer, event)
       {
 
@@ -631,7 +637,7 @@ export default class Experience{
             break;
             case o_name.includes("exit"):
               loadScene("0");
-              gsapDirLightIntensityInit(0.3);
+              gsapDirLightIntensityInit(0.1);
 
               rayNoHit = false;
             break;
