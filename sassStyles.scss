@@ -299,6 +299,7 @@
   z-index: 1;
   -webkit-user-select: none;
   user-select: none;
+  
 }
 
 #menuToggle a {
@@ -320,8 +321,7 @@
   top: -7px;
   left: -5px;
   
-  cursor: pointer;
-  
+  cursor: url(../miscellaneous/mouse/icons8-hand-cursor-40.png), auto;
   opacity: 0; /* hide this */
   z-index: 2; /* and place it over the hamburger */
   

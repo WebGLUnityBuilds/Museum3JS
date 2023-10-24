@@ -12,6 +12,7 @@ body {
   margin: 0;
   overflow: hidden;
   font-family: 'Roboto', sans-serif;
+  
 }
 
 hr {
@@ -34,6 +35,7 @@ hr {
   z-index: 5000;
 }
 .hand-cursor {
+  cursor: url(../miscellaneous/mouse/icons8-hand-cursor-40.png), auto;
   z-index: 5000;
 }
 
