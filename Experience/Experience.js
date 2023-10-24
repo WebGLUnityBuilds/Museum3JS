@@ -385,7 +385,7 @@ export default class Experience{
         });
     }
 
-    const startingIntensity = 0.3;
+    const startingIntensity = 0.1;
     const rendererProperties = { toneMappingExposure: startingIntensity };
     
     function gsapDirLightIntensityInit(targetIntensity) {
@@ -644,7 +644,7 @@ export default class Experience{
             case o_name.includes("tab00"):
               moveIsAnimating = true;
               loadScene("0");
-              gsapDirLightIntensityInit(0.3);
+              gsapDirLightIntensityInit(0.1);
 
               rayNoHit = false;
             break;
