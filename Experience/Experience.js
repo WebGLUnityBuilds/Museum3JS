@@ -95,7 +95,7 @@ export default class Experience{
         0.1,
         100
       );
-      let cameraHeight  = 1.8;
+      let cameraHeight  = 2;
       
 
       camera.position.set(0, 0, 0);
@@ -277,16 +277,19 @@ export default class Experience{
       const menuItemHref = event.target.getAttribute('href');
       if (menuItemHref === '#scene0') 
       {
+        moveIsAnimating = true;
         loadScene("0");
         gsapDirLightIntensityInit();
       } 
       else if (menuItemHref === '#scene1') 
       {
+        moveIsAnimating = true;
         loadScene("1");
         gsapDirLightIntensityTarget(0.1);
       } 
       else if (menuItemHref === '#scene2') 
       {
+        moveIsAnimating = true;
         loadScene("2");
         gsapDirLightIntensityTarget(0.1);
       }
@@ -344,30 +347,32 @@ export default class Experience{
         }
         else
         {
-          let tween = gsap.to(camera.position, {
+          gsap.to(camera.position, {
             x,
             y,
             z,
             duration: 4,
-            //overwrite: "auto",
+            overwrite: "auto",
         });
         //tween.delay(0.2);
         }
         
     }
+    
+    let tabAnim_i = 0;
     let moveIsAnimating = true;
     function objToPos(x, y, z, obj) {
-      console.log(x + " : " + y + " : " + z );
       gsap.to(obj.position, {
         x,
         y: y,
         z,
         duration: 1.5,    // Animation duration in seconds
         onComplete: () => {
+          tabAnim_i = 0;
           if(obj.name.includes("8"))
             moveIsAnimating = false;
         },
-        overwrite: "auto",
+        
       });
     }
 
@@ -612,18 +617,18 @@ export default class Experience{
       
         let o_name = intersectedObject.name;
         
-        
+       
 
           switch (true) {
             case o_name.includes("exhibit"):
               moveCameraToObject(intersectedObject);
               
-              const roomNumber = "0";
-              const searchString = "Mov";
+              // const roomNumber = "0";
+              // const searchString = "Mov";
               //setupVideo(roomNumber, searchString, camera, scene);
 
               rayNoHit = false;
-            return;
+            break;
             case o_name.includes("exit"):
               loadScene("0");
               gsapDirLightIntensityInit(0.3);
@@ -631,18 +636,23 @@ export default class Experience{
               rayNoHit = false;
             break;
             case o_name.includes("tab00"):
+              moveIsAnimating = true;
               loadScene("0");
               gsapDirLightIntensityInit(0.3);
 
               rayNoHit = false;
             break;
             case o_name.includes("tab01"):
+              moveIsAnimating = true;
               loadScene("1");
               gsapDirLightIntensityTarget(0.1);
 
               rayNoHit = false;
             break;
             case o_name.includes("tab02"):
+              const roomNumber = "0";
+              const searchString = "Mov";
+              setupVideo(roomNumber, searchString, camera, scene);
               //loadScene("2");
               //gsapDirLightIntensityTarget(0.1);
 
@@ -655,6 +665,7 @@ export default class Experience{
               rayNoHit = false;
             break;
             case o_name.includes("tab04"):
+              moveIsAnimating = true;
               loadScene("4");
               gsapDirLightIntensityTarget(0.1);
 
@@ -706,6 +717,9 @@ export default class Experience{
         
         }
 
+      
+
+
         if(rayNoHit)
         {
           // Define a point on the XZ plane (Y=0) where the ray starts
@@ -727,7 +741,7 @@ export default class Experience{
             cube.visible = false;
 
             const d = measureDistance(cube, camera);
-            if(d < 8)
+            if(d < 10)
             {
               moveCamera(intersection.x, intersection.y, intersection.z);
             }
@@ -827,6 +841,7 @@ export default class Experience{
         const loadedSceneObjects = loadedScenes.get(desiredRoom);
 
         loadedSceneObjects.forEach((object) => {
+          tabsReset(object);
           traverseActDeactHierarchy(object);
         });
       } else {
@@ -837,9 +852,6 @@ export default class Experience{
 
     function traverseActDeactHierarchy(object) {
       
-    if (object.name.includes("tab")) {
-      object.position.z = 0;
-    }
       
       if (object instanceof THREE.Mesh) {
         
@@ -865,11 +877,10 @@ export default class Experience{
 
 
 
-    let tabAnim_i = 0;
     function traverseRayHierarchy(object) {
       
       if (object.name.includes("tab")) {
-        object.position.z = 0;
+        //object.position.z = 2;
         setTimeout(() => {
           objToPos(object.position.x, object.position.y, object.position.z - 4, object);
         }, 100 * tabAnim_i);
@@ -899,7 +910,19 @@ export default class Experience{
         }
       }
     }
-   
+    function tabsReset(object) {
+      
+      if (object.name.includes("tab")) {
+        object.position.set(object.position.x, object.position.y, 0);
+      }
+
+      if (object instanceof THREE.Group) {
+
+        for (let i = 0; i < object.children.length; i++) {
+          tabsReset(object.children[i]);
+        }
+      }
+    }
 
 
     ////////////// Object select animation part //////////////////////
@@ -933,7 +956,7 @@ export default class Experience{
         return intersect.object.name.includes("tab");
       });
 
-
+      console.log(moveIsAnimating);
       if(!moveIsAnimating)
       {
         // Log the names of the filtered objects
@@ -945,8 +968,9 @@ export default class Experience{
             gsap.to(intersect.object.position, {
               duration: 2,
               x: intersect.object.position.x,
-              y: -0.25,
+              y: 0.25,
               z: intersect.object.position.z,
+              overwrite: "auto",
             });
 
             gsap.to(intersect.object.scale, {
@@ -954,6 +978,7 @@ export default class Experience{
               x: 1.03,
               y: 1.03,
               z: 1.03,
+              overwrite: "auto",
             });
 
             // Add the object to the set of scaled objects
@@ -967,8 +992,9 @@ export default class Experience{
             gsap.to(object.position, {
               duration: 2,
               x: object.position.x,
-              y: 0.25,
+              y: -0.25,
               z: object.position.z,
+              overwrite: "auto",
             });
 
             // Object is no longer intersected, scale it back down
@@ -977,6 +1003,7 @@ export default class Experience{
               x: 1,
               y: 1,
               z: 1,
+              overwrite: "auto",
             });
 
             // Remove the object from the set of scaled objects
@@ -1093,8 +1120,8 @@ export default class Experience{
         if(camera.position.z > mapLim){
           camera.position.z = mapLim;
         } 
-        if(camera.position.z < -mapLim + 2){
-          camera.position.z = -mapLim + 2;
+        if(camera.position.z < -mapLim + 4){
+          camera.position.z = -mapLim + 4;
         } 
         camera.position.y = cameraHeight;
 
@@ -1110,12 +1137,11 @@ export default class Experience{
             {
               let dist  = measureDistance(camera, exhibit);
               
-              if (dist < 3)
+              if (dist < 5)
               {
                 exhibit.traverse(function(node)
                 {
                   if(node.isMesh)
-                    console.log("whaaa");
                     shadowedExhibit = exhibit;
                 });
                 if (shadowedExhibit) 

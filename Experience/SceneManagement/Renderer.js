@@ -9,7 +9,7 @@ const createRenderer = (scene) => {
   renderer.setPixelRatio(window.devicePixelRatio * 0.95);
   renderer.setSize(window.innerWidth, window.innerHeight);
   document.body.appendChild(renderer.domElement);
-  renderer.setClearColor(0xdfdfff);
+  renderer.setClearColor(0x95adbf);
 
   renderer.shadowMap.enabled = true;
   renderer.shadowMap.type = THREE.PCFShadowMap ;
