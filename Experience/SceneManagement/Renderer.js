@@ -4,9 +4,16 @@ import { RGBELoader } from 'three/examples/jsm/loaders/RGBELoader.js';
 let hdrTexture = null; // Global variable to store the HDR texture
 
 const createRenderer = (scene) => {
-  const renderer = new THREE.WebGLRenderer({ antialias: true });
+  const renderer = new THREE.WebGLRenderer(
+    { 
+      //antialias: true 
+      antialias: false,
+      alpha: true,
+      precision: "lowp", //highp", "mediump" or "lowp"
+      powerPreference: "low-power", //"high-performance", "low-power" or "default"
+    });
 
-  renderer.setPixelRatio(window.devicePixelRatio * 0.95);
+  renderer.setPixelRatio(window.devicePixelRatio * 0.85);
   renderer.setSize(window.innerWidth, window.innerHeight);
   document.body.appendChild(renderer.domElement);
   renderer.setClearColor(0x95adbf);

@@ -178,8 +178,8 @@ export default class Experience{
         renderer.debug.checkShaderErrors = true;
 
 
-        //let stats = new Stats();
-        //document.body.appendChild( stats.dom );
+        let stats = new Stats();
+        document.body.appendChild( stats.dom );
 
         camera.position.set(0,0,-10);
 
@@ -1178,9 +1178,9 @@ export default class Experience{
   
         }
         //updatGrabablePosition();
-        //stats.begin();
+        stats.begin();
 				//renderer.render( scene, camera );
-				//stats.end();
+				stats.end();
 
 			}
       //requestAnimationFrame( animate );
