@@ -97,6 +97,7 @@ export default class Experience{
       );
       let cameraHeight  = 2;
       
+      
 
       camera.position.set(0, 0, 0);
         
@@ -223,13 +224,6 @@ export default class Experience{
       
 
 
-      const fullscreenButton = document.getElementById('fullscreenButton');
-      fullscreenButton.addEventListener('click', toggleFullscreen);
-
-
-
-
-
       // Check the platform and apply the appropriate event listener
       if (/Macintosh|iPad|iPhone|iPod/.test(navigator.userAgent)) {
         // Apple device scroll event listener
@@ -327,6 +321,7 @@ export default class Experience{
 
 
 
+
     ///////////////////////////////////////////////////////////////// ~END EVENTS /////////////////////////////////////////////////////////////////
                                                                     //////////
                                                                     //////////
@@ -378,10 +373,11 @@ export default class Experience{
 
     function rotateCamera(x, y, z) {
         gsap.to(camera.rotation, {
-            x,
+            x: 0,
             y: y,
-            z,
-            duration: 2.2
+            z: 0,
+            duration: 2.2,
+            overwrite: 'auto'
         });
     }
 
@@ -546,6 +542,44 @@ export default class Experience{
       
     }
 
+
+    //space and f controls, as well video
+
+
+    
+
+      // const fullscreenButton = document.getElementById('fullscreenButton');
+      // fullscreenButton.addEventListener('click', toggleFullscreen);
+
+
+      // document.body.onkeyup = function(e) {
+      //   if (e.key == "f" ||
+      //       e.code == "f" ||      
+      //       e.keyCode == 32      
+      //   ) {
+      //     toggleFullscreen();
+      //   }
+      // }
+      document.addEventListener('keydown', function (e) {
+        if (e.key == "f" ||
+        e.code == "f" ||      
+        e.keyCode == 70      
+        ) {
+          toggleFullscreen();
+        }
+      });
+
+    document.body.onkeyup = function(e) {
+      if (e.key == " " ||
+          e.code == "Space" ||      
+          e.keyCode == 32      
+      ) {
+        rotateCamera(camera.rotation.x , camera.rotation.y + Math.PI, camera.rotation.x);
+      }
+    }
+
+
+    
     function destroyVideoElement() {
       const videoElement = document.getElementById('CurrentVideo');
       if (videoElement) {
