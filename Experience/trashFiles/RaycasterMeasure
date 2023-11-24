@@ -1,0 +1,33 @@
+//..distance
+// let minDistance = Infinity; // Initialize with a large value
+// let closestExhibit = null;
+
+// mainRendererActiveOBJ.forEach((object) => {
+//   if(object.visible){
+//   object.children.forEach((child) => {
+//     if (child.name.includes("exhibit")) {
+//       let distance = measureDistance(camera, child);
+//       distance = distance;// / 100;
+//       if (distance < minDistance) {
+//         minDistance = distance;
+//         closestExhibit = child;
+//       }
+//     }
+//   });
+//   }
+// });
+
+// if (closestExhibit) {
+//   // console.log("Closest Exhibit: ", closestExhibit.name);
+//   console.log("Min Distance:", minDistance);
+//   if (minDistance < 12) {
+
+//     if(mainRendererActiveOBJ.length > 0)
+//     {
+//       activeObjSmallRenderer.length = 0; // Empty the array
+//     }
+//     removeExhibitObjectsFromScene(smallScene);
+//     addExhibitToScene(closestExhibit, smallScene);
+
+//   }
+// }

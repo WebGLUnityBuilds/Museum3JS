@@ -1,0 +1,408 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@100&display=swap');
+/* *{
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+} */
+
+
+/* Default Project settings --------------------------------------------------------------------------*/
+body {
+  background: #000000;
+  margin: 0;
+  overflow: hidden;
+  font-family: 'Roboto', sans-serif;
+  
+}
+
+hr {
+  display: block;
+  height: 3px;
+  border: 1;
+  border-width: 40%;
+  border-radius: 50%;
+  margin:  0;
+  padding: 0;
+}
+
+/* To deactivate the cursor*/
+/* canvas{
+  cursor: none;
+} */
+
+.custom-cursor {
+  cursor: url(../miscellaneous/mouse/idle_cursor.png), auto;
+  z-index: 5000;
+}
+.hand-cursor {
+  cursor: url(../miscellaneous/mouse/icons8-hand-cursor-40.png), auto;
+  z-index: 5000;
+}
+
+button,
+textarea,
+input,
+select,
+nav,
+div,
+p,
+h3,
+a{
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+  -webkit-tap-highlight-color: transparent;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+
+#preloader {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: #222;
+}
+#loader  {
+  display: block;
+  position: relative;
+  left: 50%;
+  top: 50%;
+  animation: rotate 3s infinite;  
+  height: 50px;
+  width: 50px;
+}
+
+#loader:before,
+#loader:after {   
+  border-radius: 50%;
+  content: '';
+  display: block;
+  height: 20px;  
+  width: 20px;
+}
+#loader:before {
+  animation: ball1 1s infinite;  
+  background-color: #cb2025;
+  box-shadow: 30px 0 0 #f8b334;
+  margin-bottom: 10px;
+}
+#loader:after {
+  animation: ball2 1s infinite; 
+  background-color: rgb(0, 88, 160);
+  box-shadow: 30px 0 0 #97bf0d;
+}
+
+@keyframes rotate {
+  0% { 
+    -webkit-transform: rotate(0deg) scale(0.8); 
+    -moz-transform: rotate(0deg) scale(0.8);
+  }
+  50% { 
+    -webkit-transform: rotate(360deg) scale(1.2); 
+    -moz-transform: rotate(360deg) scale(1.2);
+  }
+  100% { 
+    -webkit-transform: rotate(720deg) scale(0.8); 
+    -moz-transform: rotate(720deg) scale(0.8);
+  }
+}
+
+@keyframes ball1 {
+  0% {
+    box-shadow: 30px 0 0 #f8b334;
+  }
+  50% {
+    box-shadow: 0 0 0 #f8b334;
+    margin-bottom: 0;
+    -webkit-transform: translate(15px,15px);
+    -moz-transform: translate(15px, 15px);
+  }
+  100% {
+    box-shadow: 30px 0 0 #f8b334;
+    margin-bottom: 10px;
+  }
+}
+
+@keyframes ball2 {
+  0% {
+    box-shadow: 30px 0 0 #97bf0d;
+  }
+  50% {
+    box-shadow: 0 0 0 #97bf0d;
+    margin-top: -20px;
+    -webkit-transform: translate(15px,15px);
+    -moz-transform: translate(15px, 15px);
+  }
+  100% {
+    box-shadow: 30px 0 0 #97bf0d;
+    margin-top: 0;
+  }
+}
+
+/* 
+.progress-bar {
+  position: absolute;
+  top: 50%;
+  height: 2px;
+  background: #484e31;
+}
+
+
+.progress-bar-container {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 100%;
+  height: 100%;
+  background-color: rgba(131, 134, 116, 0.911);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+#progress-bar {
+  width: 50%;
+  margin-top: 0.5%;
+  height: 0.5%;
+}
+
+/* For Firefox */
+progress::-moz-progress-bar {
+  /* Permalink - use to edit and share this gradient: https://colorzilla.com/gradient-editor/#b78628+0,fcc201+100 */
+  background: #7cbd27; /* Old browsers */
+  background: -moz-linear-gradient(left,  #7cbd27 0%, #7cbd27 100%); /* FF3.6-15 */
+  background: -webkit-linear-gradient(left,  #b78628 0%,#7cbd27 100%); /* Chrome10-25,Safari5.1-6 */
+  background: linear-gradient(to right,  #7cbd27 0%,#7cbd27 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#b78628', endColorstr='#fcc201',GradientType=1 ); /* IE6-9 */
+  border-radius: 10px;
+}
+
+/* For Chrome or Safari */
+progress::-webkit-progress-value {
+ /* Permalink - use to edit and share this gradient: https://colorzilla.com/gradient-editor/#b78628+0,fcc201+100 */
+  background: #7cbd27; /* Old browsers */
+  background: -moz-linear-gradient(left,  #7cbd27 0%, #7cbd27 100%); /* FF3.6-15 */
+  background: -webkit-linear-gradient(left,  #7cbd27 0%,#7cbd27 100%); /* Chrome10-25,Safari5.1-6 */
+  background: linear-gradient(to right,  #7cbd27 0%,#7cbd27 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#b78628', endColorstr='#fcc201',GradientType=1 ); /* IE6-9 */
+  border-radius: 10px;
+}
+
+progress::-webkit-progress-bar {
+  border-radius: 10px;
+}
+
+/* For IE10 */
+progress {
+  /* Permalink - use to edit and share this gradient: https://colorzilla.com/gradient-editor/#b78628+0,fcc201+100 */
+  background: #7cbd27; /* Old browsers */
+  background: -moz-linear-gradient(left,  #7cbd27 0%, #fcc201 100%); /* FF3.6-15 */
+  background: -webkit-linear-gradient(left,  #7cbd27 0%,#fcc201 100%); /* Chrome10-25,Safari5.1-6 */
+  background: linear-gradient(to right,  #7cbd27 0%,#fcc201 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#7cbd27', endColorstr='#fcc201',GradientType=1 ); /* IE6-9 */
+  border-radius: 10px;
+}
+
+label {
+  color: white;
+  font-size: 2rem;
+} */
+
+
+
+
+.done {
+  top: 0;
+  height: 100%;
+  width: 100%;
+  transition: all .2s ease;
+}
+
+
+/*       INFO BUTTON      */
+
+
+h1 {
+  text-align: center;
+  color: #3cbe73;
+  margin: 5% 0;
+}
+/* 
+.box {
+  margin: 0 auto;
+  text-align: center;
+} */
+.box-button.info-button > img {
+  width: 3vw;
+  height: 3vw;
+}
+.box {
+  position: fixed;
+  left: -89%;
+  right: 0;
+  bottom: 5%;
+  text-align: left;
+  display: flex;
+  justify-content: center;
+}
+
+.box-button {
+  padding: 0.5%;
+  color: #fff;
+  border-radius: 100%;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.3s ease-out;
+}
+
+.box-button:hover {
+  background: rgba(233, 66, 66, 0.363);
+}
+
+.overlay {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: rgba(0, 0, 0, 0.801);
+  transition: opacity 500ms;
+  visibility: hidden;
+  opacity: 0;
+}
+
+.overlay:target {
+  visibility: visible;
+  opacity: 1;
+}
+
+.popup {
+  margin: 10% auto;
+  padding: 5%;
+  background: #fff;
+  border-radius: 5px;
+  width: 30%;
+  position: relative;
+  transition: all 5s ease-in-out;
+}
+
+.popup h2 {
+  margin-top: 0;
+  color: #333;
+}
+
+.popup .close {
+  position: absolute;
+  top: 10px;
+  right: 30px;
+  transition: all 200ms;
+  font-size: 2em;
+  font-weight: bold;
+  text-decoration: none;
+  color: #333;
+}
+
+.popup .close:hover {
+  color: #d43131;
+}
+
+.popup .content {
+  max-height: 30%;
+  text-align: center;
+  overflow: auto;
+}
+
+@media screen and (max-width: 768px) {
+  .box {
+    width: 20%;
+  }
+
+  #popup1 {
+    width: 20%;
+  }
+  #popup1 .content p {
+    font-size: 2px; /* Adjust the font size to your desired value */
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .box {
+    text-align: center;
+  }
+  
+  .box-button.info-button img {
+    max-width: 100%;
+    max-height: 100%;
+  }
+  
+  #popup1 .content p {
+    font-size: 12px; /* Adjust the font size to your desired value */
+  }
+  #popup1 {
+    width: 90%;
+    height: 90%;
+  }
+}
+
+/* Default Project settings --------------------------------------------------------------------------*/
+
+
+/* Instructions Container */
+
+
+
+
+/* Experience canvas --------------------------------------------------------------------------*/
+
+.experience{
+  position: fixed;
+  width: 100vw;
+  height: 100vh;
+}
+
+.experience-canvas{
+  width: 100%;
+  height: 100%;
+}
+
+
+/* Page section --------------------------------------------------------------------------------*/
+
+.page{
+  z-index: 999;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+.page-wrapper{
+  position: absolute;
+}
+
+/* Hero section ---------------------------------------------------------------------------------*/
+
+.hero{
+  width: 100vw;
+  height: 100vh;
+}
+
+.hero-wrapper{
+  width: relative;
+  height: 100%;
+}
+
+
+.hero-main{
+  position: absolute;
+  bottom: 2%;
+  left: 2%;
+  font-size: small;
+}
+
+

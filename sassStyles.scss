@@ -1,0 +1,410 @@
+
+////// Original navigation
+// nav {
+//   &.primary-navigation {
+    
+//     // margin: 0 auto;
+//     // display: block;
+  
+//     // padding: 10px 0 0 0;  
+//     // text-align: center;
+//     // font-size: 18px;
+//     // z-index: 1;
+
+//     // ul li {
+//     //   list-style: none;
+//     //   margin: 0 auto;
+//     //   border-left: 2px solid #e64b40;
+//     //   display: inline-block;
+//     //   padding: 0 30px;
+//     //   position: relative;
+//     //   text-decoration: none;
+//     //   text-align: center;
+//     // }
+
+//     li a {
+//       color: rgb(0, 0, 0);
+//       cursor: inherit;
+//       &.hand-cursor {
+//         cursor: url(../miscellaneous/mouse/icons8-hand-cursor-40.png), auto;
+//       }
+//     }
+    
+
+//     li a:hover {
+//       color: #40e68b;
+//     }
+
+
+
+
+
+//     // li:hover {
+//     //   cursor: pointer;
+//     // }
+
+//     ul li ul {
+//       visibility: hidden;
+//       opacity: 0;
+//       position: absolute;
+// padding-left: 0;
+//       left: 0;
+//       display: none;
+//       background: white;
+//     }
+
+//     ul li:hover > ul,
+//     ul li ul:hover {
+//       visibility: visible;
+//       opacity: 1;
+//       display: block;
+//       min-width: 250px;
+//       text-align: left;
+//       padding-top: 20px;
+//       box-shadow: 0px 3px 5px -1px #ccc;
+//     }
+
+//     ul li ul li {
+//       clear: both;
+//       width: 100%;
+//       text-align: left;
+//       margin-bottom: 20px;
+//       border-style: none;
+//     }
+
+//     ul li ul li a:hover {
+//       padding-left: 10px;
+//       border-left: 2px solid #8840e6;
+//       transition: all 0.3s ease;
+//     }
+//   }
+  
+// }
+
+// a {
+
+//     text-decoration: none;
+//     z-index: 1;
+//     &:hover {
+//         color: #75304d;
+//     }
+    
+// }
+
+//  ul li ul li a { transition: all 0.5s ease; }
+
+
+// @media (max-width: 768px) {
+//     nav.primary-navigation {
+//       font-size: 14px;
+//     }
+
+//     nav.primary-navigation ul li {
+//       padding: 0 15px;
+//     }
+
+//     ul li ul {
+//       min-width: 200px;
+//       padding-top: 10px;
+//     }
+
+//     ul li ul li {
+//       margin-bottom: 10px;
+//     }
+//   }
+
+////// Original navigation
+ 
+
+
+  #fullscreenButton {
+    position: relative;
+    top: -80%;
+    right: -93%;
+    width: 7vmin;
+    height: 6vmin;
+    background-color: rgba(179, 179, 179, 0);
+    cursor: url(../miscellaneous/mouse/icons8-hand-cursor-40.png), auto;
+  }
+  #fullscreenButton {
+     /* Your existing styles */
+  user-select: none;
+  box-shadow: none; 
+  border: none;
+  }
+  
+  #fullscreenButton:active {
+    box-shadow: none; /* Change the box shadow when button is clicked */
+  }
+
+  #fullscreenButton img {
+    display: block;
+    width: 70%;
+    height: 70%;
+    margin: auto;
+  }
+
+
+
+
+
+
+
+.arrow-container {
+  position: absolute;
+  bottom: 5%; /* Center the container vertically */
+  left: 50%; /* Center the container horizontally */
+  transform: translate(-50%, -50%); /* Center the container properly */
+  display: flex;
+  justify-content: space-between; /* Equally space the children apart horizontally */
+
+  /* Add a maximum width to prevent the buttons from spreading too far */
+  max-width: 60vmin;
+}
+
+.arrow {
+  width: 3vmin;
+  height: 3vmin;
+  border-top: 0.8vmin solid #141111;
+  border-right: 0.8vmin solid #141111;
+  transition: all 300ms ease;
+  cursor: url(../miscellaneous/mouse/icons8-hand-cursor-40.png), auto;
+
+  &.forward {
+    transform: translate3d(100%, -70%, 0) rotate(-45deg);
+  }
+
+  &.backwards {
+    transform: translate3d(0%, 120%, 0) rotate(135deg);
+  }
+
+  &.left {
+    transform: translate3d(-200%, 30%, 0) rotate(-135deg);
+  }
+
+  &.right {
+    transform: translate3d(-100%, 30%, 0) rotate(45deg);
+  }
+
+  &:hover {
+    border-color: rgb(68, 255, 68);
+    box-shadow: 0.5vmin -0.5vmin 0 #40d333;
+  }
+
+  &:before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-40%, -60%) rotate(45deg);
+    width: 200%;
+    height: 200%;
+  }
+}
+  
+.image-container {
+  position: fixed;
+  bottom: 0;
+  left: 53%;
+  transform: translateX(10%);
+  transform: translateY(-90%);
+  z-index: 999; /* Ensure it's on top of other elements */
+}
+
+.image-container img {
+  width: 100%; /* Adjust the width as needed */
+  height: auto; /* Maintain the aspect ratio of the image */
+}
+
+  
+@media screen and (max-width: 768px) {
+  
+  
+  #fullscreenButton {
+    position: relative;
+    top: -3%;
+    left: 90%;
+    width: 13.5vmin;
+    height: 12vmin;
+    background-color: rgba(179, 179, 179, 0);
+  }
+  #fullscreenButton {
+     /* Your existing styles */
+  user-select: none;
+  box-shadow: none; 
+  border: none;
+  }
+  
+  #fullscreenButton:active {
+    box-shadow: none; /* Change the box shadow when button is clicked */
+  }
+
+  #fullscreenButton img {
+    display: block;
+    width: 70%;
+    height: 70%;
+    margin: auto;
+  }
+
+
+
+
+
+
+
+  .arrow {
+    position: absolute;
+    top: 50%;
+    width: 4vmin;
+    height: 4vmin;
+    //background: transparent;
+    border-top: 1.5vmin solid rgb(233, 66, 66);
+    border-right: 1.5vmin solid rgb(233, 66, 66);
+    //box-shadow: 1 0 0 rgb(255, 244, 244);
+    transition: all 300ms ease;
+    
+    &.forward {
+      top: 75%;
+      left: 90%;
+      transform: translate3d(0%,50%,0) rotate(-45deg); //rotateX(-60deg);
+    }
+  
+    &.backwards {
+      top: 85%;
+      left: 90%;
+      transform: translate3d(0%,50%,0) rotate(135deg); //rotateX(-60deg);
+    }
+  
+    &.left {
+      top: 84.5%;
+      left: 86.5%;
+      transform: translate3d(50%,-50%,0) rotate(-135deg);
+    }
+  
+    &.right {
+      top: 84.5%;
+      left: 93.5%;
+      transform: translate3d(-50%,-50%,0) rotate(45deg);
+    }
+    
+    &:hover {
+      border-color: rgb(68, 255, 68);
+      box-shadow: 0.5vmin -0.5vmin 0 white;
+    }
+    
+    &:before { // for better hit area
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-40%,-60%) rotate(45deg);
+      width: 200%;
+      height: 200%;
+    }
+  }
+  
+}
+
+
+
+#menuToggle {
+  display: block;
+  position: relative;
+  top: 50px;
+  left: 2%;
+  z-index: 1;
+  -webkit-user-select: none;
+  user-select: none;
+  
+}
+
+#menuToggle a {
+  text-decoration: none;
+  color: #232323;
+  transition: color 0.3s ease;
+}
+
+#menuToggle a:hover {
+  color: tomato;
+}
+
+#menuToggle input
+{
+  display: block;
+  width: 40px;
+  height: 32px;
+  position: absolute;
+  top: -7px;
+  left: -5px;
+  
+  cursor: url(../miscellaneous/mouse/icons8-hand-cursor-40.png), auto;
+  opacity: 0; /* hide this */
+  z-index: 2; /* and place it over the hamburger */
+  
+  -webkit-touch-callout: none;
+}
+
+#menuToggle input:checked ~ ul {
+  transform: translateX(0); /* Display the menu when input is checked */
+}
+
+#menuToggle span {
+  display: block;
+  width: 33px;
+  height: 4px;
+  margin-bottom: 5px;
+  background: #2c2c2c;
+  border-radius: 3px;
+  transition: transform 0.5s cubic-bezier(0.77, 0.2, 0.05, 1.0), background 0.5s cubic-bezier(0.77, 0.2, 0.05, 1.0), opacity 0.55s ease;
+}
+
+#menuToggle span:first-child {
+  transform-origin: 0% 0%;
+}
+
+#menuToggle span:nth-last-child(2) {
+  transform-origin: 0% 100%;
+}
+
+#menuToggle input:checked ~ ul {
+  transform: translateX(0); /* Display the menu when input is checked */
+}
+
+#menu {
+  position: absolute;
+  width: 15%;
+  padding: 2%;
+  padding-top: 1%;
+  padding-right: 1%;
+  background-color: rgba(169, 177, 154, 0.815);
+  list-style-type: none;
+  -webkit-font-smoothing: antialiased;
+  transform: translateX(-110%);
+  transition: transform 0.4s cubic-bezier(0.77, 0.2, 0.05, 1.0);
+}
+
+#menuToggle input:checked ~ .menu-images {
+  transform: translateX(0); /* Display the menu and move the images when input is checked */
+}
+
+.menu-image {
+  transition: transform 0.4s cubic-bezier(0.77, 0.2, 0.05, 1.0);
+  
+}
+
+#menuToggle input:checked ~ .menu-images .menu-image {
+  transform: translateX(0) scale(1); /* Add scale transformation for the images when the input is checked */
+}
+
+/* Add responsive scaling for the images */
+#menuToggle input:checked ~ .menu-images .menu-image {
+  transform: translateX(0) scale(1);
+}
+
+.menu-image:hover {
+  transform: scale(1.1); /* Optional: Add scaling on hover for a zoom effect */
+}
+    // background-color: rgb(141, 133, 133, 0.5);
+    // width: 3%;
+    // height: 6%;
+    // border-radius: 60%;

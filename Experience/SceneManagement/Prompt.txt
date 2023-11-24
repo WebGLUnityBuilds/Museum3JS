@@ -1,0 +1,304 @@
+hello chat. let do something really important. if we do it wrong i risk a lot. i have a project that i want to load some models, most of them are in glb and compressed glb. I have made an asycronous system that i load each one seperetly but i might have over engineered it and  im afraid it impacts the performance a lot. i have many files but for now ill show u only the ones that relates to the problem. The files i load for now in my project are a plane floor, some planes that i call tabs with textures that i use them for a menu. i also have other interior rooms, 8 in total pretty simple that i load each time a user changes room/tab. when loaded each room ,if user goes to another room i check if its already loaded and i dont reload it i just disable the previous room and i enable each object on the next one.  Now i have some gltf/glb objects as i said that are the rooms that are low poly and very little detailed about 1000 vertices each room and i have some models that are in gltf draco compressed. in all rooms those heavier objects are about 2000 vertices each and they are about 30 obejcts. only 4 on each active scene/room and camera renders only 1 each time. for now i only have my 8 tabs and 1 room with 3 heavy objects in my app but  i see problems on some mid tier devices. i dont know what causees the problem. for now ill only give u the part of the code that laods the assets. i ahve to also tell u as ull read that i store some arrays of my obejcts that i use later on my game. here is the code is there a way to simply it by a lot , to a small single file for the loading and only calling the loading from main , so in 2 files instead of 3? if are there any optimizations fixings? 
+my Experience.js:
+// Load Assets
+import LoadLevel from './LoadLevel.js';
+import assets from './AssetsManagement/EnvironmentFiles.js';
+export default class Experience{
+    constructor(canvas){
+        this.canvas = canvas;
+        this.init();
+    }
+    init(){
+        const loadedScenes = new Map(); // Map to store the loaded scene objects
+        const roomMixersMap = new Map();
+        let interactableObjects = [];
+        const loadSceneObjects = async (desiredRoom) => {
+          console.log("Loading scene objects for room", desiredRoom);
+        
+          if (loadedScenes.has(desiredRoom)) {
+            // If the scene is already loaded, return the corresponding scene objects
+            console.log("Scene objects already loaded for room", desiredRoom);
+            return Promise.resolve(loadedScenes.get(desiredRoom));
+          }
+        
+          // Otherwise, load the scene objects
+          return LoadLevel.loadSceneObjects(scene, assets, desiredRoom)
+          .then((result) => {
+            console.log("Loaded scene objects for room", desiredRoom, ":", result.sceneObjects);
+            loadedScenes.set(desiredRoom, result.sceneObjects); // Store the loaded scene objects in the map
+            roomMixersMap.set(desiredRoom, result.mixers);
+            return result; // Return the loaded scene objects and mixers
+          });
+        };
+        
+        // Load and print the scene objects for room 0
+        const desiredRoomInit = "0";
+        loadSceneObjects(desiredRoomInit)
+        .then((result) => {
+          //findInteractableObjects(desiredRoomInit);
+          //playanimation(desiredRoomInit, result);
+        })
+        .catch((error) => {
+          console.log("Error loading scene objects for room", desiredRoomInit, ":", error);
+        });
+
+        loadScene("0");
+        /* THIS IS A COMMENT TO EXPLAIN YOU THAT THIS IS THE MAIN FILE
+        THE MAIN CODE IS HERE AND it has the camera the renderer loop events etc.
+        . Most of my functionalities of course are also exported from other files to this.
+        */
+  }
+
+}
+
+LoadLevel.js that gets called from experience.js:
+import LoadFiles from './LoadFiles.js';
+import * as THREE from 'three';
+
+const loadFiles = new LoadFiles();
+const LoadLevel = {
+  async loadSceneObjects(scene, exhibits, desiredRoom) {
+
+    const assetsData = getRoomAssets(exhibits, desiredRoom);
+
+    const sceneObjects = await loadFiles.gltfloaderFunc(scene, assetsData);
+
+    const mixerArray = [];
+
+    sceneObjects.forEach((object) => {
+      scene.add(object);
+      a(object);
+      function a(object) {
+
+        if (object instanceof THREE.Mesh) {
+         
+          if (
+            object.name.includes("exhibit") ||
+            object.name.includes("tab") 
+          ) 
+          {
+            const mixer = new THREE.AnimationMixer(object);
+            mixerArray.push(mixer);
+          }
+        } 
+  
+        if (object instanceof THREE.Group) {
+          for (let i = 0; i < object.children.length; i++) {
+            a(object.children[i]);
+          }
+        }
+      }
+    });
+
+    // Now you can use the loaded sceneObjects for further processing or rendering
+    return { sceneObjects, mixers: mixerArray };
+  },
+};
+
+function getRoomAssets(exhibits, desiredRoom) {
+    const rooms = exhibits.rooms; // Access 'rooms' instead of 'room'
+    const assetsData = [];
+  
+    // Iterate over each room
+    rooms.forEach((room) => { // Use 'rooms.forEach' instead of 'Object.values(rooms).forEach'
+      // Check if the room matches the desired room (or skip the check if desiredRoom is not provided)
+      if (!desiredRoom || room.room === desiredRoom) {
+        // Iterate over each asset in the room
+        room.assets.forEach((asset) => { // Access 'assets' instead of 'asset'
+          const { classification, type, path } = asset; // Remove 'room' since it's already defined in the outer loop
+  
+          // Create an object with the desired data
+          const assetData = {
+            room: room.room, // Use 'room.room' instead of 'room'
+            classification,
+            type,
+            path
+          };
+  
+          // Add the asset data to the array
+          assetsData.push(assetData);
+        });
+      }
+    });
+  
+    return assetsData;
+  }
+
+
+  
+export default LoadLevel;
+
+
+LoadFiles.js file that gets called from LoadLevel.js:
+
+import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader.js'
+import {GLTFLoader} from 'three/examples/jsm/loaders/GLTFLoader.js';
+import { DRACOLoader } from "three/examples/jsm/loaders/DRACOLoader.js";
+import * as THREE from 'three'; // Import the THREE module
+
+//"three": "^0.145.0" updated to "three": "^0.153.0",
+export default class LoadFiles {
+  constructor() {}
+
+  
+  async gltfloaderFunc(scene, assetsData) {
+    function loadFile(url) {
+      return new Promise((resolve, reject) => {
+        const xhr = new XMLHttpRequest();
+        xhr.open('GET', url, true);
+        xhr.responseType = 'arraybuffer';
+  
+        xhr.onprogress = (event) => {
+          if (event.lengthComputable) {
+            const progress = (event.loaded / event.total) * 100;
+            updateProgressBar(progress);
+          }
+        };
+  
+        xhr.onload = () => {
+          if (xhr.status === 200) {
+            resolve(xhr.response);
+          } else {
+            reject(new Error(`Failed to load file: ${url}`));
+          }
+        };
+  
+        xhr.onerror = () => {
+          reject(new Error(`Failed to load file: ${url}`));
+        };
+  
+        xhr.send();
+      });
+    }
+  
+    function updateProgressBar(progress) {
+      const progressBar = document.getElementById('progress-bar');
+      progressBar.value = progress;
+    }
+  
+    async function loadAsset(type, url) {
+      let data;
+      let loader;
+  
+      switch (type) {
+        case 'gltf':
+          data = await loadFile(url);
+          loader = new GLTFLoader();
+          const gltf = loader.parse(data); //await before loader if fail
+          return gltf.scene;
+  
+        case 'glb':
+          data = await loadFile(url);
+          loader = new GLTFLoader();
+          return new Promise((resolve, reject) => {
+            loader.parse(data, '', (gltf) => {
+              resolve(gltf.scene);
+            }, reject);
+          });
+
+        case 'glbDraco':
+          data = await loadFile(url);
+          loader = new GLTFLoader();
+          const dracoLoader = new DRACOLoader();
+          dracoLoader.setDecoderPath('https://www.gstatic.com/draco/versioned/decoders/1.5.6/');
+          dracoLoader.setDecoderConfig({ type: 'js' });
+          dracoLoader.preload();
+          loader.setDRACOLoader(dracoLoader);
+          return new Promise((resolve, reject) => {
+            loader.parse(data, '', (gltf) => {
+              resolve(gltf.scene);
+            }, reject);
+          });
+
+  
+        case 'fbx':
+          data = await loadFile(url);
+          loader = new FBXLoader();
+          return loader.parse(data);
+  
+        default:
+          throw new Error(`Unsupported asset type: ${type}`);
+      }
+    }
+  
+    const progressBarContainer = document.querySelector('.progress-bar-container');
+    const content = document.getElementById('scene-area');
+  
+    function hideProgressBar() {
+      progressBarContainer.style.display = 'none';
+      content.style.display = 'block';
+    }
+  
+    try {
+      const objects = await Promise.all(assetsData.map(({ type, path }, index) => loadAsset(type, path)));
+      const allSceneObjects = [];
+  
+      objects.forEach((object) => {
+        scene.add(object);
+        a(object);
+        function a(object) {
+          if (object instanceof THREE.Mesh) {
+            if (
+              object.name.includes("exhibit") ||
+              object.name.includes("tab") ||
+              object.name.includes("media") 
+            ) 
+            {
+              object.castShadow = true;
+              object.receiveShadow = true;
+            }
+
+            if(
+              object.name.includes("floor") ||
+              object.name.includes("step") ||
+              object.name.includes("wall")||
+              object.name.includes("stand") ||
+              object.name.includes("stand001") 
+              )
+            {
+              object.receiveShadow = true;
+            }
+           
+          } 
+    
+          if (object instanceof THREE.Group) {
+            for (let i = 0; i < object.children.length; i++) {
+              a(object.children[i]);
+            }
+          }
+        }
+    
+
+
+        allSceneObjects.push(object);
+      });
+  
+      handleLoadedObjects(allSceneObjects);
+      
+  
+            
+
+      function handleLoadedObjects(objects) {
+        hideProgressBar();
+      }
+
+  
+      return allSceneObjects;
+    } catch (error) {
+      console.error(error);
+      // Handle the error appropriately (e.g., show an error message to the user)
+      throw error;
+    }
+  }
+}
+
+i want you to optimize my code with modern three js techniques and optimizations . i still want my init()
+as it is on my main experience.js file because in there i have my renderer function, if its possible without 
+maing init and async function. second i want you to write every single code that is not related to the task i asked you,
+i want you to include the functionalities i have for enabling my shadows or for example the map of exhibits i make with same naming Etc.
+the loader should be in my LoadLevel.js and called from experience.js (export to call from) in the end your code should:
+1. improve my code of loading my assets while keeping all the same funcnalities.AnimationMixer
+2. merge and minimize the code to modern and optimized techniques to a single file LoadLevel.js
+
+
+
