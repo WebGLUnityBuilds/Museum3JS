@@ -74,21 +74,6 @@ export default assets = {
           classification: "exhibit",
           type: "glbDraco",
           path: "./Models/Environment/Room02/Exhibits/exhibit1_3.glb"
-        },
-        {
-          classification: "exhibit",
-          type: "glbDraco",
-          path: "./Models/Environment/Room02/Exhibits/exhibit1_3.glb"
-        },
-        {
-          classification: "exhibit",
-          type: "glbDraco",
-          path: "./Models/Environment/Room02/Exhibits/exhibit1_3.glb"
-        },
-        {
-          classification: "exhibit",
-          type: "glbDraco",
-          path: "./Models/Environment/Room02/Exhibits/exhibit1_3.glb"
         }
       ]
     }
