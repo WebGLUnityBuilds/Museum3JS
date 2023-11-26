@@ -8,7 +8,7 @@ export default assets = {
         {
           classification: "level",
           type: "glbDraco",
-          path: "./Models/Environment/Room00/MenuRoomTC23_11.glb"
+          path: "./Models/Environment/Room00/MenuRoom.glb"
         },
       ]
     },

@@ -40,8 +40,8 @@ export default function setupVideo(roomNumber, searchString, camera, scene) {
       
       const videoMesh = new THREE.Mesh(geometry, material);
       videoMesh.name = "videoMesh";
-      videoMesh.renderOrder = 999;
-      videoMesh.material.depthTest = false;
+      // videoMesh.renderOrder = 999;
+      // videoMesh.material.depthTest = false;
       function startVideoPlayback() {
         if (video) {
             camera.add(videoMesh); // Add the mesh as a child of the camera

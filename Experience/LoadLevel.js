@@ -5,6 +5,8 @@ const loadFiles = new LoadFiles();
 const LoadLevel = {
   async loadSceneObjects(scene, exhibits, desiredRoom) {
 
+    const progressBarContainer = document.querySelector('.progress-bar-container');
+    progressBarContainer.style.display = 'block';
     const assetsData = getRoomAssets(exhibits, desiredRoom);
 
     const sceneObjects = await loadFiles.gltfloaderFunc(scene, assetsData);

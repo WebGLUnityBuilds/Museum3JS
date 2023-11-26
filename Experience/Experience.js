@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 import gsap from 'gsap';
-import Stats from 'three/addons/libs/stats.module.js';
+//import Stats from 'three/addons/libs/stats.module.js';
 
 
 
@@ -19,7 +19,7 @@ import setupVideo from './VideoPlayer.js';
 
 //Controls
 import { keyboardControls } from './Controls/KeyboardControls.js';
-import { screenControls } from './Controls/ScreenControls.js';
+//import { screenControls } from './Controls/ScreenControls.js';
 import { 
   handleMouseDown,
   handleMouseUp,
@@ -34,7 +34,8 @@ import handleAppleDeviceScroll from './Controls/ZoomControls/appleDeviceScroll.j
 import { toggleFullscreen } from './Controls/ZoomControls/FullScreen.js';
 
 
-
+import {Text} from 'troika-three-text';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 
 
 export default class Experience{
@@ -48,6 +49,29 @@ export default class Experience{
         
     init(){
       
+      // commented out all console log and stats
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
       THREE.Cache.enabled = true;
 
       const scene = new THREE.Scene();
@@ -65,41 +89,125 @@ export default class Experience{
         10000
       );
       let cameraHeight  = 2;
-      
+      scene.add(camera);
+      // default camera positions 
+
+      const defaultCameraPositions = [
+        new THREE.Vector3(-1.6, 0, 4.8),
+        new THREE.Vector3(3, 2, 15),
+        new THREE.Vector3(3, 2, -15),
+        new THREE.Vector3(3, 2, 45),
+        new THREE.Vector3(3, 2, 55),
+        new THREE.Vector3(3, 2, 5),
+        new THREE.Vector3(3, 2, 5),
+      ];
+
+      const defaultCameraRotations = [
+        new THREE.Euler(0, 0, 0, 'XYZ'), 
+        new THREE.Euler(0, Math.PI / 3, 0, 'XYZ'), 
+        new THREE.Euler(0, Math.PI / 2, 0, 'XYZ'), 
+        new THREE.Euler(0, Math.PI / 2, 0, 'XYZ'), 
+        new THREE.Euler(0, Math.PI / 2, 0, 'XYZ'), 
+        new THREE.Euler(0, Math.PI / 2, 0, 'XYZ'), 
+        new THREE.Euler(0, Math.PI / 2, 0, 'XYZ'), 
+        new THREE.Euler(0, Math.PI / 2, 0, 'XYZ'), 
+      ];
+        
+
       //tween flags
       let cameraTween, tabAnimTween = null; // Variable to track if a tween is in progress
 
 
 
-      camera.position.set(0, 0, 0);
-        
       setupLights(scene);
 
 
+      // Create:
+      const myText = new Text()
+      scene.add(myText)
+
+      // Set properties to configure:
+      myText.text = 'Πατήστε στην τρίτη αίθουσα για προβολή video(testing)';
+      myText.fontSize = 0.2;
+      myText.position.x = -6;
+      myText.position.y = 4.3;
+      myText.position.z = -8.5;
+      myText.color = 0xfffffF;
+
+      // Update the rendering:
+      myText.sync();
 
 
-        
 
 
+
+      
+      const loader = new THREE.TextureLoader();
+      const texture = loader.load( "./miscellaneous/icons/x_button.png" );
+      
+
+
+      const x_buttonBgeo = new THREE.PlaneGeometry( 0.006, 0.006 );
+      const x_buttonBmat = new THREE.MeshBasicMaterial( { map: texture ,opacity: 0.8, transparent: true } );
+      const x_buttonB = new THREE.Mesh( x_buttonBgeo, x_buttonBmat );
+      scene.add( x_buttonB );
+      
+      camera.add(x_buttonB);
+      x_buttonB.position.set(0.06,0.035,-0.1);
+      x_buttonB.name = "x_button";
+      x_buttonB.visible = false;
+
+      
+      const skip_texture = loader.load( "./miscellaneous/icons/skipIcon128.png" );
+      
+      const s_buttonBgeo = new THREE.PlaneGeometry( 0.006, 0.006 );
+      const s_buttonBmat = new THREE.MeshBasicMaterial( { map: skip_texture ,opacity: 0.8, transparent: true } );
+      const s_buttonB = new THREE.Mesh( s_buttonBgeo, s_buttonBmat );
+      scene.add( s_buttonB );
+      
+      camera.add(s_buttonB);
+      s_buttonB.position.set(0.008, -0.035,-0.1);
+      s_buttonB.name = "s_button";
+      s_buttonB.visible = false;
+
+
+      const pause_texture = loader.load( "./miscellaneous/icons/play.png" );
+      
+      const p_buttonBgeo = new THREE.PlaneGeometry( 0.006, 0.006 );
+      const p_buttonBmat = new THREE.MeshBasicMaterial( { map: pause_texture ,opacity: 0.8, transparent: true } );
+      const p_buttonB = new THREE.Mesh( p_buttonBgeo, p_buttonBmat );
+      scene.add( p_buttonB );
+      
+      camera.add(p_buttonB);
+      p_buttonB.position.set(-0.001, -0.035,-0.1);
+      p_buttonB.name = "p_button";
+      p_buttonB.visible = false;
+
+
+
+
+      
         const loadedScenes = new Map(); // Map to store the loaded scene objects
         //const roomMixersMap = new Map();
         let interactableObjects = [];
    
         
         const loadSceneObjects = async (desiredRoom) => {
-          console.log("Loading scene objects for room", desiredRoom);
+          //console.log("Loading scene objects for room", desiredRoom);
         
           if (loadedScenes.has(desiredRoom)) {
             // If the scene is already loaded, return the corresponding scene objects
-            console.log("Scene objects already loaded for room", desiredRoom);
+            //console.log("Scene objects already loaded for room", desiredRoom);
+            
             return Promise.resolve(loadedScenes.get(desiredRoom));
           }
         
           // Otherwise, load the scene objects
           return LoadLevel.loadSceneObjects(scene, assets, desiredRoom)
           .then((result) => {
-            console.log("Loaded scene objects for room", desiredRoom, ":", result.sceneObjects);
+            //console.log("Loaded scene objects for room", desiredRoom, ":", result.sceneObjects);
             loadedScenes.set(desiredRoom, result.sceneObjects); // Store the loaded scene objects in the map
+            
             //roomMixersMap.set(desiredRoom, result.mixers);
             return result; // Return the loaded scene objects and mixers
           });
@@ -120,11 +228,13 @@ export default class Experience{
         renderer.debug.checkShaderErrors = true;
 
 
-        let stats = new Stats();
-        document.body.appendChild( stats.dom );
+        //let stats = new Stats();
+        //document.body.appendChild( stats.dom );
 
+        
         camera.position.set(0,0,-10);
-
+        
+        moveCamera(defaultCameraPositions[0].x,defaultCameraPositions[0].y,defaultCameraPositions[0].z);
 
 
         // Audio Video Creation
@@ -154,7 +264,6 @@ export default class Experience{
 
 
 
-        moveCamera(0, 0, 2.3);
         
         ///////////////////////////////////////////////////////////////// START EVENTS PC/LAPTOP /////////////////////////////////////////////////////////////////
       
@@ -188,7 +297,7 @@ export default class Experience{
       }
 
       const keyControls = keyboardControls(camera);
-      screenControls(camera);
+      //screenControls(camera);
 
 
       // ///////// ~Control Events //////////
@@ -215,48 +324,68 @@ export default class Experience{
         moveIsAnimating = true;
         loadScene("0");
         gsapDirLightIntensityInit();
+        camera.position.copy(defaultCameraPositions[0]);
+        camera.rotation.copy(defaultCameraRotations[0]);
+
+
       } 
       else if (menuItemHref === '#scene1') 
       {
         moveIsAnimating = true;
         loadScene("1");
         gsapDirLightIntensityTarget(0.1);
+        camera.position.copy(defaultCameraPositions[1]);
+        camera.rotation.copy(defaultCameraRotations[1]);
       } 
       else if (menuItemHref === '#scene2') 
       {
         moveIsAnimating = true;
         loadScene("2");
         gsapDirLightIntensityTarget(0.1);
+        camera.position.copy(defaultCameraPositions[2]);
+        camera.rotation.copy(defaultCameraRotations[2]);
       }
       else if (menuItemHref === '#scene3') 
       {
         loadScene("3");
         gsapDirLightIntensityTarget(0.1);
+        camera.position.copycopy(defaultCameraPositions[3]);
+        camera.rotation.copy(defaultCameraRotations[3]);
       }
       else if (menuItemHref === '#scene4') 
       {
         loadScene("4");
         gsapDirLightIntensityTarget(0.1);
+        camera.position.copycopy(defaultCameraPositions[4]);
+        camera.rotation.copy(defaultCameraRotations[4]);
       }
       else if (menuItemHref === '#scene5') 
       {
         loadScene("5");
         gsapDirLightIntensityTarget(0.1);
+        camera.position.copycopy(defaultCameraPositions[5]);
+        camera.rotation.copy(defaultCameraRotations[5]);
       }
       else if (menuItemHref === '#scene6') 
       {
         loadScene("6");
         gsapDirLightIntensityTarget(0.1);
+        camera.position.copycopy(defaultCameraPositions[6]);
+        camera.rotation.copy(defaultCameraRotations[6]);
       }
       else if (menuItemHref === '#scene7') 
       {
         loadScene("7");
         gsapDirLightIntensityTarget(0.1);
+        camera.position.copycopy(defaultCameraPositions[7]);
+        camera.rotation.copy(defaultCameraRotations[7]);
       }
       else if (menuItemHref === '#scene8') 
       {
         loadScene("8");
         gsapDirLightIntensityTarget(0.1);
+        camera.position.copy(defaultCameraPositions[8]);
+        camera.rotation.copy(defaultCameraRotations[8]);
       }
     }
 
@@ -354,12 +483,26 @@ export default class Experience{
     
     const targetIntensity = 0.5;
     function gsapDirLightIntensityTarget(targetIntensity) {
+      renderer.toneMappingExposure = 0;
       gsap.to(rendererProperties, {
         toneMappingExposure: targetIntensity,
-        duration: 2,
+        duration: 2.5,
         onUpdate: () => {
           renderer.toneMappingExposure = rendererProperties.toneMappingExposure;
+        },
+        onComplete: () => {
+          //gsapTargetRendererLighting(targetIntensity);
         }
+      });
+    }
+
+    function RenderIntensityToZero() {
+      gsap.to(rendererProperties, {
+        toneMappingExposure: 0,
+        duration: 0,
+        onUpdate: () => {
+          renderer.toneMappingExposure = rendererProperties.toneMappingExposure;
+        },
       });
     }
 
@@ -457,6 +600,8 @@ export default class Experience{
        pointer.x = (event.clientX / window.innerWidth) * 2 - 1;
        pointer.y = -(event.clientY / window.innerHeight) * 2 + 1;
 
+
+       
        document.onpointerup = function (event) {
         const elementsToIgnore = ['BUTTON', 'UL'];
     
@@ -479,15 +624,15 @@ export default class Experience{
               break;
             case 1: 
             
-              console.log("Active Drawcalls:", renderer.info.render.calls);
-              console.log("Number of Vertices:", renderer.info.render.vertices);
-              console.log("Number of Triangles :", renderer.info.render.triangles);
-              console.log("Geometries in Memory", renderer.info.memory.geometries);
-              console.log("Textures in Memory", renderer.info.memory.textures);
-              console.log("Programs(Shaders) in Memory", renderer.info.programs.length);
-              console.table(listAllEventListeners());
+              // console.log("Active Drawcalls:", renderer.info.render.calls);
+              // console.log("Number of Vertices:", renderer.info.render.vertices);
+              // console.log("Number of Triangles :", renderer.info.render.triangles);
+              // console.log("Geometries in Memory", renderer.info.memory.geometries);
+              // console.log("Textures in Memory", renderer.info.memory.textures);
+              // console.log("Programs(Shaders) in Memory", renderer.info.programs.length);
+              // console.table(listAllEventListeners());
 
-              console.log("------------------------------------------");
+              // console.log("------------------------------------------");
 
               break;
             case 2: 
@@ -537,7 +682,33 @@ export default class Experience{
     }
 
 
-    
+
+    let playVideo = true;
+    function pausePlayV(){
+      const videoElement = document.getElementById('CurrentVideo');
+      if (videoElement) {
+        if(playVideo)
+        {
+          videoElement.pause();
+          playVideo = false;
+        }else
+        {
+          videoElement.play();
+          playVideo = true;
+        }
+      }
+    }
+
+
+    function skipForwardVideo() {
+      const videoElement = document.getElementById('CurrentVideo');
+      if (videoElement) {
+        videoElement.currentTime += 10;
+      }
+
+    }
+
+
     function destroyVideoElement() {
       const videoElement = document.getElementById('CurrentVideo');
       if (videoElement) {
@@ -556,6 +727,13 @@ export default class Experience{
     
         videoElement.parentNode.removeChild(videoElement);
       }
+      if(x_buttonB.visible)
+      {
+        x_buttonB.visible = false;
+        s_buttonB.visible = false;
+        p_buttonB.visible = false;
+      }
+      
       destroyVideoPlane();
     }
 
@@ -598,7 +776,7 @@ export default class Experience{
 
 
 
-
+     // point to move the camera and compare distances
       const cameraPoint = new THREE.BoxGeometry( 0.1, 0.1, 0.1 ); 
       const material = new THREE.MeshBasicMaterial( {color: 0x000000} ); 
       const cpoint = new THREE.Mesh( cameraPoint, material ); 
@@ -608,7 +786,7 @@ export default class Experience{
       function mainRendererRaycaster(pointer, event)
       {
 
-        raycaster.setFromCamera(pointer, camera, 0.0 ,0.1);
+        raycaster.setFromCamera(pointer, camera);
         
         const intersects = raycaster.intersectObjects(interactableObjects, true);
         rayNoHit = true;
@@ -623,6 +801,20 @@ export default class Experience{
        
 
           switch (true) {
+
+            case o_name.includes("x_button"):
+              destroyVideoElement();
+            return;
+            case o_name.includes("s_button"):
+              skipForwardVideo();
+            return;
+            case o_name.includes("p_button"):
+              pausePlayV();
+            return;
+
+
+
+
             case o_name.includes("exhibit"):
               moveCameraToObject(intersectedObject);
               
@@ -648,7 +840,7 @@ export default class Experience{
             case o_name.includes("tab01"):
               moveIsAnimating = true;
               loadScene("1");
-              gsapDirLightIntensityTarget(0.1);
+              gsapDirLightIntensityInit(0.1);
 
               rayNoHit = false;
             break;
@@ -656,6 +848,12 @@ export default class Experience{
               const roomNumber = "0";
               const searchString = "Mov";
               setupVideo(roomNumber, searchString, camera, scene);
+              if(!x_buttonB.visible)
+              {
+                x_buttonB.visible = true;
+                s_buttonB.visible = true;
+                p_buttonB.visible = true;
+              }
               //loadScene("2");
               //gsapDirLightIntensityTarget(0.1);
 
@@ -670,7 +868,7 @@ export default class Experience{
             case o_name.includes("tab04"):
               moveIsAnimating = true;
               loadScene("4");
-              gsapDirLightIntensityTarget(0.1);
+              gsapDirLightIntensityInit(0.1);
 
               rayNoHit = false;
             break;
@@ -776,7 +974,7 @@ export default class Experience{
           },
           onComplete: () => {
             // Animation completed callback (if needed)
-            console.log('Camera animation completed');
+            //console.log('Camera animation completed');
           },
           overwrite: "auto",
         });
@@ -792,7 +990,7 @@ export default class Experience{
       function loadScene(desiredRoom) {
         
         if (loadedScenes.has(desiredRoom)) {
-          console.log(`Room ${desiredRoom} is already loaded.`);
+          //console.log(`Room ${desiredRoom} is already loaded.`);
           // Perform your logic for making the room visible here
 
           findObjectsToActDeact(activeRoom);
@@ -804,7 +1002,8 @@ export default class Experience{
         } 
         else 
         {
-          console.log(`Room ${desiredRoom} is not yet loaded.`);
+          
+          //console.log(`Room ${desiredRoom} is not yet loaded.`);
           loadSceneObjects(desiredRoom).then((loadedSceneObjects) => {
           findObjectsToActDeact(activeRoom);
           findInteractableObjects(desiredRoom); // Update the interactableObjects array for the current room
@@ -813,6 +1012,9 @@ export default class Experience{
           activeRoom = desiredRoom;
           });
         }
+        
+        gsapDirLightIntensityTarget(0.1);
+        //console.log(interactableObjects);
       }
 
 
@@ -826,7 +1028,7 @@ export default class Experience{
           traverseRayHierarchy(object);
         });
       } else {
-        console.log(`No loaded objects found for room ${desiredRoom}`);
+        //console.log(`No loaded objects found for room ${desiredRoom}`);
       }
     }
 
@@ -839,12 +1041,13 @@ export default class Experience{
       if (loadedScenes.has(desiredRoom)) {
         const loadedSceneObjects = loadedScenes.get(desiredRoom);
 
+        RenderIntensityToZero();
         loadedSceneObjects.forEach((object) => {
           tabsReset(object);
           traverseActDeactHierarchy(object);
         });
       } else {
-        console.log(`No loaded objects found for room ${desiredRoom}`);
+        //console.log(`No loaded objects found for room ${desiredRoom}`);
       }
     }
 
@@ -874,6 +1077,9 @@ export default class Experience{
 
 
 
+    let button_x = scene.getObjectByName( "x_button" );
+    let button_s = scene.getObjectByName( "s_button" );
+    let button_p = scene.getObjectByName( "p_button" );
 
 
     function traverseRayHierarchy(object) {
@@ -886,15 +1092,21 @@ export default class Experience{
         tabAnim_i++;
       }
      
+      //console.log(object.name);
+    
+
+
       if (object instanceof THREE.Mesh) {
+
+
         if (
           object.name.includes("exhibit") ||
           object.name.includes("tab") ||
           object.name.includes("step") ||
           object.name.includes("light") ||
-          object.name.includes("media")
+          object.name.includes("media") 
         ) {
-          console.log(object.name);
+          //console.log(object.name);
           interactableObjects.push(object); // Add the object to the interactableObjects array
         }
         if(object.name.includes("step1") && object.visible)
@@ -907,6 +1119,13 @@ export default class Experience{
 
         for (let i = 0; i < object.children.length; i++) {
           traverseRayHierarchy(object.children[i]);
+          if(i===0)
+          {
+            interactableObjects.push(button_x);
+            interactableObjects.push(button_s);
+            interactableObjects.push(button_p);
+            
+          }
         }
       }
     }
@@ -957,7 +1176,7 @@ export default class Experience{
         return intersect.object.name.includes("tab0");
       });
 
-      console.log(moveIsAnimating);
+      //console.log(moveIsAnimating);
       if(!moveIsAnimating)
       {
         // Log the names of the filtered objects
@@ -1168,9 +1387,9 @@ export default class Experience{
   
         }
         //updatGrabablePosition();
-        stats.begin();
+        //stats.begin();
 				//renderer.render( scene, camera );
-				stats.end();
+				//stats.end();
 
 			}
       //requestAnimationFrame( animate );
@@ -1221,7 +1440,7 @@ export default class Experience{
       const desiredRoomInit = "0";
       loadSceneObjects(desiredRoomInit)
       .then((result) => {
-        
+        gsapDirLightIntensityTarget(0.1);
         findInteractableObjects(desiredRoomInit);
         
         //playanimation(desiredRoomInit, result);
