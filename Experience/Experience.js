@@ -624,15 +624,15 @@ export default class Experience{
               break;
             case 1: 
             
-              // console.log("Active Drawcalls:", renderer.info.render.calls);
-              // console.log("Number of Vertices:", renderer.info.render.vertices);
-              // console.log("Number of Triangles :", renderer.info.render.triangles);
-              // console.log("Geometries in Memory", renderer.info.memory.geometries);
-              // console.log("Textures in Memory", renderer.info.memory.textures);
-              // console.log("Programs(Shaders) in Memory", renderer.info.programs.length);
-              // console.table(listAllEventListeners());
+              console.log("Active Drawcalls:", renderer.info.render.calls);
+              console.log("Number of Vertices:", renderer.info.render.vertices);
+              console.log("Number of Triangles :", renderer.info.render.triangles);
+              console.log("Geometries in Memory", renderer.info.memory.geometries);
+              console.log("Textures in Memory", renderer.info.memory.textures);
+              console.log("Programs(Shaders) in Memory", renderer.info.programs.length);
+              console.table(listAllEventListeners());
 
-              // console.log("------------------------------------------");
+              console.log("------------------------------------------");
 
               break;
             case 2: 
