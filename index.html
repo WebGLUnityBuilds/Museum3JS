@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name='viewport' content='width=device-width'/>
+    <link href="https://fonts.googleapis.com/css?family=Roboto&display=swap" rel="stylesheet">
+    <title>Museum Of Karditsa</title>
+    <link rel="icon" href="../miscellaneous/icons/Georgios_Karaiskakis.jpg">
+</head>
+<body> 
+
+<div class="custom-cursor" id="cursor-div">
+
+<div class="progress-bar-container">
+  <!-- <label for="progress-bar">Φόρτωση...</label> -->
+  
+    <div id="preloader">
+      
+      <div id="wrapper"></div>
+      <div id="loader"></div>
+    </div>
+    <!-- <progress id="progress-bar" value="0" max="100"></progress> -->
+    
+</div>
+<!-- <div class="progress-bar"></div>
+<h1 class="count"></h1> -->
+
+<div class="page" id='scene-area' style="display: none;">
+
+  <div class="page-wrapper">
+
+<section class="hero">
+    <div class="hero-wrapper">
+
+
+        <div class="hero-main">
+            <h1 class="hero-main-title" 
+                style="-moz-user-select: none; -webkit-user-select: none; -ms-user-select:none; user-select:none;-o-user-select:none;" 
+                unselectable="on"
+                onselectstart="return false;" 
+                onmousedown="return false;"> 
+                <!--to make text unselectable Λαογραφικό Μουσείο Καρδίτσας  -->
+                
+          </h1>
+        </div>
+      
+
+      <nav role="navigation"  class="primary-navigation">
+        <!--    Made by Erik Terwan    -->
+        <!--   24th of November 2015   -->
+        <!--        MIT License        -->
+          <div id="menuToggle">
+            
+            <input type="checkbox" id="menuToggleCheckbox" />
+            <span></span>
+            <span></span>
+            <span></span>
+            
+            <ul id="menu">
+
+              <br>
+
+              <div class="menu-images">
+              <table>
+                <tr> 
+                  <td>
+                    <li>
+                      <p>ΕΠΙΛΟΓΗ</p>
+                      <p id="iconSmallText">click</p>
+                      <img class="menu-image" src="../miscellaneous/MenuIcons/left-click64.png" >
+                      </li>
+                  </td>
+                </tr>
+                <tr> 
+                  <td>
+                    <li>
+                    <p>ΚΙΝΗΣΗ</p>
+                    <p id="iconSmallText">click floor</p>
+                    <img class="menu-image" src="../miscellaneous/MenuIcons/left-click64.png" >
+                    </li>
+                  </td>
+                  <td>
+                    <li>
+                    <p>ΠΕΡΙΣΤΡΟΦΗ</p>
+                    <p id="iconSmallText">click & hold</p>
+                    <img class="menu-image" src="../miscellaneous/MenuIcons/right-click64.png" >
+                    </li>
+                  </td>
+                  <td>
+                    <li>
+                    <p>&nbsp;&nbsp;zoom</p>
+                    <p id="iconSmallText" style="margin-left: 0.4vw;">roll</p>
+                    <img class="menu-image" src="../miscellaneous/MenuIcons/middle-click64.png" >
+                    </li> 
+                  </td>
+                </tr>
+                <tr> 
+                  <td>
+                    <li>
+                    <p>ΚΙΝΗΣΗ</p>
+                    <p id="iconSmallText">click</p>
+                    <img class="menu-image" src="../miscellaneous/MenuIcons/arrows64.png" >
+                    </li>
+                  </td>
+                  <td>
+                    <li>
+                      <p>ΚΙΝΗΣΗ</p>
+                      <p id="iconSmallText">keyboard</p>
+                      <img class="menu-image" src="../miscellaneous/MenuIcons/wasd64.png" >
+                      </li>
+                  </td>
+                  <td>
+                    <li>
+                    <p>ΚΙΝΗΣΗ</p>
+                    <p id="iconSmallText">keyboard</p>
+                    <img class="menu-image" src="../miscellaneous/MenuIcons/arrow-keyb64.png" >
+                    </li>
+                  </td>
+                </tr>
+              </table>
+            </div>
+              
+              <!-- <h4 style="display: inline;">Image 2</h4> -->
+                  
+              
+              </li>
+              
+              <!-- #96a05ed0 #7a1212 #2a2acc #177236 #cea82d #b6b6be #573c2a #461919-->
+              
+              <li class="scene0"><a href="#scene0" class="hand-cursor">ΑΡΧΙΚΗ</a></li>
+              <hr>
+              
+              <li class="scene1" id="menuT"><a href="#scene0" class="hand-cursor" id="menuT"><div class='box grey'></div>Γιατί "ημιτελές";</a></li>
+              <hr>
+              
+
+              <li class="scene1" id="menuT"><a href="#scene1" class="hand-cursor" ><div class='box red'></div>Γεώργιος Καραϊσκάκης</a></li>
+              <hr>
+              
+
+              <li class="scene2" id="menuT"><a href="#scene2" class="hand-cursor" ><div class='box blue'></div>Καθημερινότητα Πολέμου</a></li>
+              <hr>
+              
+
+              <li class="scene3" id="menuT"><a href="#scene3" class="hand-cursor" ><div class='box green'></div>Οικονομική Ζωή</a></li>
+              <hr>
+              
+
+              <li class="scene3" id="menuT"><a href="#scene4" class="hand-cursor" ><div class='box gold'></div>Θρησκεία και Συμβίωση</a></li>
+              <hr>
+              
+
+              <li class="scene3" id="menuT"><a href="#scene5" class="hand-cursor" ><div class='box greyblue'></div>Μετανάστευση</a></li>
+              <hr>
+              
+
+              <li class="scene3" id="menuT"><a href="#scene6" class="hand-cursor" ><div class='box bronze'></div>Κοινωνική Ζωή</a></li>
+              <hr>
+              
+
+              <li class="scene3" id="menuT"><a href="#scene7" class="hand-cursor" ><div class='box lightbronze'></div>Εκπαίδευση και Ψυχαγωγία</a></li>
+              <hr>
+              
+
+              <li class="scene3" id="menuT"><a href="#scene8" class="hand-cursor" ><div class='box brown'></div>1881 - 1987 - 1922</a></li>
+              <hr style="background-color: #6d6d6dd0;  border: 0;">
+              
+
+            </ul>
+          </div>
+        
+
+        </nav>   
+
+
+      </section>        
+
+  
+     </div>
+    </div>
+  </div>
+</div>
+<script>
+
+
+</script>
+<script type="module" src="/main.js" ></script>
+
+</body>
+</html>

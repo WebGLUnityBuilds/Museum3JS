@@ -1,0 +1,152 @@
+    
+    ///////// Control Events //////////
+    
+    //Button control events
+      // CB stands for control button
+      const forwardCButton = document.getElementById("forwardCB_action");
+      const backwardsCButton = document.getElementById("backwardsCB_action");
+      const leftCButton = document.getElementById("leftCB_action");
+      const rightCButton = document.getElementById("rightCB_action");
+      
+
+      // Get all the button-like elements in your HTML (e.g., <a> tags)
+      const buttonLikeElements = document.querySelectorAll('a');
+
+      // Flag to track if the mouse is over any button-like element
+      let isMouseOverButtonLikeElement = false;
+
+      // Add mouseover and mouseout event listeners to all button-like elements
+      buttonLikeElements.forEach((element) => {
+        element.addEventListener('mouseover', () => {
+          isMouseOverButtonLikeElement = true;
+        });
+
+        element.addEventListener('mouseout', () => {
+          isMouseOverButtonLikeElement = false;
+        });
+      });
+
+
+
+
+      function traverseBHierarchy(object, stepToMove) {
+        let targetObject = null;
+      
+        if (object.name.includes('step')) {
+          const currentStep = parseInt(object.name.replace('step', ''));
+          const targetStep = parseInt(stepToMove.replace('step', ''));
+          
+          if (currentStep === targetStep) {
+            targetObject = object;
+          }
+        }
+      
+        if (!targetObject && object.children.length > 0) {
+          for (let i = 0; i < object.children.length; i++) {
+            const result = traverseBHierarchy(object.children[i], stepToMove); // Recursively call the function for each child
+            if (result) {
+              targetObject = result; // Assign the result if a match is found in the child hierarchy
+              break; // Exit the loop if a match is found
+            }
+          }
+        }
+      
+        return targetObject; // Return the target object if found, or null if not found
+      }
+
+
+      function stepToMove(forwardFlag)
+      {
+        let stepToMove = activeStep;
+          
+        // Check if str contains the word 'step' followed by a number
+        if (/step\d+/.test(stepToMove)) {
+          // Extract the number from the string
+          let stepPosition = parseInt(stepToMove.match(/\d+/)[0]);
+          // Increment the number
+
+          if(forwardFlag)
+          {
+            ++stepPosition;
+            //++stepPosition;
+          }else
+          {
+            if(stepPosition>0)--stepPosition;
+          }
+
+          // Reconstruct the string with the incremented number
+          stepToMove = stepToMove.replace(/\d+/, stepPosition);
+          
+          let targetObject = activeStep;
+          // Call the function with the mainRendererActiveOBJ[0] and stepToMove
+          if(mainRendererActiveOBJ[0])
+          {
+            targetObject = traverseBHierarchy(mainRendererActiveOBJ[0], stepToMove);
+          }
+
+
+        
+          if (targetObject) {
+            // The object with the specified name exists in the scene
+            activeStep = stepToMove;
+            moveCamera(targetObject.position.x, camera.position.y, targetObject.position.z);
+          } else {
+            // The object with the specified name does not exist
+            console.log(`After end step`);
+          }
+
+        }
+      }
+
+     
+      let activeStep = 'step0';
+      let envStepActive = "env001";
+      document.addEventListener('click', buttonControls);
+      function buttonControls(event) {
+        const targetCB = event.target;
+        
+
+        const x = camera.rotation.x;
+        const y = camera.rotation.y;
+        const z = camera.rotation.z;
+
+        const degrees = 30;
+        const radiansToMove = (degrees / 180) * Math.PI;
+        
+        let forwardFlag = false;
+        if (targetCB.id === "forwardCB_action") {
+          forwardFlag = true;
+          //stepToMove(forwardFlag);
+          
+          // const desiredStep = invStepGroup.getObjectByName(envStepActive);
+          
+          // const stepName = desiredStep.name; // Get the name of the step from the raycaster hit object
+          // const stepNumberString = stepName.match(/\d+/)[0]; // Extract the numeric part of the name using regular expression
+          // const stepNumber = parseInt(stepNumberString); // Convert the numeric part to a number
+          
+          // if (!isNaN(stepNumber)) {
+          //   const incrementedStepNumber = stepNumber + 1;
+          //   const newStepName = `env${incrementedStepNumber.toString().padStart(3, '0')}`;
+            
+          //   const invStepToMove = invStepGroup.getObjectByName(newStepName);
+          //   moveCamera(invStepToMove.position.x , 1.65 ,  invStepToMove.position.z);
+            
+          //   envStepActive = newStepName;
+            
+          // } else {
+          //   console.error('Invalid step name format');
+          // }
+          moveCamera(camera.position.x + 2, camera.position.y , camera.position.z );
+        } else if (targetCB.id === "backwardsCB_action") {
+          forwardFlag = false;
+          stepToMove(forwardFlag);
+
+        } else if (targetCB.id === "leftCB_action") {
+          
+          rotateCamera(x, y + radiansToMove, z);
+
+        } else if (targetCB.id === "rightCB_action") {
+          rotateCamera(x, y -radiansToMove , z);
+
+        }
+      }

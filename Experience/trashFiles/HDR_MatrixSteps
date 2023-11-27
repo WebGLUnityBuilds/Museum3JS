@@ -1,0 +1,66 @@
+  // // Step 1: Create a reflection texture with reduced resolution
+    // let reflectionWidth = 512; // Adjust as needed
+    // let reflectionHeight = 512; // Adjust as needed
+    // let reflectionCubeRenderTarget = new THREE.WebGLCubeRenderTarget({
+    //   size: reflectionWidth,
+    //   generateMipmaps: true,
+    //   minFilter: THREE.LinearMipmapLinearFilter
+    // });
+    // let cubeCamera = new THREE.CubeCamera(0.1, 1000, reflectionCubeRenderTarget);
+
+    // let floorModel = null;
+    // if (sceneObjects[0]) {
+    //   sceneObjects[0].traverse(function (child) {
+    //     console.log(child.name);
+    //     if (child.name.includes('floor')) {
+    //       floorModel = child;
+    //     }
+    //   });
+    // } else {
+    //   console.error('sceneObjects[1] is undefined. Check if the object is correctly loaded.');
+    // }
+
+    // if (floorModel) {
+    //   cubeCamera.position.copy(floorModel.position); // Assuming 'floor' is your imported model
+    //   scene.add(cubeCamera); // Add the cube camera to the scene
+
+    //   // Step 2: Set up the blending materials
+    //   let blendingMaterial = new THREE.MeshStandardMaterial({
+    //     envMap: reflectionCubeRenderTarget.texture,
+    //     metalness: 1,
+    //     roughness: 0.2
+    //   });
+    //   floorModel.material = blendingMaterial;
+    // }
+    //   // Step 3: Control the update frequency
+    //   let shouldUpdateReflection = true; // Flag to track when to update the reflection texture
+
+    //   function updateReflectionTexture() {
+    //     cubeCamera.update(renderer, scene);
+    //   }      
+
+      
+      
+    // const invStepGeometry = new THREE.PlaneGeometry(1.9, 1.9);
+    // const invStepMaterial = new THREE.MeshBasicMaterial({ color: 0xffff, side: THREE.DoubleSide });
+    
+    // const instanceCount = 400;
+    // const invStepGroup = new THREE.Group();
+    
+    // for (let i = 0; i < instanceCount; i++) {
+    //   const posX = ((i % 20) - 9.5) * 2;
+    //   const posZ = (Math.floor(i / 20) - 9.5) * 2;
+    
+    //   const invStepMesh = new THREE.Mesh(invStepGeometry, invStepMaterial);
+    
+    //   const matrix = new THREE.Matrix4();
+    //   matrix.makeRotationX(Math.PI / 2); // Set rotation to Math.PI / 2
+    //   matrix.setPosition(posX, 0.1, posZ);
+    
+    //   invStepMesh.applyMatrix4(matrix);
+    //   invStepMesh.name = `env${(i + 1).toString().padStart(3, '0')}`;
+    
+    //   invStepGroup.add(invStepMesh);
+    // }
+    
+    // scene.add(invStepGroup);
