@@ -94,23 +94,23 @@ export default class Experience{
 
       const defaultCameraPositions = [
         new THREE.Vector3(-1.6, 0, 4.8),
-        new THREE.Vector3(3, 2, 15),
-        new THREE.Vector3(3, 2, -15),
-        new THREE.Vector3(3, 2, 45),
-        new THREE.Vector3(3, 2, 55),
-        new THREE.Vector3(3, 2, 5),
-        new THREE.Vector3(3, 2, 5),
+        new THREE.Vector3(-1.6, 0, 4.8),
+        new THREE.Vector3(-1.6, 0, 4.8),
+        new THREE.Vector3(-1.6, 0, 4.8),
+        new THREE.Vector3(-1.6, 0, 4.8),
+        new THREE.Vector3(-1.6, 0, 4.8),
+        new THREE.Vector3(-1.6, 0, 4.8),
       ];
 
       const defaultCameraRotations = [
         new THREE.Euler(0, 0, 0, 'XYZ'), 
-        new THREE.Euler(0, Math.PI / 3, 0, 'XYZ'), 
-        new THREE.Euler(0, Math.PI / 2, 0, 'XYZ'), 
-        new THREE.Euler(0, Math.PI / 2, 0, 'XYZ'), 
+        new THREE.Euler(0, 0, 0, 'XYZ'),
+        new THREE.Euler(0, 0, 0, 'XYZ'),
+        new THREE.Euler(0, 0, 0, 'XYZ'),
         new THREE.Euler(0, 0, 0, 'XYZ'), 
         new THREE.Euler(0, 0, 0, 'XYZ'), 
-        new THREE.Euler(0, Math.PI / 2, 0, 'XYZ'), 
-        new THREE.Euler(0, Math.PI / 2, 0, 'XYZ'), 
+        new THREE.Euler(0, 0, 0, 'XYZ'),
+        new THREE.Euler(0, 0, 0, 'XYZ'),
       ];
         
 
@@ -132,7 +132,7 @@ export default class Experience{
       myText.position.x = -6;
       myText.position.y = 4.3;
       myText.position.z = -8.5;
-      myText.color = 0xfffffF;
+      myText.color = 0x000000;
 
       // Update the rendering:
       myText.sync();
@@ -448,43 +448,31 @@ export default class Experience{
         });
     }
 
-    const startingIntensity = 0.1;
+    const startingIntensity = 0.2;
     const rendererProperties = { toneMappingExposure: startingIntensity };
     
     function gsapDirLightIntensityInit(targetIntensity) {
       gsap.to(rendererProperties, {
         toneMappingExposure: startingIntensity,
-        duration: 2,
+        duration: 3,
         onUpdate: () => {
           renderer.toneMappingExposure = rendererProperties.toneMappingExposure;
         }
       });
     }
     
-    const targetIntensity = 0.5;
     function gsapDirLightIntensityTarget(targetIntensity) {
-      renderer.toneMappingExposure = 0;
+      //renderer.toneMappingExposure = 0;
       gsap.to(rendererProperties, {
         toneMappingExposure: targetIntensity,
         duration: 2.5,
         onUpdate: () => {
           renderer.toneMappingExposure = rendererProperties.toneMappingExposure;
         },
-        onComplete: () => {
-          //gsapTargetRendererLighting(targetIntensity);
-        }
       });
     }
 
-    function RenderIntensityToZero() {
-      gsap.to(rendererProperties, {
-        toneMappingExposure: 0,
-        duration: 0,
-        onUpdate: () => {
-          renderer.toneMappingExposure = rendererProperties.toneMappingExposure;
-        },
-      });
-    }
+
 
     // color transition
     // let targetColor = new THREE.Color(0x1a1a1a);
@@ -811,17 +799,24 @@ export default class Experience{
             break;
             case o_name.includes("tab00"):
               moveIsAnimating = true;
-              loadScene("0");
-              defaultRoomSettings(0);
+              loadScene("1");
+              defaultRoomSettings(1);
               rayNoHit = false;
             break;
             case o_name.includes("tab01"):
               moveIsAnimating = true;
-              loadScene("1");
-              defaultRoomSettings(1)
+              loadScene("2");
+              defaultRoomSettings(2);
               rayNoHit = false;
             break;
             case o_name.includes("tab02"):
+              moveIsAnimating = true;
+              loadScene("3");
+              defaultRoomSettings(3);
+              rayNoHit = false;
+            break;
+            case o_name.includes("tab03"):
+              moveIsAnimating = true;
               const roomNumber = "0";
               const searchString = "Mov";
               setupVideo(roomNumber, searchString, camera, scene);
@@ -831,38 +826,31 @@ export default class Experience{
                 s_buttonB.visible = true;
                 p_buttonB.visible = true;
               }
-              //loadScene("2");
-
-              rayNoHit = false;
-            break;
-            case o_name.includes("tab03"):
-              //loadScene("3");
+              //loadScene("4");
 
               rayNoHit = false;
             break;
             case o_name.includes("tab04"):
-              moveIsAnimating = true;
-              loadScene("4");
-              defaultRoomSettings(4);
-              rayNoHit = false;
+            
+
+            rayNoHit = false;
             break;
             case o_name.includes("tab05"):
-              //loadScene("5");
-
-              rayNoHit = false;
+              
+            rayNoHit = false;
             break;
             case o_name.includes("tab06"):
-              //loadScene("6");
-
-              rayNoHit = false;
-            break;
-            case o_name.includes("tab07"):
               //loadScene("7");
 
               rayNoHit = false;
             break;
-            case o_name.includes("tab08"):
+            case o_name.includes("tab07"):
               //loadScene("8");
+
+              rayNoHit = false;
+            break;
+            case o_name.includes("tab08"):
+              //loadScene("9");
 
               rayNoHit = false;
             break;
@@ -925,7 +913,12 @@ export default class Experience{
 
       function defaultRoomSettings(roomIndex)
       {
-
+        if(roomIndex === 0)
+        {
+          myText.visible = true;
+        }else{
+          myText.visible = false;
+        }
         camera.position.copy(defaultCameraPositions[roomIndex]);
         camera.rotation.copy(defaultCameraRotations[roomIndex]);
         gsapDirLightIntensityInit(0.2);
@@ -995,8 +988,6 @@ export default class Experience{
           });
         }
         
-        gsapDirLightIntensityTarget(0.1);
-        //console.log(interactableObjects);
       }
 
 
@@ -1023,7 +1014,6 @@ export default class Experience{
       if (loadedScenes.has(desiredRoom)) {
         const loadedSceneObjects = loadedScenes.get(desiredRoom);
 
-        RenderIntensityToZero();
         loadedSceneObjects.forEach((object) => {
           tabsReset(object);
           traverseActDeactHierarchy(object);

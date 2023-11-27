@@ -25,20 +25,11 @@ const createRenderer = (scene) => {
   
   renderer.outputColorSpace = THREE.SRGBColorSpace;
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
-  renderer.toneMappingExposure = 0.1;
-
-
+  //renderer.toneMappingExposure = 0.2;
 
 
   let materialArray = [];
   
-  // let texture_lf = new THREE.TextureLoader().load('./Models/Environment/Skybox/ws_left.png');
-  // let texture_rt = new THREE.TextureLoader().load('./Models/Environment/Skybox/ws_right.png');
-  // let texture_up = new THREE.TextureLoader().load('./Models/Environment/Skybox/ws_top.png');
-  // let texture_dn = new THREE.TextureLoader().load('./Models/Environment/Skybox/ws_down.png');
-  // let texture_bk = new THREE.TextureLoader().load('./Models/Environment/Skybox/ws_back.png');
-  // let texture_ft = new THREE.TextureLoader().load('./Models/Environment/Skybox/ws_front.png');
-
 
   let texture_lf = new THREE.TextureLoader().load('./Models/Environment/Skybox/ws_right.png');
   let texture_rt = new THREE.TextureLoader().load('./Models/Environment/Skybox/ws_left.png');
@@ -47,8 +38,9 @@ const createRenderer = (scene) => {
   let texture_bk = new THREE.TextureLoader().load('./Models/Environment/Skybox/ws_back.png');
   let texture_ft = new THREE.TextureLoader().load('./Models/Environment/Skybox/ws_front.png');
 
-  materialArray.push(new THREE.MeshBasicMaterial({map: texture_lf}));
+  
   materialArray.push(new THREE.MeshBasicMaterial({map: texture_rt}));
+  materialArray.push(new THREE.MeshBasicMaterial({map: texture_lf}));
   materialArray.push(new THREE.MeshBasicMaterial({map: texture_up})); 
   materialArray.push(new THREE.MeshBasicMaterial({map: texture_dn})); 
   materialArray.push(new THREE.MeshBasicMaterial({map: texture_bk}));

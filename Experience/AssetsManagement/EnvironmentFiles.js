@@ -8,7 +8,7 @@ export default assets = {
         {
           classification: "level",
           type: "glbDraco",
-          path: "./Models/Environment/Room00/MenuRoom.glb"
+          path: "./Models/Environment/Menu/MenuRoom.glb"
         },
       ]
     },
@@ -17,53 +17,23 @@ export default assets = {
       assets: [
         {
           classification: "level",
-          type: "glb",
-          path: "./Models/Environment/Room01/room12.glb"
+          type: "glbDraco",
+          path: "./Models/Environment/Room00/room00.glb"
         },
       ]
     },
     {
       room: "2",
       assets: [
-        // {
-        //   classification: "level",
-        //   type: "glbDraco",
-        //   path: "./Models/Environment/Room00/RR.glb"
-        // },
-        // {
-        //   classification: "exhibit",
-        //   type: "glbDraco",
-        //   path: "./Models/Environment/Room00/RR.glb"
-        // },
-        // {
-        //   classification: "exhibit",
-        //   type: "glbDraco",
-        //   path: "./Models/Environment/Room00/RR.glb"
-        // }
+        {
+          classification: "level",
+          type: "glbDraco",
+          path: "./Models/Environment/Room01/room01.glb"
+        },
       ]
     },
     {
       room: "3",
-      assets: [
-        // {
-        //   classification: "level",
-        //   type: "glbDraco",
-        //   path: "./Models/Environment/Room00/RR.glb"
-        // },
-        // {
-        //   classification: "exhibit",
-        //   type: "glbDraco",
-        //   path: "./Models/Environment/Room00/RR.glb"
-        // },
-        // {
-        //   classification: "exhibit",
-        //   type: "glbDraco",
-        //   path: "./Models/Environment/Room00/RR.glb"
-        // }
-      ]
-    },
-    {
-      room: "4",
       assets: [
         {
           classification: "level",
@@ -75,6 +45,12 @@ export default assets = {
           type: "glbDraco",
           path: "./Models/Environment/Room02/Exhibits/exhibit1_3.glb"
         }
+      ]
+    },
+    {
+      room: "4",
+      assets: [
+       
       ]
     }
   ]
